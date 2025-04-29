@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: Api
+    runtime: docker
+    plan: free
+    autoDeploy: true
+    dockerfilePath: ./Dockerfile
+    branch: main
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: DATABASE_URL
+        value: "Host=ep-purple-firefly-a289919a.eu-central-1.pg.koyeb.app;Port=5432;Database=koyebdb;Username=galabot-adm;Password=npg_6MEq5txbzkDF;SSL Mode=Require;Trust Server Certificate=true;"
+    healthCheckPath: /
+    startCommand: "dotnet Api.dll"
