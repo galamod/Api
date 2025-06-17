@@ -23,7 +23,7 @@ builder.Services.AddCors(options =>
             .AllowAnyOrigin()
             .AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowCredentials(); // если используешь авторизацию
+            .AllowCredentials();
     });
 });
 
@@ -70,4 +70,4 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 }
 
-app.Run();
+await app.RunAsync();
