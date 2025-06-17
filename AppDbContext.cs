@@ -16,10 +16,10 @@ namespace Api
             modelBuilder.Entity<License>().ToTable("Licenses");
 
             modelBuilder.Entity<License>()
-       .HasOne(l => l.User)
-       .WithMany(u => u.Licenses)
-       .HasForeignKey(l => l.UserId)
-       .OnDelete(DeleteBehavior.SetNull);
+               .HasOne(l => l.User)
+               .WithMany(u => u.Licenses)
+               .HasForeignKey(l => l.UserId)
+               .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<License>()
                 .HasIndex(l => l.Key)

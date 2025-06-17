@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 
 namespace Api
@@ -60,6 +58,22 @@ namespace Api
             await _context.SaveChangesAsync();
 
             return Ok("Ключ успешно активирован");
+        }
+
+        [Authorize] // можно добавить роль администратора, если нужно
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] License model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            model.Id = Guid.NewGuid();
+            model.CreatedAt = DateTime.UtcNow;
+
+            _context.Licenses.Add(model);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetAll), new { id = model.Id }, model);
         }
 
         [Authorize]
