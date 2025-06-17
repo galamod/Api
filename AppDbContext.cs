@@ -14,7 +14,16 @@ namespace Api
         {
             modelBuilder.Entity<User>().ToTable("Users");
             modelBuilder.Entity<License>().ToTable("Licenses");
+
+            modelBuilder.Entity<License>()
+       .HasOne(l => l.User)
+       .WithMany(u => u.Licenses)
+       .HasForeignKey(l => l.UserId)
+       .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<License>()
+                .HasIndex(l => l.Key)
+                .IsUnique();
         }
     }
-
 }

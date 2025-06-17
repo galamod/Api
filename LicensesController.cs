@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 namespace Api
 {
@@ -17,18 +19,22 @@ namespace Api
         }
 
         [Authorize]
-        [HttpGet("all")]
-        public async Task<IActionResult> GetAllLicenses()
+        [HttpGet("my")] // получить лицензии текущего пользователя
+        public async Task<IActionResult> GetMyLicenses()
         {
+            var userId = User.FindFirstValue("id");
+            if (userId == null) return Unauthorized();
+
+            var guid = Guid.Parse(userId);
             var licenses = await _context.Licenses
+                .Where(l => l.UserId == guid)
                 .Select(l => new
                 {
                     l.Id,
                     l.Key,
-                    l.ApplicationName,
-                    l.UserId,
+                    l.Application,
                     l.CreatedAt,
-                    l.ExpirationDate
+                    l.ExpiresAt
                 })
                 .ToListAsync();
 
@@ -36,126 +42,91 @@ namespace Api
         }
 
         [Authorize]
-        [HttpPost("assign")]
-        public async Task<IActionResult> AssignLicense(AddLicense model)
+        [HttpPost("activate")]
+        public async Task<IActionResult> ActivateLicense([FromBody] string key)
         {
-            var user = await _context.Users.FindAsync(model.UserId);
-            if (user == null)
-                return NotFound("User not found");
+            var userId = User.FindFirstValue("id");
+            if (userId == null) return Unauthorized();
+            var guid = Guid.Parse(userId);
 
-            var existing = await _context.Licenses.AnyAsync(l => l.Key == model.Key);
-            if (existing)
-                return BadRequest("License key already in use");
+            var license = await _context.Licenses
+                .FirstOrDefaultAsync(x => x.Key == key && x.UserId == null);
 
-            var license = new License
-            {
-                Key = model.Key,
-                ApplicationName = model.ApplicationName,
-                UserId = user.Id,
-                ExpirationDate = model.ExpirationDate
-            };
+            if (license == null)
+                return BadRequest("Ключ недействителен или уже активирован");
 
-            _context.Licenses.Add(license);
+            license.UserId = guid;
+            _context.Licenses.Update(license);
+            await _context.SaveChangesAsync();
+
+            return Ok("Ключ успешно активирован");
+        }
+
+        [Authorize]
+        [HttpGet("validate")] // ?app=название
+        public async Task<IActionResult> ValidateLicense([FromQuery] string? app)
+        {
+            var userId = User.FindFirstValue("id");
+            if (userId == null) return Unauthorized();
+            var guid = Guid.Parse(userId);
+            var now = DateTime.UtcNow;
+
+            var isValid = await _context.Licenses.AnyAsync(l =>
+                l.UserId == guid &&
+                (l.Application == null || l.Application == app) &&
+                (l.ExpiresAt == null || l.ExpiresAt > now));
+
+            return Ok(new { valid = isValid });
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var licenses = await _context.Licenses
+                .Include(l => l.User)
+                .Select(l => new
+                {
+                    l.Id,
+                    l.Key,
+                    l.Application,
+                    l.CreatedAt,
+                    l.ExpiresAt,
+                    User = l.User == null ? null : new
+                    {
+                        l.User.Id,
+                        l.User.Username
+                    }
+                })
+                .ToListAsync();
+
+            return Ok(licenses);
+        }
+
+        [Authorize]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] License updated)
+        {
+            var license = await _context.Licenses.FindAsync(id);
+            if (license == null) return NotFound();
+
+            license.Application = updated.Application;
+            license.ExpiresAt = updated.ExpiresAt;
+
             await _context.SaveChangesAsync();
             return Ok();
         }
 
         [Authorize]
-        [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetUserLicenses(Guid userId)
-        {
-            var licenses = await _context.Licenses
-                .Where(l => l.UserId == userId)
-                .Select(l => new
-                {
-                    l.Key,
-                    l.ApplicationName,
-                    l.CreatedAt,
-                    l.ExpirationDate
-                })
-                .ToListAsync();
-
-            return Ok(licenses);
-        }
-
-        [Authorize]
-        [HttpGet("check")]
-        public async Task<IActionResult> CheckLicense(Guid userId, string appName)
-        {
-            var hasLicense = await _context.Licenses.AnyAsync(l =>
-                l.UserId == userId &&
-                l.ApplicationName == appName &&
-                (l.ExpirationDate == null || l.ExpirationDate > DateTime.UtcNow));
-
-            return Ok(new { hasLicense });
-        }
-
-        [Authorize]
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateLicense(Guid id, UpdateLicense model)
-        {
-            var license = await _context.Licenses.FindAsync(id);
-            if (license == null)
-                return NotFound("License not found");
-
-            license.ApplicationName = model.ApplicationName;
-            license.ExpirationDate = model.ExpirationDate;
-
-            await _context.SaveChangesAsync();
-            return Ok(new
-            {
-                license.Id,
-                license.ApplicationName,
-                license.ExpirationDate
-            });
-        }
-
-        [Authorize]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteLicense(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             var license = await _context.Licenses.FindAsync(id);
-            if (license == null)
-                return NotFound("License not found");
+            if (license == null) return NotFound();
 
             _context.Licenses.Remove(license);
             await _context.SaveChangesAsync();
-            return Ok("License deleted");
+            return Ok();
         }
-
-    }
-
-    public class AddLicense
-    {
-        [Required]
-        public Guid UserId { get; set; }
-
-        [Required]
-        public string Key { get; set; }
-
-        [Required]
-        public string ApplicationName { get; set; }
-
-        public DateTime? ExpirationDate { get; set; }
-    }
-
-    public class UpdateLicense
-    {
-        [Required]
-        public string ApplicationName { get; set; }
-
-        public DateTime? ExpirationDate { get; set; }
-    }
-
-    public class License
-    {
-        public Guid Id { get; set; } = Guid.NewGuid();
-        public string Key { get; set; }  // уникальный ключ
-        public string ApplicationName { get; set; }  // Название приложения
-        public Guid UserId { get; set; }
-        public User User { get; set; }
-
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime? ExpirationDate { get; set; } // Можно использовать для ограниченных по времени ключей
     }
 }

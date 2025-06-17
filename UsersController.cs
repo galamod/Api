@@ -25,7 +25,7 @@ namespace Api
         public async Task<IActionResult> Register(AddUser model)
         {
             if (await _context.Users.AnyAsync(x => x.Username == model.Username))
-                return BadRequest("Username is already taken");
+                return BadRequest("Имя пользователя занято");
 
             var user = new User
             {
