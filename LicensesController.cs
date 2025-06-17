@@ -60,21 +60,30 @@ namespace Api
             return Ok("Ключ успешно активирован");
         }
 
-        [Authorize] // можно добавить роль администратора, если нужно
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Create([FromBody] License model)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            model.Id = Guid.NewGuid();
-            model.CreatedAt = DateTime.UtcNow;
+            if (string.IsNullOrWhiteSpace(userId))
+                return Unauthorized();
 
-            _context.Licenses.Add(model);
+            var license = new License
+            {
+                Id = Guid.NewGuid(),
+                Key = model.Key,
+                Application = model.Application,
+                ExpiresAt = model.ExpiresAt,
+                UserId = Guid.Parse(userId)
+            };
+
+            _context.Licenses.Add(license);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetAll), new { id = model.Id }, model);
+            return Ok(license);
         }
+
 
         [Authorize]
         [HttpGet("validate")] // ?app=название
