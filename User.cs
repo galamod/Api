@@ -1,4 +1,6 @@
-﻿namespace Api
+﻿using System.Text.Json.Serialization;
+
+namespace Api
 {
     public class User
     {
@@ -7,6 +9,8 @@
         public string LastName { get; set; }
         public string Username { get; set; }
         public string PasswordHash { get; set; }
+
+        [JsonIgnore] // игнорируем User при сериализации
         public List<License> Licenses { get; set; } = new();
     }
 }

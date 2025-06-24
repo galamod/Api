@@ -1,4 +1,6 @@
-﻿namespace Api
+﻿using System.Text.Json.Serialization;
+
+namespace Api
 {
     public class License
     {
@@ -21,6 +23,7 @@
             set => _expirationDate = value?.ToUniversalTime();
         }
 
+        [JsonIgnore] // игнорируем User при сериализации
         public User? User { get; set; }
     }
 
