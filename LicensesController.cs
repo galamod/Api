@@ -114,8 +114,9 @@ namespace Api
                 {
                     Key = Guid.NewGuid().ToString("N").ToUpper(),
                     ApplicationName = dto.ApplicationName,
-                    ExpirationDate = dto.ExpirationDate,
-                    UserId = dto.UserId
+                    ExpirationDate = dto.ExpirationDate?.ToUniversalTime(), // <- здесь
+                    UserId = dto.UserId,
+                    CreatedAt = DateTime.UtcNow // если есть поле CreatedAt
                 };
 
                 _context.Licenses.Add(license);

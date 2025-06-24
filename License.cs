@@ -6,8 +6,21 @@
         public string Key { get; set; } // Уникальный лицензионный ключ
         public Guid? UserId { get; set; } // Пользователь, которому привязана лицензия (если привязана)
         public string? ApplicationName { get; set; } // null = ключ для всех приложений
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime? ExpirationDate { get; set; } // null = бессрочный
+
+        private DateTime _createdAt = DateTime.UtcNow;
+        public DateTime CreatedAt
+        {
+            get => _createdAt;
+            set => _createdAt = value.ToUniversalTime();
+        }
+
+        private DateTime? _expirationDate;
+        public DateTime? ExpirationDate
+        {
+            get => _expirationDate;
+            set => _expirationDate = value?.ToUniversalTime();
+        }
+
         public User? User { get; set; }
     }
 
@@ -16,7 +29,14 @@
         public Guid Id { get; set; }
         public string Key { get; set; }
         public string? ApplicationName { get; set; }
-        public DateTime? ExpirationDate { get; set; }
+
+        private DateTime? _expirationDate;
+        public DateTime? ExpirationDate
+        {
+            get => _expirationDate;
+            set => _expirationDate = value?.ToUniversalTime();
+        }
+
         public Guid? UserId { get; set; }
         public string? UserUsername { get; set; }
     }
@@ -25,17 +45,30 @@
     {
         public Guid UserId { get; set; }
         public string? ApplicationName { get; set; } // null = для всех
-        public DateTime? ExpirationDate { get; set; } // null = бессрочная
+
+        private DateTime? _expirationDate;
+        public DateTime? ExpirationDate
+        {
+            get => _expirationDate;
+            set => _expirationDate = value?.ToUniversalTime();
+        }
     }
 
     public class GenerateLicenseDto
     {
         public string? ApplicationName { get; set; } // null если для всех приложений
-        public DateTime? ExpirationDate { get; set; }
+
+        private DateTime? _expirationDate;
+        public DateTime? ExpirationDate
+        {
+            get => _expirationDate;
+            set => _expirationDate = value?.ToUniversalTime();
+        }
     }
 
     public class ActivateLicenseDto
     {
         public string LicenseKey { get; set; }
     }
+
 }
