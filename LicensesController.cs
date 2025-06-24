@@ -97,6 +97,23 @@ namespace Api
             return Ok(licenses);
         }
 
+        [Authorize]
+        [HttpPost("admin/create-for-user")]
+        public async Task<IActionResult> CreateForUser(CreateLicenseForUserDto dto)
+        {
+            var license = new License
+            {
+                Key = Guid.NewGuid().ToString("N").ToUpper(),
+                ApplicationName = dto.ApplicationName,
+                ExpirationDate = dto.ExpirationDate,
+                UserId = dto.UserId
+            };
+
+            _context.Licenses.Add(license);
+            await _context.SaveChangesAsync();
+
+            return Ok(license);
+        }
 
         [Authorize]
         [HttpPut("{id}")]

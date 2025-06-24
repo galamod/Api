@@ -21,6 +21,12 @@
         public string? UserUsername { get; set; }
     }
 
+    public class CreateLicenseForUserDto
+    {
+        public Guid UserId { get; set; }
+        public string? ApplicationName { get; set; } // null = для всех
+        public DateTime? ExpirationDate { get; set; } // null = бессрочная
+    }
 
     public class GenerateLicenseDto
     {
