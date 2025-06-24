@@ -99,20 +99,37 @@ namespace Api
 
         [Authorize]
         [HttpPost("admin/create-for-user")]
-        public async Task<IActionResult> CreateForUser(CreateLicenseForUserDto dto)
+        public async Task<IActionResult> CreateForUser([FromBody] CreateLicenseForUserDto dto)
         {
-            var license = new License
+            try
             {
-                Key = Guid.NewGuid().ToString("N").ToUpper(),
-                ApplicationName = dto.ApplicationName,
-                ExpirationDate = dto.ExpirationDate,
-                UserId = dto.UserId
-            };
+                if (dto == null)
+                    return BadRequest("DTO не передан");
 
-            _context.Licenses.Add(license);
-            await _context.SaveChangesAsync();
+                var user = await _context.Users.FindAsync(dto.UserId);
+                if (user == null)
+                    return NotFound("Пользователь не найден");
 
-            return Ok(license);
+                var license = new License
+                {
+                    Key = Guid.NewGuid().ToString("N").ToUpper(),
+                    ApplicationName = dto.ApplicationName,
+                    ExpirationDate = dto.ExpirationDate,
+                    UserId = dto.UserId
+                };
+
+                _context.Licenses.Add(license);
+                await _context.SaveChangesAsync();
+
+                return Ok(license);
+            }
+            catch (Exception ex)
+            {
+                // Логируем исключение (если у тебя есть ILogger)
+                // logger.LogError(ex, "Ошибка создания лицензии для пользователя");
+
+                return StatusCode(500, $"Ошибка сервера: {ex.Message} {ex.InnerException?.Message}");
+            }
         }
 
         [Authorize]
