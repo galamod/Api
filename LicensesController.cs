@@ -81,9 +81,22 @@ namespace Api
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var licenses = await _context.Licenses.Include(x => x.User).ToListAsync();
+            var licenses = await _context.Licenses
+                .Include(x => x.User)
+                .Select(x => new LicenseDto
+                {
+                    Id = x.Id,
+                    Key = x.Key,
+                    ApplicationName = x.ApplicationName,
+                    ExpirationDate = x.ExpirationDate,
+                    UserId = x.UserId,
+                    UserUsername = x.User != null ? x.User.Username : null
+                })
+                .ToListAsync();
+
             return Ok(licenses);
         }
+
 
         [Authorize]
         [HttpPut("{id}")]

@@ -11,6 +11,17 @@
         public User? User { get; set; }
     }
 
+    public class LicenseDto
+    {
+        public Guid Id { get; set; }
+        public string Key { get; set; }
+        public string? ApplicationName { get; set; }
+        public DateTime? ExpirationDate { get; set; }
+        public Guid? UserId { get; set; }
+        public string? UserUsername { get; set; }
+    }
+
+
     public class GenerateLicenseDto
     {
         public string? ApplicationName { get; set; } // null если для всех приложений
