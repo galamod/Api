@@ -49,7 +49,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false,
             RoleClaimType = ClaimTypes.Role  // ”казываем, какой claim отвечает за роль
         };
-    });
+    }).Services.AddControllers().AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    }); 
 
 builder.Services.AddAuthorization();
 
