@@ -172,6 +172,7 @@ namespace Api
                     u.LastName,
                     u.Username,
                     Licenses = u.Licenses.Select(l => new {
+                        l.Id,
                         l.Key,
                         l.ApplicationName,
                         l.ExpirationDate
@@ -181,6 +182,5 @@ namespace Api
 
             return Ok(users);
         }
-
     }
 }
