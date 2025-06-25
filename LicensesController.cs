@@ -34,21 +34,25 @@ namespace Api
                 if (license == null)
                     return NotFound("Лицензия не найдена");
 
-                if (license.UserId != null)
-                    return BadRequest("Лицензия уже активирована");
+                // ❗ Убираем запрет, если лицензия уже активирована этим же пользователем
+                if (license.UserId != null && license.UserId != userId)
+                    return BadRequest("Лицензия уже активирована другим пользователем.");
 
-                license.UserId = userId;
-                await _context.SaveChangesAsync();
+                // Привязываем к пользователю (если ещё не была привязана)
+                if (license.UserId == null)
+                {
+                    license.UserId = userId;
+                    await _context.SaveChangesAsync();
+                }
 
-                return Ok("Лицензия успешно активирована");
+                return Ok("Лицензия активирована успешно.");
             }
             catch (Exception ex)
             {
-                // Логируем и возвращаем 500
-                // logger.LogError(ex, "Ошибка активации лицензии");
                 return StatusCode(500, $"Ошибка сервера: {ex.Message}");
             }
         }
+
 
         [Authorize]
         [HttpGet("my")]
