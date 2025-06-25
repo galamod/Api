@@ -9,7 +9,6 @@ namespace Api
         public DbSet<License> Licenses { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().ToTable("Users");
@@ -19,11 +18,13 @@ namespace Api
                .HasOne(l => l.User)
                .WithMany(u => u.Licenses)
                .HasForeignKey(l => l.UserId)
-               .OnDelete(DeleteBehavior.SetNull);
+               .OnDelete(DeleteBehavior.Cascade); // или DeleteBehavior.SetNull — в зависимости от твоей логики
 
             modelBuilder.Entity<License>()
                 .HasIndex(l => l.Key)
                 .IsUnique();
+
+            base.OnModelCreating(modelBuilder);
         }
     }
 }
