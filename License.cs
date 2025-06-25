@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Api
 {
@@ -71,6 +72,7 @@ namespace Api
 
     public class ActivateLicenseDto
     {
+        [Required]
         public string LicenseKey { get; set; }
     }
 

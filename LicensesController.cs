@@ -18,7 +18,7 @@ namespace Api
 
         [Authorize]
         [HttpPost("activate")]
-        public async Task<IActionResult> Activate(ActivateLicenseDto dto)
+        public async Task<IActionResult> Activate([FromBody] ActivateLicenseDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -26,19 +26,28 @@ namespace Api
             if (string.IsNullOrEmpty(dto.LicenseKey))
                 return BadRequest("Ключ лицензии не может быть пустым.");
 
-            var userId = Guid.Parse(User.FindFirstValue("id")!);
+            try
+            {
+                var userId = Guid.Parse(User.FindFirstValue("id")!);
 
-            var license = await _context.Licenses.FirstOrDefaultAsync(x => x.Key == dto.LicenseKey);
-            if (license == null)
-                return NotFound("Лицензия не найдена");
+                var license = await _context.Licenses.FirstOrDefaultAsync(x => x.Key == dto.LicenseKey);
+                if (license == null)
+                    return NotFound("Лицензия не найдена");
 
-            if (license.UserId != null)
-                return BadRequest("Лицензия уже активирована");
+                if (license.UserId != null)
+                    return BadRequest("Лицензия уже активирована");
 
-            license.UserId = userId;
-            await _context.SaveChangesAsync();
+                license.UserId = userId;
+                await _context.SaveChangesAsync();
 
-            return Ok("Лицензия успешно активирована");
+                return Ok("Лицензия успешно активирована");
+            }
+            catch (Exception ex)
+            {
+                // Логируем и возвращаем 500
+                // logger.LogError(ex, "Ошибка активации лицензии");
+                return StatusCode(500, $"Ошибка сервера: {ex.Message}");
+            }
         }
 
         [Authorize]
@@ -91,36 +100,26 @@ namespace Api
         [HttpPost("admin/create-for-user")]
         public async Task<IActionResult> CreateForUser([FromBody] CreateLicenseForUserDto dto)
         {
-            try
+            if (dto == null)
+                return BadRequest("DTO не передан");
+
+            var user = await _context.Users.FindAsync(dto.UserId);
+            if (user == null)
+                return NotFound("Пользователь не найден");
+
+            var license = new License
             {
-                if (dto == null)
-                    return BadRequest("DTO не передан");
+                Key = Guid.NewGuid().ToString("N").ToUpper(),
+                ApplicationName = dto.ApplicationName,
+                ExpirationDate = dto.ExpirationDate?.ToUniversalTime(), // <- здесь
+                UserId = dto.UserId,
+                CreatedAt = DateTime.UtcNow // если есть поле CreatedAt
+            };
 
-                var user = await _context.Users.FindAsync(dto.UserId);
-                if (user == null)
-                    return NotFound("Пользователь не найден");
+            _context.Licenses.Add(license);
+            await _context.SaveChangesAsync();
 
-                var license = new License
-                {
-                    Key = Guid.NewGuid().ToString("N").ToUpper(),
-                    ApplicationName = dto.ApplicationName,
-                    ExpirationDate = dto.ExpirationDate?.ToUniversalTime(), // <- здесь
-                    UserId = dto.UserId,
-                    CreatedAt = DateTime.UtcNow // если есть поле CreatedAt
-                };
-
-                _context.Licenses.Add(license);
-                await _context.SaveChangesAsync();
-
-                return Ok(license);
-            }
-            catch (Exception ex)
-            {
-                // Логируем исключение (если у тебя есть ILogger)
-                // logger.LogError(ex, "Ошибка создания лицензии для пользователя");
-
-                return StatusCode(500, $"Ошибка сервера: {ex.Message} {ex.InnerException?.Message}");
-            }
+            return Ok(license);
         }
 
         [Authorize(Roles = "Admin")]
