@@ -20,6 +20,12 @@ namespace Api
         [HttpPost("activate")]
         public async Task<IActionResult> Activate(ActivateLicenseDto dto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (string.IsNullOrEmpty(dto.LicenseKey))
+                return BadRequest("Ключ лицензии не может быть пустым.");
+
             var userId = Guid.Parse(User.FindFirstValue("id")!);
 
             var license = await _context.Licenses.FirstOrDefaultAsync(x => x.Key == dto.LicenseKey);
