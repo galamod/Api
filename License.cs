@@ -6,7 +6,7 @@ namespace Api
     public class License
     {
         public Guid Id { get; set; } = Guid.NewGuid();
-        public string LicenseKey { get; set; } // Уникальный лицензионный ключ
+        public string Key { get; set; } // Уникальный лицензионный ключ
         public Guid? UserId { get; set; } // Пользователь, которому привязана лицензия (если привязана)
         public string? ApplicationName { get; set; } // null = ключ для всех приложений
 
@@ -31,7 +31,7 @@ namespace Api
     public class LicenseDto
     {
         public Guid Id { get; set; }
-        public string LicenseKey { get; set; }
+        public string Key { get; set; }
         public string? ApplicationName { get; set; }
 
         private DateTime? _expirationDate;
@@ -73,7 +73,7 @@ namespace Api
     public class ActivateLicenseDto
     {
         [Required]
-        public string LicenseKey { get; set; }
+        public string Key { get; set; }
     }
 
 }

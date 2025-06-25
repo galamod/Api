@@ -23,14 +23,14 @@ namespace Api
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (string.IsNullOrEmpty(dto.LicenseKey))
+            if (string.IsNullOrEmpty(dto.Key))
                 return BadRequest("Ключ лицензии не может быть пустым.");
 
             try
             {
                 var userId = Guid.Parse(User.FindFirstValue("id")!);
 
-                var license = await _context.Licenses.FirstOrDefaultAsync(x => x.LicenseKey == dto.LicenseKey);
+                var license = await _context.Licenses.FirstOrDefaultAsync(x => x.Key == dto.Key);
                 if (license == null)
                     return NotFound("Лицензия не найдена");
 
@@ -85,7 +85,7 @@ namespace Api
                 .Select(x => new LicenseDto
                 {
                     Id = x.Id,
-                    LicenseKey = x.LicenseKey,
+                    Key = x.Key,
                     ApplicationName = x.ApplicationName,
                     ExpirationDate = x.ExpirationDate,
                     UserId = x.UserId,
@@ -109,7 +109,7 @@ namespace Api
 
             var license = new License
             {
-                LicenseKey = Guid.NewGuid().ToString("N").ToUpper(),
+                Key = Guid.NewGuid().ToString("N").ToUpper(),
                 ApplicationName = dto.ApplicationName,
                 ExpirationDate = dto.ExpirationDate?.ToUniversalTime(), // <- здесь
                 UserId = dto.UserId,
@@ -162,7 +162,7 @@ namespace Api
                     u.Username,
                     Licenses = u.Licenses.Select(l => new {
                         l.Id,
-                        l.LicenseKey,
+                        l.Key,
                         l.ApplicationName,
                         l.ExpirationDate
                     })

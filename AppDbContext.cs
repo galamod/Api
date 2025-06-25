@@ -21,7 +21,7 @@ namespace Api
                .OnDelete(DeleteBehavior.Cascade); // или DeleteBehavior.SetNull — в зависимости от твоей логики
 
             modelBuilder.Entity<License>()
-                .HasIndex(l => l.LicenseKey)
+                .HasIndex(l => l.Key)
                 .IsUnique();
 
             base.OnModelCreating(modelBuilder);
