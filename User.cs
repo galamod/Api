@@ -9,6 +9,7 @@ namespace Api
         public string LastName { get; set; }
         public string Username { get; set; }
         public string PasswordHash { get; set; }
+        public string Role { get; set; } = "User"; // по умолчанию
 
         [JsonIgnore] // игнорируем User при сериализации
         public List<License> Licenses { get; set; } = new();

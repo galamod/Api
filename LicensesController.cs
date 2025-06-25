@@ -17,22 +17,6 @@ namespace Api
         }
 
         [Authorize]
-        [HttpPost("generate")]
-        public async Task<IActionResult> Generate(GenerateLicenseDto dto)
-        {
-            var license = new License
-            {
-                Key = Guid.NewGuid().ToString("N").ToUpper(),
-                ApplicationName = dto.ApplicationName,
-                ExpirationDate = dto.ExpirationDate
-            };
-
-            _context.Licenses.Add(license);
-            await _context.SaveChangesAsync();
-            return Ok(license);
-        }
-
-        [Authorize]
         [HttpPost("activate")]
         public async Task<IActionResult> Activate(ActivateLicenseDto dto)
         {
@@ -77,7 +61,7 @@ namespace Api
             return Ok(new { accessGranted = hasLicense });
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -97,7 +81,7 @@ namespace Api
             return Ok(licenses);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPost("admin/create-for-user")]
         public async Task<IActionResult> CreateForUser([FromBody] CreateLicenseForUserDto dto)
         {
@@ -133,7 +117,7 @@ namespace Api
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, GenerateLicenseDto dto)
         {
@@ -147,7 +131,7 @@ namespace Api
             return Ok(license);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
@@ -160,7 +144,7 @@ namespace Api
             return Ok();
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpGet("with-licenses")]
         public async Task<IActionResult> GetUsersWithLicenses()
         {
