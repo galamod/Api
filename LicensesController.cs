@@ -30,7 +30,7 @@ namespace Api
             {
                 var userId = Guid.Parse(User.FindFirstValue("id")!);
 
-                var license = await _context.Licenses.FirstOrDefaultAsync(x => x.Key == dto.LicenseKey);
+                var license = await _context.Licenses.FirstOrDefaultAsync(x => x.LicenseKey == dto.LicenseKey);
                 if (license == null)
                     return NotFound("Лицензия не найдена");
 
@@ -85,7 +85,7 @@ namespace Api
                 .Select(x => new LicenseDto
                 {
                     Id = x.Id,
-                    Key = x.Key,
+                    LicenseKey = x.LicenseKey,
                     ApplicationName = x.ApplicationName,
                     ExpirationDate = x.ExpirationDate,
                     UserId = x.UserId,
@@ -109,7 +109,7 @@ namespace Api
 
             var license = new License
             {
-                Key = Guid.NewGuid().ToString("N").ToUpper(),
+                LicenseKey = Guid.NewGuid().ToString("N").ToUpper(),
                 ApplicationName = dto.ApplicationName,
                 ExpirationDate = dto.ExpirationDate?.ToUniversalTime(), // <- здесь
                 UserId = dto.UserId,
@@ -162,7 +162,7 @@ namespace Api
                     u.Username,
                     Licenses = u.Licenses.Select(l => new {
                         l.Id,
-                        l.Key,
+                        l.LicenseKey,
                         l.ApplicationName,
                         l.ExpirationDate
                     })
