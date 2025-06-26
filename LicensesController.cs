@@ -72,46 +72,22 @@ namespace Api
             var userId = Guid.Parse(User.FindFirstValue("id")!);
             var now = DateTime.UtcNow;
 
-            // Проверка универсальной лицензии
-            var universalLicense = await _context.Licenses
-                .Where(x => x.UserId == userId &&
-                            x.ApplicationName == null &&
-                            (x.ExpirationDate == null || x.ExpirationDate > now))
-                .OrderBy(x => x.ExpirationDate)
-                .FirstOrDefaultAsync();
+            // Сначала проверка на "универсальную" лицензию (на все приложения)
+            var hasUniversalLicense = await _context.Licenses.AnyAsync(x =>
+                x.UserId == userId &&
+                x.ApplicationName == null &&
+                (x.ExpirationDate == null || x.ExpirationDate > now));
 
-            if (universalLicense != null)
-            {
-                return Ok(new
-                {
-                    accessGranted = true,
-                    licenseType = "universal",
-                    expirationDate = universalLicense.ExpirationDate,
-                    applicationName = "Все приложения"
-                });
-            }
+            if (hasUniversalLicense)
+                return Ok(new { accessGranted = true });
 
-            // Проверка лицензии под конкретное приложение
-            var specificLicense = await _context.Licenses
-                .Where(x => x.UserId == userId &&
-                            x.ApplicationName == application &&
-                            (x.ExpirationDate == null || x.ExpirationDate > now))
-                .OrderBy(x => x.ExpirationDate)
-                .FirstOrDefaultAsync();
+            // Затем проверка конкретной лицензии под указанное приложение
+            var hasSpecificLicense = await _context.Licenses.AnyAsync(x =>
+                x.UserId == userId &&
+                x.ApplicationName == application &&
+                (x.ExpirationDate == null || x.ExpirationDate > now));
 
-            if (specificLicense != null)
-            {
-                return Ok(new
-                {
-                    accessGranted = true,
-                    licenseType = "specific",
-                    expirationDate = specificLicense.ExpirationDate,
-                    applicationName = specificLicense.ApplicationName
-                });
-            }
-
-            // Нет лицензии
-            return Ok(new { accessGranted = false });
+            return Ok(new { accessGranted = hasSpecificLicense });
         }
 
         [Authorize(Roles = "Admin")]
