@@ -70,14 +70,48 @@ namespace Api
         public async Task<IActionResult> CheckAccess([FromQuery] string application)
         {
             var userId = Guid.Parse(User.FindFirstValue("id")!);
-
             var now = DateTime.UtcNow;
-            var hasLicense = await _context.Licenses.AnyAsync(x =>
-                x.UserId == userId &&
-                (x.ApplicationName == null || x.ApplicationName == application) &&
-                (x.ExpirationDate == null || x.ExpirationDate > now));
 
-            return Ok(new { accessGranted = hasLicense });
+            // Проверка универсальной лицензии
+            var universalLicense = await _context.Licenses
+                .Where(x => x.UserId == userId &&
+                            x.ApplicationName == null &&
+                            (x.ExpirationDate == null || x.ExpirationDate > now))
+                .OrderBy(x => x.ExpirationDate)
+                .FirstOrDefaultAsync();
+
+            if (universalLicense != null)
+            {
+                return Ok(new
+                {
+                    accessGranted = true,
+                    licenseType = "universal",
+                    expirationDate = universalLicense.ExpirationDate,
+                    applicationName = "Все приложения"
+                });
+            }
+
+            // Проверка лицензии под конкретное приложение
+            var specificLicense = await _context.Licenses
+                .Where(x => x.UserId == userId &&
+                            x.ApplicationName == application &&
+                            (x.ExpirationDate == null || x.ExpirationDate > now))
+                .OrderBy(x => x.ExpirationDate)
+                .FirstOrDefaultAsync();
+
+            if (specificLicense != null)
+            {
+                return Ok(new
+                {
+                    accessGranted = true,
+                    licenseType = "specific",
+                    expirationDate = specificLicense.ExpirationDate,
+                    applicationName = specificLicense.ApplicationName
+                });
+            }
+
+            // Нет лицензии
+            return Ok(new { accessGranted = false });
         }
 
         [Authorize(Roles = "Admin")]
