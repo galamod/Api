@@ -72,7 +72,7 @@ namespace Api
             var userId = Guid.Parse(User.FindFirstValue("id")!);
             var now = DateTime.UtcNow;
 
-            // Сначала проверка на "универсальную" лицензию (на все приложения)
+            // Сначала проверяем наличие универсальной лицензии
             var hasUniversalLicense = await _context.Licenses.AnyAsync(x =>
                 x.UserId == userId &&
                 x.ApplicationName == null &&
@@ -81,7 +81,7 @@ namespace Api
             if (hasUniversalLicense)
                 return Ok(new { accessGranted = true });
 
-            // Затем проверка конкретной лицензии под указанное приложение
+            // Если универсальной нет — проверяем конкретную
             var hasSpecificLicense = await _context.Licenses.AnyAsync(x =>
                 x.UserId == userId &&
                 x.ApplicationName == application &&
