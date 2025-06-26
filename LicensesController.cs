@@ -70,24 +70,14 @@ namespace Api
         public async Task<IActionResult> CheckAccess([FromQuery] string application)
         {
             var userId = Guid.Parse(User.FindFirstValue("id")!);
+
             var now = DateTime.UtcNow;
-
-            // Сначала проверяем наличие универсальной лицензии
-            var hasUniversalLicense = await _context.Licenses.AnyAsync(x =>
+            var hasLicense = await _context.Licenses.AnyAsync(x =>
                 x.UserId == userId &&
-                x.ApplicationName == null &&
+                (x.ApplicationName == null || x.ApplicationName == application) &&
                 (x.ExpirationDate == null || x.ExpirationDate > now));
 
-            if (hasUniversalLicense)
-                return Ok(new { accessGranted = true });
-
-            // Если универсальной нет — проверяем конкретную
-            var hasSpecificLicense = await _context.Licenses.AnyAsync(x =>
-                x.UserId == userId &&
-                x.ApplicationName == application &&
-                (x.ExpirationDate == null || x.ExpirationDate > now));
-
-            return Ok(new { accessGranted = hasSpecificLicense });
+            return Ok(new { accessGranted = hasLicense });
         }
 
         [Authorize(Roles = "Admin")]
