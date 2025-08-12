@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
 
-namespace Api
+namespace Api.Helper
 {
     public class TelegramBot
     {

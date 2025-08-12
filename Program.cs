@@ -1,4 +1,5 @@
 using Api;
+using Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -28,8 +29,6 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddControllers();
-
 var dbUrl = builder.Configuration.GetConnectionString("DefaultConnection")
           ?? Environment.GetEnvironmentVariable("DATABASE_URL");
 
@@ -37,6 +36,8 @@ Console.WriteLine($"DATABASE_URL from environment: {dbUrl}");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(dbUrl));
+
+builder.Services.AddSingleton<IConnectionManager, ConnectionManager>();
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
-namespace Api
+namespace Api.Controllers
 {
     [Route("licenses")]
     [ApiController]
