@@ -15,15 +15,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
-    <PackageReference Include="RestSharp" Version="112.1.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Using Include="IO.Plisio.Api" />
-    <Using Include="IO.Plisio.Client" />
-    <Using Include="IO.Plisio.Model" />
   </ItemGroup>
 
 </Project>
