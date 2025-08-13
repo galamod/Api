@@ -59,7 +59,7 @@ namespace Api.Services
 
                     Console.WriteLine($"✅ Сертификат истекает: {expireDate} (через {daysLeft} дней)");
 
-                    if (!_cts.Token.IsCancellationRequested)
+                    if (!_cts.Token.IsCancellationRequested && IsConnectionActive)
                     {
                         Send($":ru IDENT 355 -1 0000 1 2 :GALA");
                     }

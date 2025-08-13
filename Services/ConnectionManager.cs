@@ -29,7 +29,7 @@ namespace Api.Services
             _cleanupTimer = new Timer(CleanupCallback, null, TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(5));
         }
 
-        public async Task<string> CreateConnectionAsync(string password, string planetName = "default")
+        public Task<string> CreateConnectionAsync(string password, string planetName = "default")
         {
             var connection = new SecureConnection
             {
@@ -48,9 +48,6 @@ namespace Api.Services
                     await Galaxy.Connect(password, planetName);
                 });
 
-                // Ждем некоторое время для установки соединения
-                await Task.Delay(2000);
-
                 // Проверяем, установлено ли соединение
                 if (Galaxy.IsConnectionActive)
                 {
@@ -63,7 +60,7 @@ namespace Api.Services
 
                     _logger.LogInformation($"Создано новое соединение Galaxy: {connection.ConnectionId} для планеты {planetName}");
 
-                    return connection.ConnectionId;
+                    return Task.FromResult(connection.ConnectionId);
                 }
                 else
                 {
@@ -138,10 +135,23 @@ namespace Api.Services
         {
             if (_connections.TryGetValue(connectionId, out var connection) && connection.IsActive())
             {
-                connection.UpdateActivity();
-                return Task.FromResult(Galaxy.users);
+                try
+                {
+                    // Добавляем логирование
+                    _logger.LogInformation($"Получение пользователей для соединения {connectionId}");
+                    _logger.LogInformation($"Количество пользователей в Galaxy.users: {Galaxy.users.Count}");
+
+                    connection.UpdateActivity();
+                    return Task.FromResult(Galaxy.users);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"Ошибка при получении пользователей для соединения {connectionId}: {ex.Message}");
+                    return Task.FromResult(new ConcurrentDictionary<int, Galaxy.user>());
+                }
             }
 
+            _logger.LogWarning($"Соединение {connectionId} не найдено или неактивно");
             return Task.FromResult(new ConcurrentDictionary<int, Galaxy.user>());
         }
 

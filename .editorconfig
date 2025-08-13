@@ -8,3 +8,9 @@ dotnet_diagnostic.CS8622.severity = none
 
 # CS8618: Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Рассмотрите возможность добавления модификатора "required" или объявления значения, допускающего значение NULL.
 dotnet_diagnostic.CS8618.severity = none
+
+# CA1848: Использовать делегаты LoggerMessage
+dotnet_diagnostic.CA1848.severity = none
+
+# CA2254: Шаблон должен быть статическим выражением
+dotnet_diagnostic.CA2254.severity = none
