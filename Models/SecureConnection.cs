@@ -1,5 +1,4 @@
 ﻿using Api.Services;
-using System.Collections.Concurrent;
 
 namespace Api.Models
 {
@@ -19,15 +18,11 @@ namespace Api.Models
         public string BotNick { get; set; }
         public string BotPass { get; set; }
 
-        // Пользователи на планете
-        public ConcurrentDictionary<int, Galaxy.user> Users { get; set; }
-
         public SecureConnection()
         {
             ConnectionId = Guid.NewGuid().ToString();
             CreatedAt = DateTime.UtcNow;
             LastActivity = DateTime.UtcNow;
-            Users = new ConcurrentDictionary<int, Galaxy.user>();
             CancellationTokenSource = new CancellationTokenSource();
         }
 

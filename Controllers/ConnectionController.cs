@@ -16,23 +16,41 @@ namespace Api.Controllers
             _logger = logger;
         }
 
+        [HttpGet("connect")]
+        public async Task<IActionResult> ConnectToServerGet([FromQuery] string password, [FromQuery] string planetName = "default")
+        {
+            return await ConnectToServer(password, planetName);
+        }
+
         [HttpPost("connect/{password}")]
         public async Task<IActionResult> ConnectToServer(string password, [FromQuery] string planetName = "default")
         {
             try
             {
-                if (string.IsNullOrEmpty(password))
+                if (string.IsNullOrWhiteSpace(password))
                 {
-                    return BadRequest("Пароль не может быть пустым");
+                    _logger.LogWarning("Попытка подключения с пустым паролем");
+                    return BadRequest(new { message = "Пароль не может быть пустым" });
                 }
+
+                if (string.IsNullOrWhiteSpace(planetName))
+                {
+                    planetName = "default";
+                }
+
+                _logger.LogInformation($"Запрос на подключение к Galaxy серверу, планета: {planetName}");
 
                 var connectionId = await _connectionManager.CreateConnectionAsync(password, planetName);
 
+                _logger.LogInformation($"Успешное подключение к Galaxy серверу, ID соединения: {connectionId}");
+
                 return Ok(new
                 {
+                    success = true,
                     message = "Успешное подключение к Galaxy серверу",
                     connectionId = connectionId,
-                    planetName = planetName
+                    planetName = planetName,
+                    timestamp = DateTime.UtcNow
                 });
             }
             catch (Exception ex)
@@ -40,8 +58,10 @@ namespace Api.Controllers
                 _logger.LogError(ex, "Ошибка при подключении к Galaxy серверу");
                 return StatusCode(500, new
                 {
+                    success = false,
                     message = "Ошибка подключения к Galaxy серверу",
-                    error = ex.Message
+                    error = ex.Message,
+                    timestamp = DateTime.UtcNow
                 });
             }
         }
@@ -51,32 +71,52 @@ namespace Api.Controllers
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(connectionId))
+                {
+                    return BadRequest(new { message = "ID соединения не может быть пустым" });
+                }
+
                 var status = await _connectionManager.GetConnectionStatusAsync(connectionId);
                 var connection = await _connectionManager.GetConnectionAsync(connectionId);
 
                 if (connection != null)
                 {
+                    _logger.LogInformation($"Запрос статуса соединения {connectionId}: {status}");
+
                     return Ok(new
                     {
+                        success = true,
                         connectionId,
                         status,
                         planetName = connection.PlanetName,
                         botNick = connection.BotNick,
                         botId = connection.BotId,
                         connectedAt = connection.CreatedAt,
-                        lastActivity = connection.LastActivity
+                        lastActivity = connection.LastActivity,
+                        isActive = connection.IsActive(),
+                        timestamp = DateTime.UtcNow
                     });
                 }
 
-                return Ok(new { connectionId, status });
+                _logger.LogWarning($"Соединение {connectionId} не найдено");
+                return NotFound(new
+                {
+                    success = false,
+                    message = "Соединение не найдено",
+                    connectionId,
+                    status = "Unknown",
+                    timestamp = DateTime.UtcNow
+                });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при проверке статуса соединения");
+                _logger.LogError(ex, $"Ошибка при проверке статуса соединения {connectionId}");
                 return StatusCode(500, new
                 {
+                    success = false,
                     message = "Ошибка при проверке статуса",
-                    error = ex.Message
+                    error = ex.Message,
+                    timestamp = DateTime.UtcNow
                 });
             }
         }
@@ -86,24 +126,47 @@ namespace Api.Controllers
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(connectionId))
+                {
+                    return BadRequest(new { message = "ID соединения не может быть пустым" });
+                }
+
+                _logger.LogInformation($"Запрос на отключение соединения: {connectionId}");
+
                 var result = await _connectionManager.CloseConnectionAsync(connectionId);
 
                 if (result)
                 {
-                    return Ok(new { message = "Galaxy соединение успешно закрыто" });
+                    _logger.LogInformation($"Galaxy соединение {connectionId} успешно закрыто");
+                    return Ok(new
+                    {
+                        success = true,
+                        message = "Galaxy соединение успешно закрыто",
+                        connectionId,
+                        timestamp = DateTime.UtcNow
+                    });
                 }
                 else
                 {
-                    return BadRequest(new { message = "Соединение не найдено или уже закрыто" });
+                    _logger.LogWarning($"Соединение {connectionId} не найдено или уже закрыто");
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "Соединение не найдено или уже закрыто",
+                        connectionId,
+                        timestamp = DateTime.UtcNow
+                    });
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при закрытии Galaxy соединения");
+                _logger.LogError(ex, $"Ошибка при закрытии Galaxy соединения {connectionId}");
                 return StatusCode(500, new
                 {
+                    success = false,
                     message = "Ошибка при закрытии соединения",
-                    error = ex.Message
+                    error = ex.Message,
+                    timestamp = DateTime.UtcNow
                 });
             }
         }
@@ -113,64 +176,123 @@ namespace Api.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(request.Message))
+                if (string.IsNullOrWhiteSpace(connectionId))
                 {
-                    return BadRequest("Сообщение не может быть пустым");
+                    return BadRequest(new { message = "ID соединения не может быть пустым" });
                 }
+
+                if (string.IsNullOrWhiteSpace(request?.Message))
+                {
+                    return BadRequest(new { message = "Сообщение не может быть пустым" });
+                }
+
+                _logger.LogInformation($"Отправка сообщения через соединение {connectionId}: {request.Message}");
 
                 var result = await _connectionManager.SendMessageAsync(connectionId, request.Message);
 
                 if (result)
                 {
-                    return Ok(new { message = "Сообщение отправлено" });
+                    _logger.LogInformation($"Сообщение успешно отправлено через соединение {connectionId}");
+                    return Ok(new
+                    {
+                        success = true,
+                        message = "Сообщение отправлено",
+                        connectionId,
+                        sentMessage = request.Message,
+                        timestamp = DateTime.UtcNow
+                    });
                 }
                 else
                 {
-                    return BadRequest(new { message = "Ошибка отправки сообщения" });
+                    _logger.LogWarning($"Ошибка отправки сообщения через соединение {connectionId}");
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "Ошибка отправки сообщения",
+                        connectionId,
+                        timestamp = DateTime.UtcNow
+                    });
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при отправке сообщения");
+                _logger.LogError(ex, $"Ошибка при отправке сообщения через соединение {connectionId}");
                 return StatusCode(500, new
                 {
+                    success = false,
                     message = "Ошибка при отправке сообщения",
-                    error = ex.Message
+                    error = ex.Message,
+                    timestamp = DateTime.UtcNow
                 });
             }
         }
 
-        [HttpGet("users/{connectionId}")]
-        public async Task<IActionResult> GetUsers(string connectionId)
+        [HttpGet("connections")]
+        public async Task<IActionResult> GetAllConnections()
         {
             try
             {
-                var users = await _connectionManager.GetUsersAsync(connectionId);
+                _logger.LogInformation("Запрос списка всех активных соединений");
+
+                // Этот метод нужно добавить в IConnectionManager
+                var connections = await _connectionManager.GetAllConnectionsAsync();
 
                 return Ok(new
                 {
-                    connectionId,
-                    userCount = users.Count,
-                    users = users.Values.Select(u => new
+                    success = true,
+                    connectionCount = connections.Count,
+                    connections = connections.Select(c => new
                     {
-                        id = u.id,
-                        nick = u.nick,
-                        clan = u.clan,
-                        position = u.position,
-                        author = u.author,
-                        stars = u.stars,
-                        owner = u.owner,
-                        join = u.join
-                    })
+                        connectionId = c.ConnectionId,
+                        planetName = c.PlanetName,
+                        botNick = c.BotNick,
+                        botId = c.BotId,
+                        isConnected = c.IsConnected,
+                        isActive = c.IsActive(),
+                        createdAt = c.CreatedAt,
+                        lastActivity = c.LastActivity
+                    }),
+                    timestamp = DateTime.UtcNow
                 });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при получении списка пользователей");
+                _logger.LogError(ex, "Ошибка при получении списка соединений");
                 return StatusCode(500, new
                 {
-                    message = "Ошибка при получении списка пользователей",
-                    error = ex.Message
+                    success = false,
+                    message = "Ошибка при получении списка соединений",
+                    error = ex.Message,
+                    timestamp = DateTime.UtcNow
+                });
+            }
+        }
+
+        [HttpPost("cleanup")]
+        public IActionResult CleanupExpiredConnections()
+        {
+            try
+            {
+                _logger.LogInformation("Запуск очистки неактивных соединений");
+
+                _connectionManager.CleanupExpiredConnections();
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "Очистка неактивных соединений выполнена",
+                    timestamp = DateTime.UtcNow
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при очистке соединений");
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = "Ошибка при очистке соединений",
+                    error = ex.Message,
+                    timestamp = DateTime.UtcNow
                 });
             }
         }

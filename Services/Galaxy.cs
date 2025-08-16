@@ -1,5 +1,4 @@
 ﻿using Api.Helper;
-using System.Collections.Concurrent;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Security;
@@ -17,68 +16,91 @@ namespace Api.Services
         public static SslStream sslStream { get; private set; }
         public static NetworkStream networkStream { get; private set; }
 
-        public static ConcurrentDictionary<int, user> users = new ConcurrentDictionary<int, user>();
         private readonly Random random = new Random();
         private static CancellationTokenSource _cts = new CancellationTokenSource();
         private readonly StaticWebUserAgentGenerator staticWebUserAgent = new StaticWebUserAgentGenerator();
 
-        public static async Task Connect(string password, string planetName)
-        {
-            Galaxy client = new Galaxy();
+        // Добавляем логгер
+        private static ILogger<Galaxy> _logger;
 
-            await client.TcpClientConnectAsync(password, planetName);
+        // Событие для уведомления о состоянии подключения
+        public static event Action<string, bool> ConnectionStateChanged;
+        public static event Action<string> LogMessage;
+
+        public static void SetLogger(ILogger<Galaxy> logger)
+        {
+            _logger = logger;
         }
 
-        public async Task TcpClientConnectAsync(string password, string planetName)
+        public static async Task<bool> Connect(string password, string planetName)
+        {
+            Galaxy client = new Galaxy();
+            return await client.TcpClientConnectAsync(password, planetName);
+        }
+
+        public async Task<bool> TcpClientConnectAsync(string password, string planetName)
         {
             string userAgent = staticWebUserAgent.GeneratedUserAgent;
             string phoneUserAgent = staticWebUserAgent.GetPhoneUserAgent(userAgent);
 
             _cts = new CancellationTokenSource();
-
             string hash = null;
+            bool connectionSuccessful = false;
 
             try
             {
+                LogInfo($"Начинаем подключение к Galaxy серверу для планеты: {planetName}");
+
                 using (client = new TcpClient(hostname: "cs.mobstudio.ru", port: 6671))
                 using (networkStream = client.GetStream())
-                using (sslStream = new SslStream(innerStream: networkStream, leaveInnerStreamOpen: false, userCertificateValidationCallback: new RemoteCertificateValidationCallback(ValidateServerCertificate), userCertificateSelectionCallback: SelectClientCertificate))
+                using (sslStream = new SslStream(innerStream: networkStream, leaveInnerStreamOpen: false,
+                    userCertificateValidationCallback: new RemoteCertificateValidationCallback(ValidateServerCertificate),
+                    userCertificateSelectionCallback: SelectClientCertificate))
                 {
-                    await sslStream.AuthenticateAsClientAsync(targetHost: "cs.mobstudio.ru", clientCertificates: null, enabledSslProtocols: SslProtocols.Tls12, checkCertificateRevocation: false);
+                    await sslStream.AuthenticateAsClientAsync(targetHost: "cs.mobstudio.ru", clientCertificates: null,
+                        enabledSslProtocols: SslProtocols.Tls12, checkCertificateRevocation: false);
 
                     var cert = sslStream.RemoteCertificate;
                     if (cert == null)
                     {
-                        Console.WriteLine("❌ Сертификат сервера не получен.");
-                        return;
+                        LogError("Сертификат сервера не получен");
+                        return false;
                     }
 
                     var x509 = new X509Certificate2(cert);
                     var expireDate = x509.NotAfter;
                     var daysLeft = (expireDate - DateTime.UtcNow).Days;
 
-                    Console.WriteLine($"✅ Сертификат истекает: {expireDate} (через {daysLeft} дней)");
+                    LogInfo($"Сертификат истекает: {expireDate} (через {daysLeft} дней)");
 
                     if (!_cts.Token.IsCancellationRequested && IsConnectionActive)
                     {
                         Send($":ru IDENT 355 -1 0000 1 2 :GALA");
+                        LogInfo("Отправлена команда IDENT");
                     }
 
                     do
                     {
                         var (input, parts, msg, message, str) = await ReadFromStream(_cts.Token);
 
+                        if (string.IsNullOrEmpty(input))
+                            continue;
+
                         string parts0 = parts.ElementAtOrDefault(0, string.Empty);
                         string parts1 = parts.ElementAtOrDefault(1, string.Empty);
+
+                        LogInfo($"Получена команда: {parts0}");
 
                         switch (parts0)
                         {
                             case "PING":
                                 Send("PONG");
+                                LogInfo("Отправлен PONG в ответ на PING");
                                 break;
                             case "HAAAPSI":
                                 hash = HashGenerator.GenerateHash(parts[1]);
                                 Send($"RECOVER {password.Trim()}");
+                                LogInfo("Отправлена команда RECOVER");
                                 break;
                             case "REGISTER":
                                 string randomHash = new RandomHashGenerator(16).GenerateRandomHash();
@@ -86,78 +108,65 @@ namespace Api.Services
                                 Bot.Instance.id = parts[1];
                                 Bot.Instance.pass = parts[2];
                                 Bot.Instance.nick = parts[3];
-                                break;
-                            case "SLEEP":
-                            case "PART":
-                                userExit(int.Parse(parts[1].Trim()));
-                                break;
-                            case "JOIN":
-                                userJoin(input, parts[2], int.Parse(parts[3]));
-                                break;
-                            case "OP":
-                                OP(parts[1]);
-                                break;
-                            case "T":
-                                user t = getUser(int.Parse(parts[1].Trim()));
-                                if (t != null)
-                                    Console.WriteLine($"{t.nick} печатает...");
-                                break;
-                            case "353":
-                                parser353(str);
+                                LogInfo($"Регистрация бота: {Bot.Instance.nick}");
                                 break;
                             case "403":
                                 if (input.Contains("no such channel", StringComparison.CurrentCulture))
                                 {
-                                    _ = Task.Delay(random.Next(2500, 3500));
+                                    await Task.Delay(random.Next(2500, 3500));
                                     Send($"JOIN {planetName}");
+                                    LogInfo($"Повторная попытка подключения к планете: {planetName}");
                                 }
                                 break;
                             case "421":
-                                Console.WriteLine(input);
+                                LogWarning($"Неизвестная команда: {input}");
                                 break;
                             case "451":
                                 if (input.Contains("Неверный код", StringComparison.CurrentCultureIgnoreCase))
                                 {
-                                    Console.WriteLine("Неверный код восстановления!");
+                                    LogError("Неверный код восстановления!");
                                     Close();
+                                    return false;
                                 }
                                 break;
                             case "452":
                                 if (input.Contains("заблокирован", StringComparison.CurrentCultureIgnoreCase))
                                 {
-                                    Console.WriteLine(input);
+                                    LogError($"Аккаунт заблокирован: {input}");
                                     Close();
+                                    return false;
                                 }
                                 break;
                             case "471":
                                 if (input.Contains("channel is full", StringComparison.CurrentCulture))
                                 {
-                                    _ = Task.Delay(random.Next(2500, 3500));
+                                    await Task.Delay(random.Next(2500, 3500));
                                     Send($"JOIN {planetName}");
+                                    LogInfo($"Планета переполнена, повторная попытка: {planetName}");
                                 }
                                 break;
                             case "482":
-                                Console.WriteLine(input);
+                                LogWarning($"Недостаточно прав: {input}");
                                 break;
                             case "855":
-                                Console.WriteLine("Остановка текущих задач и очистка состояния...");
+                                LogInfo("Остановка текущих задач и очистка состояния...");
                                 if (_cts != null)
                                 {
                                     _cts.Cancel();
                                     _cts.Dispose();
                                 }
                                 _cts = new CancellationTokenSource();
-                                Console.WriteLine("Создан новый CancellationTokenSource для будущих задач.");
-                                users.Clear();
-                                break;
-                            case "860":
-                                parser860(input);
+                                LogInfo("Создан новый CancellationTokenSource для будущих задач");
                                 break;
                             case "863":
                                 break;
                             case "900":
-                                Console.WriteLine($"Успешно авторизовались: [{Bot.Instance.nick}] [{parts[1].ToUpper().Trim()}]");
-                                break;
+                                LogInfo($"Успешно авторизовались: [{Bot.Instance.nick}] [{parts[1].ToUpper().Trim()}]");
+                                connectionSuccessful = true;
+                                ConnectionStateChanged?.Invoke(Bot.Instance.nick, true);
+                                Close();
+                                CleanUpConnection();
+                                return true;
                             case "999":
                                 var randomAddons = random.Next(251700, 251799);
                                 Send($"FWLISTVER {random.Next(310, 320)}");
@@ -165,16 +174,7 @@ namespace Api.Services
                                 Send($"MYADDONS {randomAddons} 1");
                                 Send(phoneUserAgent);
                                 Send($"JOIN {planetName.Trim()}");
-                                break;
-                        }
-
-                        switch (parts1)
-                        {
-                            case "KICK":
-                            case "BAN":
-                            case "PRISON":
-                                user user = getUser(int.Parse(parts[2].Trim()));
-                                userExit(int.Parse(parts[2].Trim()));
+                                LogInfo($"Подключение к планете: {planetName}");
                                 break;
                         }
 
@@ -183,129 +183,22 @@ namespace Api.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Неизвестная ошибка: {ex.Message}");
-                await TcpClientConnectAsync(password, planetName);
+                LogError($"Ошибка подключения: {ex.Message}");
+
+                // Попытка переподключения только если это не критическая ошибка
+                if (!connectionSuccessful && !_cts.Token.IsCancellationRequested)
+                {
+                    LogInfo("Попытка переподключения через 5 секунд...");
+                    await Task.Delay(5000);
+                    return await TcpClientConnectAsync(password, planetName);
+                }
             }
             finally
             {
                 CleanUpConnection();
             }
-        }
 
-        private void parser353(string str, bool join = false)
-        {
-            try
-            {
-                const int CHARACTER_PARAMS_PER_SUIT = 5;
-                string[] tokens = Regex.Split(str.Trim(), @"\s+");
-                string nick, clan, id, position;
-
-                for (int i = 0; i < tokens.Length;)
-                {
-                    bool owner = false, stars = false;
-
-                    clan = tokens[i];
-                    nick = tokens[i + 1];
-                    id = tokens[i + 2];
-                    int K = Math.Abs(int.Parse(tokens[i + 3]));
-                    position = tokens[i + 4 + K * CHARACTER_PARAMS_PER_SUIT];
-
-                    if (nick.StartsWith("+"))
-                    {
-                        nick = nick.Substring(1).Trim();
-                        stars = true;
-                    }
-
-                    if (nick.StartsWith("@"))
-                    {
-                        nick = nick.Substring(1).Trim();
-                        owner = true;
-                    }
-
-                    i += 5 + K * CHARACTER_PARAMS_PER_SUIT;
-
-                    users[int.Parse(id)] = new user { id = int.Parse(id), nick = nick, clan = clan, position = int.Parse(position), owner = owner, stars = stars, join = join };
-
-                    if (join)
-                        break;
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"parser 353 error: {e.Message}");
-            }
-        }
-
-        public void parser860(string str)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(str)) return;
-
-                string[] d = Regex.Split(str.Trim(), @"\s+");
-                for (int i = 0; i < d.Length; i += 3)
-                {
-                    if (i + 1 >= d.Length) continue;
-                    if (!int.TryParse(d[i + 1], out int id)) continue;
-
-                    if (users.TryGetValue(id, out user user))
-                    {
-                        if (int.TryParse(d[i + 2], out int authority))
-                        {
-                            user.author = authority;
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"parser 860 error: {e.Message}");
-            }
-        }
-
-        private void OP(string userID)
-        {
-            int id = int.Parse(userID);
-
-            if (users.TryGetValue(id, out var user))
-            {
-                user.stars = true;
-            }
-        }
-
-        private static user getUser(int id)
-        {
-            // Изменения здесь: поиск пользователя по id в словаре
-            if (users.TryGetValue(id, out var user))
-            {
-                return user;
-            }
-            return null;
-        }
-
-        private void removeUsers(int id)
-        {
-            users.TryRemove(id, out _);
-        }
-
-        private void userJoin(string input, string nick, int id)
-        {
-            if (Bot.Instance.id != id.ToString())
-                Console.WriteLine($"На планету залетел персонаж ➜ {nick}");
-            user userJoin = getUser(id);
-            if (userJoin == null)
-            {
-                string join = input.Substring(input.Trim().IndexOf(" ") + 1);
-                parser353(join, true);
-            }
-        }
-
-        private void userExit(int id)
-        {
-            user userExit = getUser(id);
-            if (userExit != null)
-                Console.WriteLine($"Покинул планету ➜ {userExit.nick}");
-            removeUsers(id);
+            return connectionSuccessful;
         }
 
         public static async void Send(string message)
@@ -378,6 +271,27 @@ namespace Api.Services
                 try { sslStream.Dispose(); } catch { }
                 sslStream = null;
             }
+        }
+
+        private static void LogInfo(string message)
+        {
+            _logger?.LogInformation(message);
+            LogMessage?.Invoke($"[INFO] {message}");
+            Console.WriteLine($"[INFO] {message}");
+        }
+
+        private static void LogWarning(string message)
+        {
+            _logger?.LogWarning(message);
+            LogMessage?.Invoke($"[WARNING] {message}");
+            Console.WriteLine($"[WARNING] {message}");
+        }
+
+        private static void LogError(string message)
+        {
+            _logger?.LogError(message);
+            LogMessage?.Invoke($"[ERROR] {message}");
+            Console.WriteLine($"[ERROR] {message}");
         }
 
         private async Task<(string, string[], string, string, string)> ReadFromStream(CancellationToken token)
@@ -458,25 +372,6 @@ namespace Api.Services
                 // Если ни одна из проверок не прошла
                 return false;
             }
-        }
-
-        public class user
-        {
-            public int id { get; set; }
-
-            public string nick { get; set; }
-
-            public string clan { get; set; }
-
-            public int position { get; set; }
-
-            public int author { get; set; }
-
-            public bool stars { get; set; }
-
-            public bool owner { get; set; }
-
-            public bool join { get; set; }
         }
 
         public class Bot

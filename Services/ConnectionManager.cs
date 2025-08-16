@@ -10,7 +10,7 @@ namespace Api.Services
         Task<SecureConnection> GetConnectionAsync(string connectionId);
         Task<string> GetConnectionStatusAsync(string connectionId);
         Task<bool> SendMessageAsync(string connectionId, string message);
-        Task<ConcurrentDictionary<int, Galaxy.user>> GetUsersAsync(string connectionId);
+        Task<List<SecureConnection>> GetAllConnectionsAsync(); // Новый метод
         void CleanupExpiredConnections();
     }
 
@@ -25,11 +25,18 @@ namespace Api.Services
             _connections = new ConcurrentDictionary<string, SecureConnection>();
             _logger = logger;
 
+            // Устанавливаем логгер для Galaxy
+            Galaxy.SetLogger(logger as ILogger<Galaxy>);
+
+            // Подписываемся на события Galaxy
+            Galaxy.ConnectionStateChanged += OnGalaxyConnectionStateChanged;
+            Galaxy.LogMessage += OnGalaxyLogMessage;
+
             // Таймер для очистки неактивных соединений каждые 5 минут
             _cleanupTimer = new Timer(CleanupCallback, null, TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(5));
         }
 
-        public Task<string> CreateConnectionAsync(string password, string planetName = "default")
+        public async Task<string> CreateConnectionAsync(string password, string planetName = "default")
         {
             var connection = new SecureConnection
             {
@@ -39,17 +46,17 @@ namespace Api.Services
 
             try
             {
-                // Создаем экземпляр Galaxy и подключаемся
+                _logger.LogInformation($"Создание нового Galaxy соединения для планеты: {planetName}");
+
+                // Создаем экземпляр Galaxy
                 connection.GalaxyClient = new Galaxy();
 
-                // Запускаем подключение в отдельной задаче
-                var connectTask = Task.Run(async () =>
-                {
-                    await Galaxy.Connect(password, planetName);
-                });
+                // Запускаем подключение
+                var connectResult = await Galaxy.Connect(password, planetName);
 
-                // Проверяем, установлено ли соединение
-                if (Galaxy.IsConnectionActive)
+                await Task.Delay(TimeSpan.FromSeconds(1));
+
+                if (connectResult && Galaxy.IsConnectionActive)
                 {
                     connection.IsConnected = true;
                     connection.BotId = Galaxy.Bot.Instance.id;
@@ -58,9 +65,9 @@ namespace Api.Services
 
                     _connections.TryAdd(connection.ConnectionId, connection);
 
-                    _logger.LogInformation($"Создано новое соединение Galaxy: {connection.ConnectionId} для планеты {planetName}");
+                    _logger.LogInformation($"Успешно создано Galaxy соединение: {connection.ConnectionId} для планеты {planetName}, бот: {connection.BotNick}");
 
-                    return Task.FromResult(connection.ConnectionId);
+                    return connection.ConnectionId;
                 }
                 else
                 {
@@ -73,6 +80,16 @@ namespace Api.Services
                 connection.Dispose();
                 throw;
             }
+        }
+
+        private void OnGalaxyConnectionStateChanged(string botNick, bool isConnected)
+        {
+            _logger.LogInformation($"Состояние подключения Galaxy изменено - Бот: {botNick}, Подключен: {isConnected}");
+        }
+
+        private void OnGalaxyLogMessage(string message)
+        {
+            _logger.LogInformation($"Galaxy: {message}");
         }
 
         public Task<bool> CloseConnectionAsync(string connectionId)
@@ -131,28 +148,23 @@ namespace Api.Services
             return Task.FromResult(false);
         }
 
-        public Task<ConcurrentDictionary<int, Galaxy.user>> GetUsersAsync(string connectionId)
+        public Task<List<SecureConnection>> GetAllConnectionsAsync()
         {
-            if (_connections.TryGetValue(connectionId, out var connection) && connection.IsActive())
+            try
             {
-                try
-                {
-                    // Добавляем логирование
-                    _logger.LogInformation($"Получение пользователей для соединения {connectionId}");
-                    _logger.LogInformation($"Количество пользователей в Galaxy.users: {Galaxy.users.Count}");
+                var activeConnections = _connections.Values
+                    .Where(c => c.IsActive())
+                    .ToList();
 
-                    connection.UpdateActivity();
-                    return Task.FromResult(Galaxy.users);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, $"Ошибка при получении пользователей для соединения {connectionId}: {ex.Message}");
-                    return Task.FromResult(new ConcurrentDictionary<int, Galaxy.user>());
-                }
+                _logger.LogInformation($"Найдено {activeConnections.Count} активных соединений из {_connections.Count} общих");
+
+                return Task.FromResult(activeConnections);
             }
-
-            _logger.LogWarning($"Соединение {connectionId} не найдено или неактивно");
-            return Task.FromResult(new ConcurrentDictionary<int, Galaxy.user>());
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при получении списка всех соединений");
+                return Task.FromResult(new List<SecureConnection>());
+            }
         }
 
         public void CleanupExpiredConnections()
@@ -179,6 +191,10 @@ namespace Api.Services
         public void Dispose()
         {
             _cleanupTimer?.Dispose();
+
+            // Отписываемся от событий
+            Galaxy.ConnectionStateChanged -= OnGalaxyConnectionStateChanged;
+            Galaxy.LogMessage -= OnGalaxyLogMessage;
 
             foreach (var connection in _connections.Values)
             {
