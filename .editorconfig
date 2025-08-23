@@ -14,3 +14,6 @@ dotnet_diagnostic.CA1848.severity = none
 
 # CA2254: Шаблон должен быть статическим выражением
 dotnet_diagnostic.CA2254.severity = none
+
+# CS8600: Преобразование литерала, допускающего значение NULL или возможного значения NULL в тип, не допускающий значение NULL.
+dotnet_diagnostic.CS8600.severity = none
