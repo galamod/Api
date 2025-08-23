@@ -3,8 +3,6 @@ using Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Net;
-using System.Net.Sockets;
 using System.Security.Claims;
 using System.Text;
 
@@ -34,28 +32,10 @@ builder.Services.AddCors(options =>
 var dbUrl = builder.Configuration.GetConnectionString("DefaultConnection")
           ?? Environment.GetEnvironmentVariable("DATABASE_URL");
 
-// Парсим хост из строки
-var uriBuilder = new Npgsql.NpgsqlConnectionStringBuilder(dbUrl);
-string host = uriBuilder.Host;
-int port = uriBuilder.Port;
-
-// Резолвим IP
-var addresses = await Dns.GetHostAddressesAsync(host);
-
-// Предпочтение IPv4 → если нет, возьмём IPv6
-var ip = addresses.FirstOrDefault(a => a.AddressFamily == AddressFamily.InterNetwork)
-         ?? addresses.First();
-
-var ipString = ip.AddressFamily == AddressFamily.InterNetworkV6 ? $"[{ip}]" : ip.ToString();
-
-// Подменяем хост
-uriBuilder.Host = ipString;
-
-// Создаём финальную строку подключения
-string resolvedConnectionString = uriBuilder.ConnectionString;
+Console.WriteLine($"DATABASE_URL from environment: {dbUrl}");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(resolvedConnectionString));
+    options.UseNpgsql(dbUrl));
 
 builder.Services.AddSingleton<IConnectionManager, ConnectionManager>();
 
