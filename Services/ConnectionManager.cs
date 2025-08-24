@@ -9,7 +9,7 @@ namespace Api.Services
         Task<bool> CloseConnectionAsync(string connectionId);
         Task<SecureConnection> GetConnectionAsync(string connectionId);
         Task<string> GetConnectionStatusAsync(string connectionId);
-        Task<bool> SendMessageAsync(string connectionId, string message);
+        bool SendMessage(string connectionId, string message);
         Task<List<SecureConnection>> GetAllConnectionsAsync(); // Новый метод
         void CleanupExpiredConnections();
     }
@@ -124,13 +124,13 @@ namespace Api.Services
             return Task.FromResult("Unknown");
         }
 
-        public async Task<bool> SendMessageAsync(string connectionId, string message)
+        public bool SendMessage(string connectionId, string message)
         {
             if (_connections.TryGetValue(connectionId, out var connection) && connection.IsActive())
             {
                 try
                 {
-                    await connection.GalaxyClient.Send(message);
+                    connection.GalaxyClient.Send(message);
                     connection.UpdateActivity();
                     return true;
                 }

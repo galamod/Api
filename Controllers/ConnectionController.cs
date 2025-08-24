@@ -215,7 +215,7 @@ namespace Api.Controllers
         }
 
         [HttpPost("send/{connectionId}")]
-        public async Task<IActionResult> SendMessage(string connectionId, [FromBody] SendMessageRequest request)
+        public IActionResult SendMessage(string connectionId, [FromBody] SendMessageRequest request)
         {
             try
             {
@@ -231,7 +231,7 @@ namespace Api.Controllers
 
                 _logger.LogInformation($"Отправка сообщения через соединение {connectionId}: {request.Message}");
 
-                var result = await _connectionManager.SendMessageAsync(connectionId, request.Message);
+                var result = _connectionManager.SendMessage(connectionId, request.Message);
 
                 if (result)
                 {
