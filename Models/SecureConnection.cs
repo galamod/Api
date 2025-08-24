@@ -33,7 +33,7 @@ namespace Api.Models
 
         public bool IsActive()
         {
-            return GalaxyClient != null && Galaxy.IsConnectionActive && IsConnected;
+            return GalaxyClient != null && GalaxyClient.IsConnectionActive && IsConnected;
         }
 
         public void Dispose()
@@ -41,12 +41,12 @@ namespace Api.Models
             try
             {
                 CancellationTokenSource?.Cancel();
-                Galaxy.Close();
+                GalaxyClient?.Close();
+                GalaxyClient?.Dispose();
                 CancellationTokenSource?.Dispose();
             }
             catch (Exception ex)
             {
-                // Логирование ошибок при необходимости
                 Console.WriteLine($"Ошибка при закрытии соединения {ConnectionId}: {ex.Message}");
             }
 

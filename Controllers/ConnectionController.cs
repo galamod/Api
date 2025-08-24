@@ -19,7 +19,50 @@ namespace Api.Controllers
         [HttpGet("connect")]
         public async Task<IActionResult> ConnectToServerGet([FromQuery] string password, [FromQuery] string planetName = "default")
         {
-            return await ConnectToServer(password, planetName);
+            try
+            {
+                if (string.IsNullOrWhiteSpace(password))
+                {
+                    _logger.LogWarning("Попытка подключения с пустым паролем через GET");
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "Пароль не может быть пустым",
+                        timestamp = DateTime.UtcNow
+                    });
+                }
+
+                if (string.IsNullOrWhiteSpace(planetName))
+                {
+                    planetName = "default";
+                }
+
+                _logger.LogInformation($"GET запрос на подключение к Galaxy серверу, планета: {planetName}");
+
+                var connectionId = await _connectionManager.CreateConnectionAsync(password, planetName);
+
+                _logger.LogInformation($"Успешное подключение к Galaxy серверу через GET, ID соединения: {connectionId}");
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "Успешное подключение к Galaxy серверу",
+                    connectionId = connectionId,
+                    planetName = planetName,
+                    timestamp = DateTime.UtcNow
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при подключении к Galaxy серверу через GET");
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = "Ошибка подключения к Galaxy серверу",
+                    error = ex.Message,
+                    timestamp = DateTime.UtcNow
+                });
+            }
         }
 
         [HttpPost("connect/{password}")]

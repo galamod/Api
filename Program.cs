@@ -16,6 +16,8 @@ string[] allowedOrigins =
     "https://galascript.netlify.app",
 };
 
+builder.Services.AddSingleton<IConnectionManager, ConnectionManager>();
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -36,8 +38,6 @@ Console.WriteLine($"DATABASE_URL from environment: {dbUrl}");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(dbUrl));
-
-builder.Services.AddSingleton<IConnectionManager, ConnectionManager>();
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
