@@ -8,6 +8,9 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Добавьте эту строку для регистрации IHttpClientFactory
+builder.Services.AddHttpClient();
+
 string[] allowedOrigins =
 {
     "https://galabot.netlify.app",
