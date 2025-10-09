@@ -9,72 +9,55 @@ namespace Api.Controllers
     public class ProxyController : ControllerBase
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ILogger<ProxyController> _logger;
-        private const string TargetBaseUrl = "https://galaxy.mobstudio.ru/web/";
 
-        public ProxyController(IHttpClientFactory httpClientFactory, ILogger<ProxyController> logger)
+        public ProxyController(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
-            _logger = logger;
         }
 
         [HttpGet]
-        [Route("{*path}")]
-        public async Task<IActionResult> Get(string path)
+        public async Task<IActionResult> GetProxiedPage()
         {
+            const string targetUrl = "https://galaxy.mobstudio.ru/web/";
             var client = _httpClientFactory.CreateClient();
-            var targetUrl = new Uri(new Uri(TargetBaseUrl), path);
 
             try
             {
                 var response = await client.GetAsync(targetUrl);
+                response.EnsureSuccessStatusCode();
+                var htmlContent = await response.Content.ReadAsStringAsync();
 
-                if (!response.IsSuccessStatusCode)
+                var htmlDoc = new HtmlDocument();
+                htmlDoc.LoadHtml(htmlContent);
+
+                // 1. Находим <head>
+                var headNode = htmlDoc.DocumentNode.SelectSingleNode("//head");
+                if (headNode != null)
                 {
-                    return StatusCode((int)response.StatusCode, await response.Content.ReadAsStringAsync());
+                    // 2. Создаем тег <base>
+                    var baseNode = htmlDoc.CreateElement("base");
+                    baseNode.SetAttributeValue("href", targetUrl);
+
+                    // 3. Добавляем <base> в начало <head>
+                    headNode.PrependChild(baseNode);
                 }
 
-                var contentType = response.Content.Headers.ContentType?.ToString();
+                // 4. Создаем и внедряем ваш скрипт
+                var scriptNode = htmlDoc.CreateElement("script");
+                scriptNode.InnerHtml = @"
+// Ваш кастомный JavaScript код
+console.log('Скрипт успешно внедрен!');
+alert('Привет от внедренного скрипта!');
+// Здесь может быть любая ваша логика
+";
 
-                // Если это HTML-документ, внедряем скрипт
-                if (contentType != null && contentType.Contains("text/html"))
-                {
-                    var html = await response.Content.ReadAsStringAsync();
-                    var doc = new HtmlDocument();
-                    doc.LoadHtml(html);
+                htmlDoc.DocumentNode.SelectSingleNode("//body").AppendChild(scriptNode);
 
-                    // Внедряем <base> тег для корректной загрузки относительных ресурсов (CSS, JS, изображений)
-                    var head = doc.DocumentNode.SelectSingleNode("//head");
-                    if (head != null)
-                    {
-                        var baseTag = doc.CreateElement("base");
-                        baseTag.SetAttributeValue("href", TargetBaseUrl);
-                        head.PrependChild(baseTag);
-                    }
-
-                    // Внедряем наш скрипт в конец <body>
-                    var body = doc.DocumentNode.SelectSingleNode("//body");
-                    if (body != null)
-                    {
-                        var scriptNode = doc.CreateElement("script");
-                        scriptNode.InnerHtml = "alert('Привет от внедренного скрипта!'); console.log('Скрипт успешно внедрен.');";
-                        body.AppendChild(scriptNode);
-                    }
-
-                    var modifiedHtml = doc.DocumentNode.OuterHtml;
-                    return Content(modifiedHtml, "text/html", Encoding.UTF8);
-                }
-                else
-                {
-                    // Для всех остальных типов контента (CSS, JS, картинки) просто проксируем их
-                    var content = await response.Content.ReadAsByteArrayAsync();
-                    return new FileContentResult(content, contentType ?? "application/octet-stream");
-                }
+                return Content(htmlDoc.DocumentNode.OuterHtml, "text/html");
             }
-            catch (Exception ex)
+            catch (HttpRequestException e)
             {
-                _logger.LogError(ex, "Ошибка при проксировании запроса на {Url}", targetUrl);
-                return StatusCode(500, "Внутренняя ошибка сервера при проксировании запроса.");
+                return StatusCode(502, $"Не удалось загрузить страницу: {e.Message}");
             }
         }
     }
