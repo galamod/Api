@@ -18,6 +18,7 @@ namespace Api.Controllers
             _logger = logger;
         }
 
+
         [HttpGet]
         [Route("{*path}")]
         public async Task<IActionResult> Get(string path = "")
