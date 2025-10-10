@@ -39,7 +39,9 @@ namespace Api.Controllers
         public async Task<IActionResult> Get(string path = "")
         {
             var client = _httpClientFactory.CreateClient();
-            var targetUrl = string.IsNullOrEmpty(path) ? new Uri(TargetBaseUrl) : new Uri(new Uri(TargetBaseUrl), path);
+            var targetUrl = string.IsNullOrEmpty(path)
+                ? new Uri(TargetBaseUrl)
+                : new Uri(new Uri(TargetBaseUrl), path);
 
             try
             {
@@ -50,19 +52,34 @@ namespace Api.Controllers
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    return StatusCode((int)response.StatusCode, await response.Content.ReadAsStringAsync());
+                    return StatusCode((int)response.StatusCode,
+                        await response.Content.ReadAsStringAsync());
                 }
 
                 var contentType = response.Content.Headers.ContentType?.ToString();
 
                 // ---------- Фикс кодировки ----------
                 var charset = response.Content.Headers.ContentType?.CharSet ?? "utf-8";
-                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance); // нужно для windows-1251
-                var encoding = Encoding.GetEncoding(charset);
 
-                using var stream = await response.Content.ReadAsStreamAsync();
-                using var reader = new StreamReader(stream, encoding);
-                var html = await reader.ReadToEndAsync();
+                // Поддержка legacy-кодировок (windows-1251 и т.п.)
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+                Encoding sourceEncoding;
+                try
+                {
+                    sourceEncoding = Encoding.GetEncoding(charset);
+                }
+                catch
+                {
+                    sourceEncoding = Encoding.UTF8; // fallback
+                }
+
+                string html;
+                using (var stream = await response.Content.ReadAsStreamAsync())
+                using (var reader = new StreamReader(stream, sourceEncoding))
+                {
+                    html = await reader.ReadToEndAsync();
+                }
                 // ------------------------------------
 
                 if (contentType != null && contentType.Contains("text/html"))
@@ -70,30 +87,61 @@ namespace Api.Controllers
                     var doc = new HtmlDocument();
                     doc.LoadHtml(html);
 
-                    // Внедряем <base> и <meta charset>
+                    // Удаляем Service Worker
+                    var scriptNodes = doc.DocumentNode.SelectNodes("//script");
+                    if (scriptNodes != null)
+                    {
+                        foreach (var script in scriptNodes.ToList())
+                        {
+                            var src = script.GetAttributeValue("src", string.Empty);
+                            if (script.InnerHtml.Contains("serviceWorker.register") ||
+                                src.Contains("sw.js") ||
+                                src.Contains("service-worker"))
+                            {
+                                script.Remove();
+                            }
+                        }
+                    }
+
+                    // Вставляем <base> и принудительно <meta charset="utf-8">
                     var head = doc.DocumentNode.SelectSingleNode("//head");
                     if (head != null)
                     {
-                        var baseTag = doc.CreateElement("base");
-                        baseTag.SetAttributeValue("href", TargetBaseUrl);
-                        head.PrependChild(baseTag);
+                        // Удаляем старые <meta charset> если были
+                        var oldMetas = head.SelectNodes(".//meta[@charset]");
+                        if (oldMetas != null)
+                        {
+                            foreach (var m in oldMetas) m.Remove();
+                        }
 
+                        // Также удаляем <meta http-equiv="Content-Type">
+                        var httpEquivMetas = head.SelectNodes(".//meta[translate(@http-equiv,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='content-type']");
+                        if (httpEquivMetas != null)
+                        {
+                            foreach (var m in httpEquivMetas) m.Remove();
+                        }
+
+                        // Добавляем новый meta charset=utf-8
                         var metaCharset = doc.CreateElement("meta");
                         metaCharset.SetAttributeValue("charset", "utf-8");
                         head.PrependChild(metaCharset);
+
+                        // Добавляем <base href="...">
+                        var baseTag = doc.CreateElement("base");
+                        baseTag.SetAttributeValue("href", TargetBaseUrl);
+                        head.PrependChild(baseTag);
                     }
 
-                    // Внедряем JS для перехвата fetch/XHR
+                    // Внедряем JS (через base64, чтобы кириллица не ломалась)
+                    var jsCode = "alert('Привет! Это прокси-скрипт 🚀');";
+                    var jsBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(jsCode));
+
+                    var proxyScript = doc.CreateElement("script");
+                    proxyScript.InnerHtml = $"eval(atob('{jsBase64}'));";
+
                     var body = doc.DocumentNode.SelectSingleNode("//body");
                     if (body != null)
                     {
-                        // 🔥 Кодировка JS фикс: через base64, чтобы кириллица не ломалась
-                        var jsCode = "alert('Привет! Это прокси-скрипт 🚀');";
-                        var jsBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(jsCode));
-
-                        var proxyScript = doc.CreateElement("script");
-                        proxyScript.InnerHtml = $"eval(atob('{jsBase64}'));";
-
                         var mainScript = doc.DocumentNode.SelectSingleNode("//script[@src]");
                         if (mainScript != null)
                             mainScript.ParentNode.InsertBefore(proxyScript, mainScript);
@@ -103,7 +151,7 @@ namespace Api.Controllers
 
                     var modifiedHtml = doc.DocumentNode.OuterHtml;
 
-                    // ⚙️ Возвращаем корректный UTF-8 HTML
+                    // ⚙️ Возвращаем как UTF-8, независимо от исходной кодировки
                     return Content(modifiedHtml, "text/html; charset=utf-8", Encoding.UTF8);
                 }
                 else
@@ -118,6 +166,7 @@ namespace Api.Controllers
                 return StatusCode(500, "Внутренняя ошибка сервера при проксировании GET.");
             }
         }
+
 
 
         [HttpPost]
