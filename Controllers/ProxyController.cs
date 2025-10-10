@@ -133,11 +133,9 @@ namespace Api.Controllers
                     }
 
                     // Внедряем JS (через base64, чтобы кириллица не ломалась)
+                    // Внедряем JS корректно без base64
                     var jsCode = "alert('Привет! Это прокси-скрипт 🚀');";
-                    var jsBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(jsCode));
-
-                    var proxyScript = doc.CreateElement("script");
-                    proxyScript.InnerHtml = $"eval(atob('{jsBase64}'));";
+                    var proxyScript = HtmlNode.CreateNode($"<script>{jsCode}</script>");
 
                     var body = doc.DocumentNode.SelectSingleNode("//body");
                     if (body != null)
