@@ -1362,40 +1362,48 @@ namespace Api.Controllers
 
                     var body = doc.DocumentNode.SelectSingleNode("//body");
 
-                    var jsInterceptor = @"
-                    (function() {
-                        const rewriteUrl = (url) => {
-                            if (!url) return url;
-                            if (url.startsWith('https://galaxy.mobstudio.ru/'))
-                                return url.replace('https://galaxy.mobstudio.ru/', '/api/proxy/');
-                            if (url.startsWith('/web/'))
-                                return '/api/proxy' + url;
-                            if (url.startsWith('/'))
-                                return '/api/proxy' + url;
-                            return url;
-                        };
+                    var jsInterceptor = @"(function() {
+    // Перехват fetch
+    const origFetch = window.fetch;
+    window.fetch = function(url, opts) {
+        url = rewriteUrl(url);
+        return origFetch(url, opts);
+    };
 
-                        // fetch
-                        const origFetch = window.fetch;
-                        window.fetch = function(url, opts) {
-                            return origFetch(rewriteUrl(url), opts);
-                        };
+    // Перехват XMLHttpRequest
+    const origOpen = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function(method, url) {
+        url = rewriteUrl(url);
+        return origOpen.apply(this, [method, url]);
+    };
 
-                        // XMLHttpRequest
-                        const origOpen = XMLHttpRequest.prototype.open;
-                        XMLHttpRequest.prototype.open = function(method, url) {
-                            return origOpen.apply(this, [method, rewriteUrl(url)]);
-                        };
+    // Перехват переходов по ссылкам
+    document.addEventListener('click', function(e) {
+        const a = e.target.closest('a');
+        if (a && a.href) {
+            a.href = rewriteUrl(a.href);
+        }
+    }, true);
 
-                        // WebSocket
-                        const origWs = window.WebSocket;
-                        window.WebSocket = function(url, protocols) {
-                            return new origWs(rewriteUrl(url), protocols);
-                        };
+    // Перехват форм
+    document.addEventListener('submit', function(e) {
+        const form = e.target;
+        if (form && form.action) {
+            form.action = rewriteUrl(form.action);
+        }
+    }, true);
 
-                        console.log('✅ GalaxyProxy: полная ротация URL активна');
-                    })();
-                ";
+    function rewriteUrl(url) {
+        if (!url) return url;
+        if (url.startsWith('https://galaxy.mobstudio.ru/'))
+            return url.replace('https://galaxy.mobstudio.ru/', '/api/proxy/');
+        if (url.startsWith('/web/'))
+            return '/api/proxy' + url;
+        if (url.startsWith('/'))
+            return '/api/proxy' + url;
+        return url;
+    }
+})();";
 
                     var scriptNode = HtmlNode.CreateNode($"<script>{jsInterceptor}</script>");
                     body?.AppendChild(scriptNode);
