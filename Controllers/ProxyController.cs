@@ -66,6 +66,10 @@ namespace Api.Controllers
                         var baseTag = doc.CreateElement("base");
                         baseTag.SetAttributeValue("href", TargetBaseUrl);
                         head.PrependChild(baseTag);
+
+                        var metaCharset = doc.CreateElement("meta");
+                        metaCharset.SetAttributeValue("charset", "utf-8");
+                        head.PrependChild(metaCharset);
                     }
 
                     // 3. Внедряем наш кастомный скрипт
