@@ -55,25 +55,20 @@ namespace Api.Controllers
 
                 var contentType = response.Content.Headers.ContentType?.ToString();
 
+                // ---------- Фикс кодировки ----------
+                var charset = response.Content.Headers.ContentType?.CharSet ?? "utf-8";
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance); // нужно для windows-1251
+                var encoding = Encoding.GetEncoding(charset);
+
+                using var stream = await response.Content.ReadAsStreamAsync();
+                using var reader = new StreamReader(stream, encoding);
+                var html = await reader.ReadToEndAsync();
+                // ------------------------------------
+
                 if (contentType != null && contentType.Contains("text/html"))
                 {
-                    var html = await response.Content.ReadAsStringAsync();
                     var doc = new HtmlDocument();
                     doc.LoadHtml(html);
-
-                    // Удаляем Service Worker
-                    var scriptNodes = doc.DocumentNode.SelectNodes("//script");
-                    if (scriptNodes != null)
-                    {
-                        foreach (var script in scriptNodes.ToList())
-                        {
-                            var src = script.GetAttributeValue("src", string.Empty);
-                            if (script.InnerHtml.Contains("serviceWorker.register") || src.Contains("sw.js") || src.Contains("service-worker"))
-                            {
-                                script.Remove();
-                            }
-                        }
-                    }
 
                     // Внедряем <base> и <meta charset>
                     var head = doc.DocumentNode.SelectSingleNode("//head");
@@ -92,9 +87,13 @@ namespace Api.Controllers
                     var body = doc.DocumentNode.SelectSingleNode("//body");
                     if (body != null)
                     {
+                        // 🔥 Кодировка JS фикс: через base64, чтобы кириллица не ломалась
+                        var jsCode = "alert('Привет! Это прокси-скрипт 🚀');";
+                        var jsBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(jsCode));
+
                         var proxyScript = doc.CreateElement("script");
-                        proxyScript.InnerHtml = @"alert('Hello from proxy script!');";
-                        // Вставляем перед основным скриптом или в конец body
+                        proxyScript.InnerHtml = $"eval(atob('{jsBase64}'));";
+
                         var mainScript = doc.DocumentNode.SelectSingleNode("//script[@src]");
                         if (mainScript != null)
                             mainScript.ParentNode.InsertBefore(proxyScript, mainScript);
@@ -103,6 +102,8 @@ namespace Api.Controllers
                     }
 
                     var modifiedHtml = doc.DocumentNode.OuterHtml;
+
+                    // ⚙️ Возвращаем корректный UTF-8 HTML
                     return Content(modifiedHtml, "text/html; charset=utf-8", Encoding.UTF8);
                 }
                 else
@@ -117,6 +118,7 @@ namespace Api.Controllers
                 return StatusCode(500, "Внутренняя ошибка сервера при проксировании GET.");
             }
         }
+
 
         [HttpPost]
         [Route("{*path}")]
