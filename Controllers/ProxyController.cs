@@ -93,30 +93,7 @@ namespace Api.Controllers
                     if (body != null)
                     {
                         var proxyScript = doc.CreateElement("script");
-                        proxyScript.InnerHtml = @"
-(function() {
-    const proxyPrefix = '/api/proxy';
-    // fetch
-    const origFetch = window.fetch;
-    window.fetch = function(input, init) {
-        let url = typeof input === 'string' ? input : input.url;
-        if (url.startsWith('/web') || url.startsWith('https://galaxy.mobstudio.ru/web')) {
-            let newUrl = proxyPrefix + (url.startsWith('/web') ? url : url.replace('https://galaxy.mobstudio.ru', ''));
-            if (typeof input === 'string') input = newUrl;
-            else input.url = newUrl;
-        }
-        return origFetch(input, init);
-    };
-    // XMLHttpRequest
-    const origOpen = XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open = function(method, url, ...args) {
-        if (url.startsWith('/web') || url.startsWith('https://galaxy.mobstudio.ru/web')) {
-            url = proxyPrefix + (url.startsWith('/web') ? url : url.replace('https://galaxy.mobstudio.ru', ''));
-        }
-        return origOpen.call(this, method, url, ...args);
-    };
-})();
-";
+                        proxyScript.InnerHtml = @"alert('Hello from proxy script!');";
                         // Вставляем перед основным скриптом или в конец body
                         var mainScript = doc.DocumentNode.SelectSingleNode("//script[@src]");
                         if (mainScript != null)
