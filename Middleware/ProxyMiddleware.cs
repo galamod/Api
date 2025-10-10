@@ -58,13 +58,19 @@ namespace Api.Middleware
             if (contentType.Contains("javascript") || relativePath.EndsWith(".js"))
             {
                 var js = Encoding.UTF8.GetString(bytes);
+
+                // Заменяем обращения к исходному сайту и корню /web/
                 js = js.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
-                js = "alert('✅ JS через middleware');\n" + js;
+                js = js.Replace("\"/web/", "\"/api/proxy/web/");
+                js = js.Replace(@"'\/web/", "'/api/proxy/web/");
+
+                js = "alert('✅ JS через middleware модифицирован');\n" + js;
 
                 context.Response.ContentType = "application/javascript; charset=utf-8";
                 await context.Response.WriteAsync(js, Encoding.UTF8);
                 return;
             }
+
 
             // === Обработка HTML ===
             if (contentType.Contains("text/html"))
@@ -127,17 +133,29 @@ namespace Api.Middleware
                 {
                     var value = node.GetAttributeValue(attr, null);
                     if (string.IsNullOrEmpty(value)) continue;
-                    if (value.StartsWith("#") || value.StartsWith("data:")) continue;
+                    if (value.StartsWith("#") || value.StartsWith("data:") || value.StartsWith("mailto:")) continue;
 
+                    // ✅ Если это абсолютный путь на galaxy.mobstudio.ru
                     if (value.StartsWith("https://galaxy.mobstudio.ru/"))
+                    {
                         value = value.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
+                    }
+                    // ✅ Если начинается с /web/
+                    else if (value.StartsWith("/web/"))
+                    {
+                        value = "/api/proxy" + value;
+                    }
+                    // ✅ Если относительный путь
                     else if (!value.StartsWith("http"))
+                    {
                         value = "/api/proxy/" + value.TrimStart('/');
+                    }
 
                     node.SetAttributeValue(attr, value);
                 }
             }
         }
+
 
         private void InjectCustomScript(HtmlDocument doc)
         {
