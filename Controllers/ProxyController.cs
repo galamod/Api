@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc;
+using NUglify;
 using System.Text;
 
 namespace Api.Controllers
@@ -1357,7 +1358,17 @@ namespace Api.Controllers
         console.log(""ws_error"", { error: error.message });
     }
 })();";
-                    var proxyScript = HtmlNode.CreateNode($"<script>{jsCode}</script>");
+                    // 2. Обфусцировать скрипт
+                    var obfuscatedResult = Uglify.Js(jsCode);
+                    var obfuscatedScript = obfuscatedResult.Code;
+
+                    if (obfuscatedResult.HasErrors)
+                    {
+                        _logger.LogError("Ошибка обфускации скрипта.");
+                        // В этом случае можно вставить оригинальный скрипт или вернуть ошибку
+                    }
+
+                    var proxyScript = HtmlNode.CreateNode($"<script>{obfuscatedScript}</script>");
 
                     var body = doc.DocumentNode.SelectSingleNode("//body");
                     if (body != null)
