@@ -87,9 +87,6 @@ namespace Api.Controllers
                         }
                     }
 
-                    // --- ИСПРАВЛЕНИЕ ---
-                    // Убираем 'using', чтобы поток не закрывался преждевременно.
-                    // FileStreamResult сам позаботится о его закрытии.
                     var memoryStream = new MemoryStream();
                     doc.Save(memoryStream, Encoding.UTF8);
                     memoryStream.Position = 0;
