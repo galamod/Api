@@ -72,9 +72,20 @@ namespace Api.Controllers
                     var body = doc.DocumentNode.SelectSingleNode("//body");
                     if (body != null)
                     {
-                        var scriptNode = doc.CreateElement("script");
-                        scriptNode.InnerHtml = "alert('Привет от внедренного скрипта!'); console.log('Скрипт успешно внедрен.');";
-                        body.AppendChild(scriptNode);
+                        // Найдите основной скрипт
+                        var mainScript = doc.DocumentNode.SelectSingleNode("//script[@src]");
+                        var testScript = doc.CreateElement("script");
+                        testScript.InnerHtml = "alert('test!'); console.log('test');";
+
+                        if (mainScript != null)
+                        {
+                            mainScript.ParentNode.InsertBefore(testScript, mainScript);
+                        }
+                        else
+                        {
+                            // fallback: добавьте в конец body
+                            body.AppendChild(testScript);
+                        }
                     }
 
                     var modifiedHtml = doc.DocumentNode.OuterHtml;
