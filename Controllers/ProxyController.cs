@@ -10,7 +10,7 @@ namespace Api.Controllers
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<ProxyController> _logger;
-        private const string TargetBaseUrl = "https://galaxy.mobstudio.ru/";
+        private const string TargetBaseUrl = "https://galaxy.mobstudio.ru/web";
 
         public ProxyController(IHttpClientFactory httpClientFactory, ILogger<ProxyController> logger)
         {
