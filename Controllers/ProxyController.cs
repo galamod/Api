@@ -20,7 +20,7 @@ namespace Api.Controllers
 
         [HttpGet]
         [Route("{*path}")]
-        public async Task<IActionResult> Get(string path)
+        public async Task<IActionResult> Get(string path = "")
         {
             var client = _httpClientFactory.CreateClient();
             var targetUrl = new Uri(new Uri(TargetBaseUrl), path);
@@ -36,14 +36,27 @@ namespace Api.Controllers
 
                 var contentType = response.Content.Headers.ContentType?.ToString();
 
-                // Если это HTML-документ, внедряем скрипт
+                // Если это HTML-документ, модифицируем его
                 if (contentType != null && contentType.Contains("text/html"))
                 {
                     var html = await response.Content.ReadAsStringAsync();
                     var doc = new HtmlDocument();
                     doc.LoadHtml(html);
 
-                    // Внедряем <base> тег для корректной загрузки относительных ресурсов (CSS, JS, изображений)
+                    // 1. Удаляем скрипты регистрации Service Worker
+                    var scriptNodes = doc.DocumentNode.SelectNodes("//script");
+                    if (scriptNodes != null)
+                    {
+                        foreach (var script in scriptNodes.ToList())
+                        {
+                            if (script.InnerHtml.Contains("serviceWorker.register"))
+                            {
+                                script.Remove();
+                            }
+                        }
+                    }
+
+                    // 2. Внедряем <base> тег
                     var head = doc.DocumentNode.SelectSingleNode("//head");
                     if (head != null)
                     {
@@ -52,7 +65,7 @@ namespace Api.Controllers
                         head.PrependChild(baseTag);
                     }
 
-                    // Внедряем наш скрипт в конец <body>
+                    // 3. Внедряем наш кастомный скрипт
                     var body = doc.DocumentNode.SelectSingleNode("//body");
                     if (body != null)
                     {
@@ -75,51 +88,6 @@ namespace Api.Controllers
             {
                 _logger.LogError(ex, "Ошибка при проксировании запроса на {Url}", targetUrl);
                 return StatusCode(500, "Внутренняя ошибка сервера при проксировании запроса.");
-            }
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetProxiedPage()
-        {
-            var client = _httpClientFactory.CreateClient();
-
-            try
-            {
-                var response = await client.GetAsync(TargetBaseUrl);
-                response.EnsureSuccessStatusCode();
-                var htmlContent = await response.Content.ReadAsStringAsync();
-
-                var htmlDoc = new HtmlDocument();
-                htmlDoc.LoadHtml(htmlContent);
-
-                // 1. Находим <head>
-                var headNode = htmlDoc.DocumentNode.SelectSingleNode("//head");
-                if (headNode != null)
-                {
-                    // 2. Создаем тег <base>
-                    var baseNode = htmlDoc.CreateElement("base");
-                    baseNode.SetAttributeValue("href", TargetBaseUrl);
-
-                    // 3. Добавляем <base> в начало <head>
-                    headNode.PrependChild(baseNode);
-                }
-
-                // 4. Создаем и внедряем ваш скрипт
-                var scriptNode = htmlDoc.CreateElement("script");
-                scriptNode.InnerHtml = @"
-// Ваш кастомный JavaScript код
-console.log('Скрипт успешно внедрен!');
-alert('Привет от внедренного скрипта!');
-// Здесь может быть любая ваша логика
-";
-
-                htmlDoc.DocumentNode.SelectSingleNode("//body").AppendChild(scriptNode);
-
-                return Content(htmlDoc.DocumentNode.OuterHtml, "text/html");
-            }
-            catch (HttpRequestException e)
-            {
-                return StatusCode(502, $"Не удалось загрузить страницу: {e.Message}");
             }
         }
     }
