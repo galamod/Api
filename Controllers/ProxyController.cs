@@ -86,6 +86,22 @@ namespace Api.Controllers
                 var contentTypeHeader = response.Content.Headers.ContentType?.ToString();
                 var charset = response.Content.Headers.ContentType?.CharSet ?? "utf-8";
 
+                var bytess = await response.Content.ReadAsByteArrayAsync();
+
+                // === Обработка JS ===
+                if (contentTypeHeader.Contains("javascript") || contentTypeHeader.EndsWith(".js") || contentTypeHeader.Contains("text/css"))
+                {
+                    var text = Encoding.UTF8.GetString(bytess);
+
+
+                    // Переписываем все пути к /web/
+                    text = text.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
+                    text = text.Replace("'/web/", "'/api/proxy/web/");
+                    text = text.Replace("\"/web/", "\"/api/proxy/web/");
+
+                    return Content(text, contentTypeHeader + "; charset=utf-8", Encoding.UTF8);
+                }
+
                 if (contentTypeHeader != null && contentTypeHeader.Contains("text/html"))
                 {
                     // --- Обработка HTML ---
@@ -97,6 +113,8 @@ namespace Api.Controllers
                     var html = await response.Content.ReadAsStringAsync();
                     var doc = new HtmlDocument();
                     doc.LoadHtml(html);
+
+                    RewriteRelativeUrls(doc);
 
                     var head = doc.DocumentNode.SelectSingleNode("//head");
                     if (head != null)
@@ -172,6 +190,40 @@ namespace Api.Controllers
                 return StatusCode(500, $"Ошибка прокси: {ex.Message}");
             }
         }
-    }
 
+        private void RewriteRelativeUrls(HtmlDocument doc)
+        {
+            var nodes = doc.DocumentNode.SelectNodes("//*[@src or @href or @action]");
+            if (nodes == null) return;
+
+            foreach (var node in nodes)
+            {
+                foreach (var attr in new[] { "src", "href", "action" })
+                {
+                    var value = node.GetAttributeValue(attr, null);
+                    if (string.IsNullOrEmpty(value)) continue;
+
+                    // Игнорируем якоря, mailto, data:
+                    if (value.StartsWith("#") || value.StartsWith("data:") || value.StartsWith("mailto:"))
+                        continue;
+
+                    if (value.StartsWith("https://galaxy.mobstudio.ru/"))
+                    {
+                        value = value.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
+                    }
+                    else if (value.StartsWith("/web/"))
+                    {
+                        value = "/api/proxy" + value;
+                    }
+                    else if (value.StartsWith("/"))
+                    {
+                        value = "/api/proxy" + value;
+                    }
+
+                    node.SetAttributeValue(attr, value);
+                }
+            }
+        }
+
+    }
 }
