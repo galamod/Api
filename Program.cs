@@ -1,4 +1,5 @@
 using Api;
+using Api.Middleware;
 using Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -70,6 +71,10 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseStaticFiles();
+app.UseRouting();
+
+app.UseGalaxyProxy(); // 👈 Наш middleware-прокси
 
 app.MapControllers();
 
