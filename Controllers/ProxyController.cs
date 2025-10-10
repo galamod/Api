@@ -1389,195 +1389,195 @@ namespace Api.Controllers
         }
 
         // Универсальный метод для любых HTTP-запросов
-        [HttpGet, HttpPost, HttpPut, HttpPatch, HttpDelete, HttpOptions]
-        [Route("{*path}")]
-        public async Task<IActionResult> HandleRequest(string path = "")
-        {
-            var client = _httpClientFactory.CreateClient();
-            var targetUrl = string.IsNullOrEmpty(path)
-                ? new Uri(TargetBaseUrl)
-                : new Uri(new Uri(TargetBaseUrl), path);
+        //[HttpGet, HttpPost, HttpPut, HttpPatch, HttpDelete, HttpOptions]
+        //[Route("{*path}")]
+        //public async Task<IActionResult> HandleRequest(string path = "")
+        //{
+        //    var client = _httpClientFactory.CreateClient();
+        //    var targetUrl = string.IsNullOrEmpty(path)
+        //        ? new Uri(TargetBaseUrl)
+        //        : new Uri(new Uri(TargetBaseUrl), path);
 
-            try
-            {
-                // Создаём исходящий запрос
-                var method = new HttpMethod(Request.Method);
-                var requestMessage = new HttpRequestMessage(method, targetUrl);
-                AddGalaxyHeaders(requestMessage);
+        //    try
+        //    {
+        //        // Создаём исходящий запрос
+        //        var method = new HttpMethod(Request.Method);
+        //        var requestMessage = new HttpRequestMessage(method, targetUrl);
+        //        AddGalaxyHeaders(requestMessage);
 
-                // Если есть тело запроса — копируем его
-                if (Request.ContentLength > 0 &&
-                    (method == HttpMethod.Post || method == HttpMethod.Put || method.Method == "PATCH"))
-                {
-                    using var reader = new StreamReader(Request.Body);
-                    var body = await reader.ReadToEndAsync();
+        //        // Если есть тело запроса — копируем его
+        //        if (Request.ContentLength > 0 &&
+        //            (method == HttpMethod.Post || method == HttpMethod.Put || method.Method == "PATCH"))
+        //        {
+        //            using var reader = new StreamReader(Request.Body);
+        //            var body = await reader.ReadToEndAsync();
 
-                    var contentType = Request.ContentType ?? "application/octet-stream";
+        //            var contentType = Request.ContentType ?? "application/octet-stream";
 
-                    // Определяем тип контента
-                    if (contentType.Contains("application/json"))
-                    {
-                        requestMessage.Content = new StringContent(body, Encoding.UTF8, "application/json");
-                    }
-                    else if (contentType.Contains("application/x-www-form-urlencoded"))
-                    {
-                        requestMessage.Content = new StringContent(body, Encoding.UTF8, "application/x-www-form-urlencoded");
-                    }
-                    else if (contentType.Contains("text/plain"))
-                    {
-                        requestMessage.Content = new StringContent(body, Encoding.UTF8, "text/plain");
-                    }
-                    else
-                    {
-                        // Любой другой тип (включая multipart/form-data)
-                        var bytes = Encoding.UTF8.GetBytes(body);
-                        requestMessage.Content = new ByteArrayContent(bytes);
-                        requestMessage.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
-                    }
-                }
+        //            // Определяем тип контента
+        //            if (contentType.Contains("application/json"))
+        //            {
+        //                requestMessage.Content = new StringContent(body, Encoding.UTF8, "application/json");
+        //            }
+        //            else if (contentType.Contains("application/x-www-form-urlencoded"))
+        //            {
+        //                requestMessage.Content = new StringContent(body, Encoding.UTF8, "application/x-www-form-urlencoded");
+        //            }
+        //            else if (contentType.Contains("text/plain"))
+        //            {
+        //                requestMessage.Content = new StringContent(body, Encoding.UTF8, "text/plain");
+        //            }
+        //            else
+        //            {
+        //                // Любой другой тип (включая multipart/form-data)
+        //                var bytes = Encoding.UTF8.GetBytes(body);
+        //                requestMessage.Content = new ByteArrayContent(bytes);
+        //                requestMessage.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
+        //            }
+        //        }
 
-                // Проксируем
-                var response = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
-                var contentTypeHeader = response.Content.Headers.ContentType?.ToString();
-                var charset = response.Content.Headers.ContentType?.CharSet ?? "utf-8";
+        //        // Проксируем
+        //        var response = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
+        //        var contentTypeHeader = response.Content.Headers.ContentType?.ToString();
+        //        var charset = response.Content.Headers.ContentType?.CharSet ?? "utf-8";
 
-                var bytess = await response.Content.ReadAsByteArrayAsync();
+        //        var bytess = await response.Content.ReadAsByteArrayAsync();
 
-                // === Обработка JS ===
-                if (contentTypeHeader.Contains("javascript") || contentTypeHeader.EndsWith(".js") || contentTypeHeader.Contains("text/css"))
-                {
-                    var text = Encoding.UTF8.GetString(bytess);
+        //        // === Обработка JS ===
+        //        if (contentTypeHeader.Contains("javascript") || contentTypeHeader.EndsWith(".js") || contentTypeHeader.Contains("text/css"))
+        //        {
+        //            var text = Encoding.UTF8.GetString(bytess);
 
 
-                    // Переписываем все пути к /web/
-                    text = text.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
-                    text = text.Replace("'/web/", "'/api/proxy/web/");
-                    text = text.Replace("\"/web/", "\"/api/proxy/web/");
+        //            // Переписываем все пути к /web/
+        //            text = text.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
+        //            text = text.Replace("'/web/", "'/api/proxy/web/");
+        //            text = text.Replace("\"/web/", "\"/api/proxy/web/");
 
-                    return Content(text, contentTypeHeader + "; charset=utf-8", Encoding.UTF8);
-                }
+        //            return Content(text, contentTypeHeader + "; charset=utf-8", Encoding.UTF8);
+        //        }
 
-                if (contentTypeHeader != null && contentTypeHeader.Contains("text/html"))
-                {
-                    // --- Обработка HTML ---
-                    Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-                    Encoding sourceEncoding;
-                    try { sourceEncoding = Encoding.GetEncoding(charset); }
-                    catch { sourceEncoding = Encoding.UTF8; }
+        //        if (contentTypeHeader != null && contentTypeHeader.Contains("text/html"))
+        //        {
+        //            // --- Обработка HTML ---
+        //            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        //            Encoding sourceEncoding;
+        //            try { sourceEncoding = Encoding.GetEncoding(charset); }
+        //            catch { sourceEncoding = Encoding.UTF8; }
 
-                    var html = await response.Content.ReadAsStringAsync();
-                    var doc = new HtmlDocument();
-                    doc.LoadHtml(html);
+        //            var html = await response.Content.ReadAsStringAsync();
+        //            var doc = new HtmlDocument();
+        //            doc.LoadHtml(html);
 
-                    RewriteRelativeUrls(doc);
+        //            RewriteRelativeUrls(doc);
 
-                    var head = doc.DocumentNode.SelectSingleNode("//head");
-                    if (head != null)
-                    {
-                        var oldMetas = head.SelectNodes(".//meta[@charset]") ?? new HtmlNodeCollection(null);
-                        foreach (var m in oldMetas) m.Remove();
-                        var httpEquivMetas = head.SelectNodes(".//meta[translate(@http-equiv,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='content-type']") ?? new HtmlNodeCollection(null);
-                        foreach (var m in httpEquivMetas) m.Remove();
+        //            var head = doc.DocumentNode.SelectSingleNode("//head");
+        //            if (head != null)
+        //            {
+        //                var oldMetas = head.SelectNodes(".//meta[@charset]") ?? new HtmlNodeCollection(null);
+        //                foreach (var m in oldMetas) m.Remove();
+        //                var httpEquivMetas = head.SelectNodes(".//meta[translate(@http-equiv,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='content-type']") ?? new HtmlNodeCollection(null);
+        //                foreach (var m in httpEquivMetas) m.Remove();
 
-                        var metaCharset = doc.CreateElement("meta");
-                        metaCharset.SetAttributeValue("charset", "utf-8");
-                        head.PrependChild(metaCharset);
+        //                var metaCharset = doc.CreateElement("meta");
+        //                metaCharset.SetAttributeValue("charset", "utf-8");
+        //                head.PrependChild(metaCharset);
 
-                        var baseTag = doc.CreateElement("base");
-                        baseTag.SetAttributeValue("href", "/api/proxy/web/");
-                        head.PrependChild(baseTag);
-                    }
+        //                var baseTag = doc.CreateElement("base");
+        //                baseTag.SetAttributeValue("href", "/api/proxy/web/");
+        //                head.PrependChild(baseTag);
+        //            }
 
-                    // JS-интерцептор
-                    var jsInterceptor = @"
-                    (function() {
-                        const rewriteUrl = (url) => {
-                            if (!url) return url;
-                            if (url.startsWith('https://galaxy.mobstudio.ru/'))
-                                return url.replace('https://galaxy.mobstudio.ru/', '/api/proxy/');
-                            if (url.startsWith('/web/'))
-                                return '/api/proxy' + url;
-                            if (url.startsWith('/'))
-                                return '/api/proxy' + url;
-                            return url;
-                        };
+        //            // JS-интерцептор
+        //            var jsInterceptor = @"
+        //            (function() {
+        //                const rewriteUrl = (url) => {
+        //                    if (!url) return url;
+        //                    if (url.startsWith('https://galaxy.mobstudio.ru/'))
+        //                        return url.replace('https://galaxy.mobstudio.ru/', '/api/proxy/');
+        //                    if (url.startsWith('/web/'))
+        //                        return '/api/proxy' + url;
+        //                    if (url.startsWith('/'))
+        //                        return '/api/proxy' + url;
+        //                    return url;
+        //                };
 
-                        // fetch
-                        const origFetch = window.fetch;
-                        window.fetch = function(url, opts) {
-                            return origFetch(rewriteUrl(url), opts);
-                        };
+        //                // fetch
+        //                const origFetch = window.fetch;
+        //                window.fetch = function(url, opts) {
+        //                    return origFetch(rewriteUrl(url), opts);
+        //                };
 
-                        // XMLHttpRequest
-                        const origOpen = XMLHttpRequest.prototype.open;
-                        XMLHttpRequest.prototype.open = function(method, url) {
-                            return origOpen.apply(this, [method, rewriteUrl(url)]);
-                        };
+        //                // XMLHttpRequest
+        //                const origOpen = XMLHttpRequest.prototype.open;
+        //                XMLHttpRequest.prototype.open = function(method, url) {
+        //                    return origOpen.apply(this, [method, rewriteUrl(url)]);
+        //                };
 
-                        // WebSocket
-                        const origWs = window.WebSocket;
-                        window.WebSocket = function(url, protocols) {
-                            return new origWs(rewriteUrl(url), protocols);
-                        };
+        //                // WebSocket
+        //                const origWs = window.WebSocket;
+        //                window.WebSocket = function(url, protocols) {
+        //                    return new origWs(rewriteUrl(url), protocols);
+        //                };
 
-                        console.log('✅ GalaxyProxy: полная ротация URL активна');
-                    })();
-                ";
+        //                console.log('✅ GalaxyProxy: полная ротация URL активна');
+        //            })();
+        //        ";
 
-                    var scriptNode = HtmlNode.CreateNode($"<script>{jsInterceptor}</script>");
-                    var body = doc.DocumentNode.SelectSingleNode("//body");
-                    body?.AppendChild(scriptNode);
+        //            var scriptNode = HtmlNode.CreateNode($"<script>{jsInterceptor}</script>");
+        //            var body = doc.DocumentNode.SelectSingleNode("//body");
+        //            body?.AppendChild(scriptNode);
 
-                    var modifiedHtml = doc.DocumentNode.OuterHtml;
-                    return Content(modifiedHtml, "text/html; charset=utf-8", Encoding.UTF8);
-                }
+        //            var modifiedHtml = doc.DocumentNode.OuterHtml;
+        //            return Content(modifiedHtml, "text/html; charset=utf-8", Encoding.UTF8);
+        //        }
 
-                // --- Остальные типы контента ---
-                var content = await response.Content.ReadAsByteArrayAsync();
-                return new FileContentResult(content, contentTypeHeader ?? "application/octet-stream")
-                {
-                    FileDownloadName = Path.GetFileName(targetUrl.LocalPath)
-                };
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при проксировании запроса {Method} {Url}", Request.Method, targetUrl);
-                return StatusCode(500, $"Ошибка прокси: {ex.Message}");
-            }
-        }
+        //        // --- Остальные типы контента ---
+        //        var content = await response.Content.ReadAsByteArrayAsync();
+        //        return new FileContentResult(content, contentTypeHeader ?? "application/octet-stream")
+        //        {
+        //            FileDownloadName = Path.GetFileName(targetUrl.LocalPath)
+        //        };
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "Ошибка при проксировании запроса {Method} {Url}", Request.Method, targetUrl);
+        //        return StatusCode(500, $"Ошибка прокси: {ex.Message}");
+        //    }
+        //}
 
-        private void RewriteRelativeUrls(HtmlDocument doc)
-        {
-            var nodes = doc.DocumentNode.SelectNodes("//*[@src or @href or @action]");
-            if (nodes == null) return;
+        //private void RewriteRelativeUrls(HtmlDocument doc)
+        //{
+        //    var nodes = doc.DocumentNode.SelectNodes("//*[@src or @href or @action]");
+        //    if (nodes == null) return;
 
-            foreach (var node in nodes)
-            {
-                foreach (var attr in new[] { "src", "href", "action" })
-                {
-                    var value = node.GetAttributeValue(attr, null);
-                    if (string.IsNullOrEmpty(value)) continue;
+        //    foreach (var node in nodes)
+        //    {
+        //        foreach (var attr in new[] { "src", "href", "action" })
+        //        {
+        //            var value = node.GetAttributeValue(attr, null);
+        //            if (string.IsNullOrEmpty(value)) continue;
 
-                    // Игнорируем якоря, mailto, data:
-                    if (value.StartsWith("#") || value.StartsWith("data:") || value.StartsWith("mailto:"))
-                        continue;
+        //            // Игнорируем якоря, mailto, data:
+        //            if (value.StartsWith("#") || value.StartsWith("data:") || value.StartsWith("mailto:"))
+        //                continue;
 
-                    if (value.StartsWith("https://galaxy.mobstudio.ru/"))
-                    {
-                        value = value.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
-                    }
-                    else if (value.StartsWith("/web/"))
-                    {
-                        value = "/api/proxy" + value;
-                    }
-                    else if (value.StartsWith("/"))
-                    {
-                        value = "/api/proxy" + value;
-                    }
+        //            if (value.StartsWith("https://galaxy.mobstudio.ru/"))
+        //            {
+        //                value = value.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
+        //            }
+        //            else if (value.StartsWith("/web/"))
+        //            {
+        //                value = "/api/proxy" + value;
+        //            }
+        //            else if (value.StartsWith("/"))
+        //            {
+        //                value = "/api/proxy" + value;
+        //            }
 
-                    node.SetAttributeValue(attr, value);
-                }
-            }
-        }
+        //            node.SetAttributeValue(attr, value);
+        //        }
+        //    }
+        //}
     }
 }
