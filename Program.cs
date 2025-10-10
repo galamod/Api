@@ -71,8 +71,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseStaticFiles();
-app.UseRouting();
+//app.UseStaticFiles();
+//app.UseRouting();
 
 //app.UseGalaxyProxy(); // 👈 Наш middleware-прокси
 
