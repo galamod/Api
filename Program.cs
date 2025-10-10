@@ -74,7 +74,7 @@ app.UseAuthorization();
 app.UseStaticFiles();
 app.UseRouting();
 
-//app.UseGalaxyProxy(); // 👈 Наш middleware-прокси
+app.UseGalaxyProxy(); // 👈 Наш middleware-прокси
 
 app.MapControllers();
 

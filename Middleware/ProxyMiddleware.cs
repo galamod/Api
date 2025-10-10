@@ -9,7 +9,7 @@ namespace Api.Middleware
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<ProxyMiddleware> _logger;
 
-        private const string TargetBaseUrl = "https://galaxy.mobstudio.ru/web/";
+        private const string TargetBaseUrl = "https://galaxy.mobstudio.ru/";
 
         public ProxyMiddleware(RequestDelegate next, IHttpClientFactory httpClientFactory, ILogger<ProxyMiddleware> logger)
         {
