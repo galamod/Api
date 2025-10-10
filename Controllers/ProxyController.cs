@@ -114,7 +114,7 @@ namespace Api.Controllers
                     var doc = new HtmlDocument();
                     doc.LoadHtml(html);
 
-                    RewriteRelativeUrls(doc);
+                    //RewriteRelativeUrls(doc);
 
                     var head = doc.DocumentNode.SelectSingleNode("//head");
                     if (head != null)
