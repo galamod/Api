@@ -87,20 +87,20 @@ namespace Api.Controllers
                 var contentTypeHeader = response.Content.Headers.ContentType?.ToString();
                 var charset = response.Content.Headers.ContentType?.CharSet ?? "utf-8";
 
-                var bytess = await response.Content.ReadAsByteArrayAsync();
+                //var bytess = await response.Content.ReadAsByteArrayAsync();
 
-                // === Обработка JS ===
-                if (contentTypeHeader.Contains("javascript") || contentTypeHeader.EndsWith(".js") || contentTypeHeader.Contains("text/css"))
-                {
-                    var text = Encoding.UTF8.GetString(bytess);
+                //// === Обработка JS ===
+                //if (contentTypeHeader.Contains("javascript") || contentTypeHeader.EndsWith(".js") || contentTypeHeader.Contains("text/css"))
+                //{
+                //    var text = Encoding.UTF8.GetString(bytess);
 
-                    // Переписываем все пути к /web/
-                    text = text.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
-                    text = text.Replace("'/web/", "'/api/proxy/web/");
-                    text = text.Replace("\"/web/", "\"/api/proxy/web/");
+                //    // Переписываем все пути к /web/
+                //    text = text.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
+                //    text = text.Replace("'/web/", "'/api/proxy/web/");
+                //    text = text.Replace("\"/web/", "\"/api/proxy/web/");
 
-                    return Content(text, contentTypeHeader + "; charset=utf-8", Encoding.UTF8);
-                }
+                //    return Content(text, contentTypeHeader + "; charset=utf-8", Encoding.UTF8);
+                //}
 
                 if (contentTypeHeader != null && contentTypeHeader.Contains("text/html"))
                 {
