@@ -18,13 +18,13 @@ namespace Api.Controllers
             _logger = logger;
         }
 
-
         [HttpGet]
         [Route("{*path}")]
         public async Task<IActionResult> Get(string path = "")
         {
             var client = _httpClientFactory.CreateClient();
-            var targetUrl = new Uri(new Uri(TargetBaseUrl), path);
+            // Если путь пустой, используем базовый URL, иначе конструируем полный URL
+            var targetUrl = string.IsNullOrEmpty(path) ? new Uri(TargetBaseUrl) : new Uri(new Uri(TargetBaseUrl), path);
 
             try
             {
@@ -37,22 +37,24 @@ namespace Api.Controllers
 
                 var contentType = response.Content.Headers.ContentType?.ToString();
 
-                // Если это HTML-документ, модифицируем его
                 if (contentType != null && contentType.Contains("text/html"))
                 {
                     var html = await response.Content.ReadAsStringAsync();
                     var doc = new HtmlDocument();
                     doc.LoadHtml(html);
 
-                    // 1. Удаляем скрипты регистрации Service Worker
+                    // 1. Агрессивное удаление Service Worker
                     var scriptNodes = doc.DocumentNode.SelectNodes("//script");
                     if (scriptNodes != null)
                     {
                         foreach (var script in scriptNodes.ToList())
                         {
-                            if (script.InnerHtml.Contains("serviceWorker.register"))
+                            // Проверяем и встроенный код, и внешние ссылки
+                            var src = script.GetAttributeValue("src", string.Empty);
+                            if (script.InnerHtml.Contains("serviceWorker.register") || src.Contains("sw.js") || src.Contains("service-worker"))
                             {
                                 script.Remove();
+                                _logger.LogInformation("Удален скрипт Service Worker.");
                             }
                         }
                     }
@@ -80,7 +82,6 @@ namespace Api.Controllers
                 }
                 else
                 {
-                    // Для всех остальных типов контента (CSS, JS, картинки) просто проксируем их
                     var content = await response.Content.ReadAsByteArrayAsync();
                     return new FileContentResult(content, contentType ?? "application/octet-stream");
                 }
