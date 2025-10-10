@@ -23,6 +23,7 @@ namespace Api.Controllers
         public async Task<IActionResult> Get(string path = "")
         {
             var client = _httpClientFactory.CreateClient();
+            // Если путь пустой, используем базовый URL, иначе конструируем полный URL
             var targetUrl = string.IsNullOrEmpty(path) ? new Uri(TargetBaseUrl) : new Uri(new Uri(TargetBaseUrl), path);
 
             try
@@ -38,20 +39,17 @@ namespace Api.Controllers
 
                 if (contentType != null && contentType.Contains("text/html"))
                 {
-                    var responseBytes = await response.Content.ReadAsByteArrayAsync();
+                    var html = await response.Content.ReadAsStringAsync();
                     var doc = new HtmlDocument();
+                    doc.LoadHtml(html);
 
-                    doc.OptionDefaultStreamEncoding = Encoding.UTF8;
-                    using (var stream = new MemoryStream(responseBytes))
-                    {
-                        doc.Load(stream, true);
-                    }
-
+                    // 1. Агрессивное удаление Service Worker
                     var scriptNodes = doc.DocumentNode.SelectNodes("//script");
                     if (scriptNodes != null)
                     {
                         foreach (var script in scriptNodes.ToList())
                         {
+                            // Проверяем и встроенный код, и внешние ссылки
                             var src = script.GetAttributeValue("src", string.Empty);
                             if (script.InnerHtml.Contains("serviceWorker.register") || src.Contains("sw.js") || src.Contains("service-worker"))
                             {
@@ -61,6 +59,7 @@ namespace Api.Controllers
                         }
                     }
 
+                    // 2. Внедряем <base> тег
                     var head = doc.DocumentNode.SelectSingleNode("//head");
                     if (head != null)
                     {
@@ -69,13 +68,15 @@ namespace Api.Controllers
                         head.PrependChild(baseTag);
                     }
 
+                    // 3. Внедряем наш кастомный скрипт
                     var body = doc.DocumentNode.SelectSingleNode("//body");
                     if (body != null)
                     {
+                        // Найдите основной скрипт
                         var mainScript = doc.DocumentNode.SelectSingleNode("//script[@src]");
                         var testScript = doc.CreateElement("script");
-                        
-                        testScript.InnerHtml = @"alert('Привет, мир!'); console.log('Тестовый скрипт с кириллицей выполнен.');";
+                        var jsCode = "alert('Привет, мир!'); console.log('Тестовый скрипт с кириллицей выполнен.');";
+                        testScript.InnerHtml = ToJsUnicode(jsCode);
 
                         if (mainScript != null)
                         {
@@ -83,14 +84,13 @@ namespace Api.Controllers
                         }
                         else
                         {
+                            // fallback: добавьте в конец body
                             body.AppendChild(testScript);
                         }
                     }
 
-                    var memoryStream = new MemoryStream();
-                    doc.Save(memoryStream, Encoding.UTF8);
-                    memoryStream.Position = 0;
-                    return new FileStreamResult(memoryStream, "text/html; charset=utf-8");
+                    var modifiedHtml = doc.DocumentNode.OuterHtml;
+                    return Content(modifiedHtml, "text/html; charset=utf-8", Encoding.UTF8);
                 }
                 else
                 {
@@ -103,6 +103,19 @@ namespace Api.Controllers
                 _logger.LogError(ex, "Ошибка при проксировании запроса на {Url}", targetUrl);
                 return StatusCode(500, "Внутренняя ошибка сервера при проксировании запроса.");
             }
+        }
+
+        private string ToJsUnicode(string input)
+        {
+            var sb = new StringBuilder();
+            foreach (var c in input)
+            {
+                if (c > 127)
+                    sb.AppendFormat("\\u{0:x4}", (int)c);
+                else
+                    sb.Append(c);
+            }
+            return sb.ToString();
         }
     }
 }
