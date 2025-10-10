@@ -38,21 +38,14 @@ namespace Api.Controllers
 
                 if (contentType != null && contentType.Contains("text/html"))
                 {
-                    // --- НАЧАЛО ИЗМЕНЕНИЙ ---
-
-                    // 1. Читаем ответ как байты, а не строку
                     var responseBytes = await response.Content.ReadAsByteArrayAsync();
                     var doc = new HtmlDocument();
 
-                    // 2. Устанавливаем кодировку по умолчанию для парсера
                     doc.OptionDefaultStreamEncoding = Encoding.UTF8;
                     using (var stream = new MemoryStream(responseBytes))
                     {
-                        // 3. Загружаем HTML из потока, позволяя HAP правильно определить кодировку
                         doc.Load(stream, true);
                     }
-
-                    // --- КОНЕЦ ИЗМЕНЕНИЙ ---
 
                     var scriptNodes = doc.DocumentNode.SelectNodes("//script");
                     if (scriptNodes != null)
@@ -82,7 +75,6 @@ namespace Api.Controllers
                         var mainScript = doc.DocumentNode.SelectSingleNode("//script[@src]");
                         var testScript = doc.CreateElement("script");
                         
-                        // Пример скрипта с кириллицей
                         testScript.InnerHtml = @"alert('Привет, мир!'); console.log('Тестовый скрипт с кириллицей выполнен.');";
 
                         if (mainScript != null)
@@ -95,16 +87,13 @@ namespace Api.Controllers
                         }
                     }
 
-                    // --- ИЗМЕНЕНИЕ СПОСОБА СОХРАНЕНИЯ ---
-                    
-                    // 4. Сохраняем измененный HTML в поток с явным указанием кодировки UTF-8
-                    using (var memoryStream = new MemoryStream())
-                    {
-                        doc.Save(memoryStream, Encoding.UTF8);
-                        memoryStream.Position = 0;
-                        // Возвращаем результат как FileStreamResult, чтобы избежать повторного преобразования
-                        return new FileStreamResult(memoryStream, "text/html; charset=utf-8");
-                    }
+                    // --- ИСПРАВЛЕНИЕ ---
+                    // Убираем 'using', чтобы поток не закрывался преждевременно.
+                    // FileStreamResult сам позаботится о его закрытии.
+                    var memoryStream = new MemoryStream();
+                    doc.Save(memoryStream, Encoding.UTF8);
+                    memoryStream.Position = 0;
+                    return new FileStreamResult(memoryStream, "text/html; charset=utf-8");
                 }
                 else
                 {
