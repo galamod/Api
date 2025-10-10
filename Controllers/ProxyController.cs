@@ -10,7 +10,7 @@ namespace Api.Controllers
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<ProxyController> _logger;
-        private const string TargetBaseUrl = "https://galaxy.mobstudio.ru/web";
+        private const string TargetBaseUrl = "https://galaxy.mobstudio.ru/";
 
         public ProxyController(IHttpClientFactory httpClientFactory, ILogger<ProxyController> logger)
         {
@@ -34,9 +34,10 @@ namespace Api.Controllers
             request.Headers.Add("x-galaxy-user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36");
         }
 
-        [HttpGet]
+        // Универсальный метод для любых HTTP-запросов
+        [HttpGet, HttpPost, HttpPut, HttpPatch, HttpDelete, HttpOptions]
         [Route("{*path}")]
-        public async Task<IActionResult> Get(string path = "")
+        public async Task<IActionResult> HandleRequest(string path = "")
         {
             var client = _httpClientFactory.CreateClient();
             var targetUrl = string.IsNullOrEmpty(path)
@@ -45,94 +46,93 @@ namespace Api.Controllers
 
             try
             {
-                var request = new HttpRequestMessage(HttpMethod.Get, targetUrl);
-                AddGalaxyHeaders(request);
+                // Создаём исходящий запрос
+                var method = new HttpMethod(Request.Method);
+                var requestMessage = new HttpRequestMessage(method, targetUrl);
+                AddGalaxyHeaders(requestMessage);
 
-                var response = await client.SendAsync(request);
-
-                if (!response.IsSuccessStatusCode)
+                // Если есть тело запроса — копируем его
+                if (Request.ContentLength > 0 &&
+                    (method == HttpMethod.Post || method == HttpMethod.Put || method.Method == "PATCH"))
                 {
-                    return StatusCode((int)response.StatusCode,
-                        await response.Content.ReadAsStringAsync());
+                    using var reader = new StreamReader(Request.Body);
+                    var body = await reader.ReadToEndAsync();
+
+                    var contentType = Request.ContentType ?? "application/octet-stream";
+
+                    // Определяем тип контента
+                    if (contentType.Contains("application/json"))
+                    {
+                        requestMessage.Content = new StringContent(body, Encoding.UTF8, "application/json");
+                    }
+                    else if (contentType.Contains("application/x-www-form-urlencoded"))
+                    {
+                        requestMessage.Content = new StringContent(body, Encoding.UTF8, "application/x-www-form-urlencoded");
+                    }
+                    else if (contentType.Contains("text/plain"))
+                    {
+                        requestMessage.Content = new StringContent(body, Encoding.UTF8, "text/plain");
+                    }
+                    else
+                    {
+                        // Любой другой тип (включая multipart/form-data)
+                        var bytes = Encoding.UTF8.GetBytes(body);
+                        requestMessage.Content = new ByteArrayContent(bytes);
+                        requestMessage.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
+                    }
                 }
 
-                var contentType = response.Content.Headers.ContentType?.ToString();
-
-                // ---------- Фикс кодировки ----------
+                // Проксируем
+                var response = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
+                var contentTypeHeader = response.Content.Headers.ContentType?.ToString();
                 var charset = response.Content.Headers.ContentType?.CharSet ?? "utf-8";
 
-                // Поддержка legacy-кодировок (windows-1251 и т.п.)
-                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                var bytess = await response.Content.ReadAsByteArrayAsync();
 
-                Encoding sourceEncoding;
-                try
+                // === Обработка JS ===
+                if (contentTypeHeader.Contains("javascript") || contentTypeHeader.EndsWith(".js") || contentTypeHeader.Contains("text/css"))
                 {
-                    sourceEncoding = Encoding.GetEncoding(charset);
-                }
-                catch
-                {
-                    sourceEncoding = Encoding.UTF8; // fallback
+                    var text = Encoding.UTF8.GetString(bytess);
+
+                    // Переписываем все пути к /web/
+                    text = text.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
+                    text = text.Replace("'/web/", "'/api/proxy/web/");
+                    text = text.Replace("\"/web/", "\"/api/proxy/web/");
+
+                    return Content(text, contentTypeHeader + "; charset=utf-8", Encoding.UTF8);
                 }
 
-                string html;
-                using (var stream = await response.Content.ReadAsStreamAsync())
-                using (var reader = new StreamReader(stream, sourceEncoding))
+                if (contentTypeHeader != null && contentTypeHeader.Contains("text/html"))
                 {
-                    html = await reader.ReadToEndAsync();
-                }
-                // ------------------------------------
+                    // --- Обработка HTML ---
+                    Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                    Encoding sourceEncoding;
+                    try { sourceEncoding = Encoding.GetEncoding(charset); }
+                    catch { sourceEncoding = Encoding.UTF8; }
 
-                if (contentType != null && contentType.Contains("text/html"))
-                {
+                    var html = await response.Content.ReadAsStringAsync();
                     var doc = new HtmlDocument();
                     doc.LoadHtml(html);
 
-                    // Удаляем Service Worker
-                    var scriptNodes = doc.DocumentNode.SelectNodes("//script");
-                    if (scriptNodes != null)
-                    {
-                        foreach (var script in scriptNodes.ToList())
-                        {
-                            var src = script.GetAttributeValue("src", string.Empty);
-                            if (script.InnerHtml.Contains("serviceWorker.register") ||
-                                src.Contains("sw.js") ||
-                                src.Contains("service-worker"))
-                            {
-                                script.Remove();
-                            }
-                        }
-                    }
+                    RewriteRelativeUrls(doc);
 
-                    // Вставляем <base> и принудительно <meta charset="utf-8">
                     var head = doc.DocumentNode.SelectSingleNode("//head");
                     if (head != null)
                     {
-                        // Удаляем старые <meta charset> если были
-                        var oldMetas = head.SelectNodes(".//meta[@charset]");
-                        if (oldMetas != null)
-                        {
-                            foreach (var m in oldMetas) m.Remove();
-                        }
+                        var oldMetas = head.SelectNodes(".//meta[@charset]") ?? new HtmlNodeCollection(null);
+                        foreach (var m in oldMetas) m.Remove();
+                        var httpEquivMetas = head.SelectNodes(".//meta[translate(@http-equiv,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='content-type']") ?? new HtmlNodeCollection(null);
+                        foreach (var m in httpEquivMetas) m.Remove();
 
-                        // Также удаляем <meta http-equiv="Content-Type">
-                        var httpEquivMetas = head.SelectNodes(".//meta[translate(@http-equiv,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='content-type']");
-                        if (httpEquivMetas != null)
-                        {
-                            foreach (var m in httpEquivMetas) m.Remove();
-                        }
-
-                        // Добавляем новый meta charset=utf-8
                         var metaCharset = doc.CreateElement("meta");
                         metaCharset.SetAttributeValue("charset", "utf-8");
                         head.PrependChild(metaCharset);
 
-                        // Добавляем <base href="...">
                         var baseTag = doc.CreateElement("base");
-                        baseTag.SetAttributeValue("href", TargetBaseUrl);
+                        baseTag.SetAttributeValue("href", "/api/proxy/web/");
                         head.PrependChild(baseTag);
                     }
 
-                    // Внедряем JS корректно без base64
                     var jsCode = @"(function () {
     try {
         if (window.__ws_hooked) return;
@@ -1361,6 +1361,45 @@ namespace Api.Controllers
                     var proxyScript = HtmlNode.CreateNode($"<script>{jsCode}</script>");
 
                     var body = doc.DocumentNode.SelectSingleNode("//body");
+
+                    var jsInterceptor = @"
+                    (function() {
+                        const rewriteUrl = (url) => {
+                            if (!url) return url;
+                            if (url.startsWith('https://galaxy.mobstudio.ru/'))
+                                return url.replace('https://galaxy.mobstudio.ru/', '/api/proxy/');
+                            if (url.startsWith('/web/'))
+                                return '/api/proxy' + url;
+                            if (url.startsWith('/'))
+                                return '/api/proxy' + url;
+                            return url;
+                        };
+
+                        // fetch
+                        const origFetch = window.fetch;
+                        window.fetch = function(url, opts) {
+                            return origFetch(rewriteUrl(url), opts);
+                        };
+
+                        // XMLHttpRequest
+                        const origOpen = XMLHttpRequest.prototype.open;
+                        XMLHttpRequest.prototype.open = function(method, url) {
+                            return origOpen.apply(this, [method, rewriteUrl(url)]);
+                        };
+
+                        // WebSocket
+                        const origWs = window.WebSocket;
+                        window.WebSocket = function(url, protocols) {
+                            return new origWs(rewriteUrl(url), protocols);
+                        };
+
+                        console.log('✅ GalaxyProxy: полная ротация URL активна');
+                    })();
+                ";
+
+                    var scriptNode = HtmlNode.CreateNode($"<script>{jsInterceptor}</script>");
+                    body?.AppendChild(scriptNode);
+
                     if (body != null)
                     {
                         var mainScript = doc.DocumentNode.SelectSingleNode("//script[@src]");
@@ -1371,213 +1410,55 @@ namespace Api.Controllers
                     }
 
                     var modifiedHtml = doc.DocumentNode.OuterHtml;
-
-                    // ⚙️ Возвращаем как UTF-8, независимо от исходной кодировки
                     return Content(modifiedHtml, "text/html; charset=utf-8", Encoding.UTF8);
                 }
-                else
+
+                // --- Остальные типы контента ---
+                var content = await response.Content.ReadAsByteArrayAsync();
+                return new FileContentResult(content, contentTypeHeader ?? "application/octet-stream")
                 {
-                    var content = await response.Content.ReadAsByteArrayAsync();
-                    return new FileContentResult(content, contentType ?? "application/octet-stream");
-                }
+                    FileDownloadName = Path.GetFileName(targetUrl.LocalPath)
+                };
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при проксировании GET {Url}", targetUrl);
-                return StatusCode(500, "Внутренняя ошибка сервера при проксировании GET.");
+                _logger.LogError(ex, "Ошибка при проксировании запроса {Method} {Url}", Request.Method, targetUrl);
+                return StatusCode(500, $"Ошибка прокси: {ex.Message}");
             }
         }
 
-        // Универсальный метод для любых HTTP-запросов
-        //[HttpGet, HttpPost, HttpPut, HttpPatch, HttpDelete, HttpOptions]
-        //[Route("{*path}")]
-        //public async Task<IActionResult> HandleRequest(string path = "")
-        //{
-        //    var client = _httpClientFactory.CreateClient();
-        //    var targetUrl = string.IsNullOrEmpty(path)
-        //        ? new Uri(TargetBaseUrl)
-        //        : new Uri(new Uri(TargetBaseUrl), path);
+        private void RewriteRelativeUrls(HtmlDocument doc)
+        {
+            var nodes = doc.DocumentNode.SelectNodes("//*[@src or @href or @action]");
+            if (nodes == null) return;
 
-        //    try
-        //    {
-        //        // Создаём исходящий запрос
-        //        var method = new HttpMethod(Request.Method);
-        //        var requestMessage = new HttpRequestMessage(method, targetUrl);
-        //        AddGalaxyHeaders(requestMessage);
+            foreach (var node in nodes)
+            {
+                foreach (var attr in new[] { "src", "href", "action" })
+                {
+                    var value = node.GetAttributeValue(attr, null);
+                    if (string.IsNullOrEmpty(value)) continue;
 
-        //        // Если есть тело запроса — копируем его
-        //        if (Request.ContentLength > 0 &&
-        //            (method == HttpMethod.Post || method == HttpMethod.Put || method.Method == "PATCH"))
-        //        {
-        //            using var reader = new StreamReader(Request.Body);
-        //            var body = await reader.ReadToEndAsync();
+                    // Игнорируем якоря, mailto, data:
+                    if (value.StartsWith("#") || value.StartsWith("data:") || value.StartsWith("mailto:"))
+                        continue;
 
-        //            var contentType = Request.ContentType ?? "application/octet-stream";
+                    if (value.StartsWith("https://galaxy.mobstudio.ru/"))
+                    {
+                        value = value.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
+                    }
+                    else if (value.StartsWith("/web/"))
+                    {
+                        value = "/api/proxy" + value;
+                    }
+                    else if (value.StartsWith("/"))
+                    {
+                        value = "/api/proxy" + value;
+                    }
 
-        //            // Определяем тип контента
-        //            if (contentType.Contains("application/json"))
-        //            {
-        //                requestMessage.Content = new StringContent(body, Encoding.UTF8, "application/json");
-        //            }
-        //            else if (contentType.Contains("application/x-www-form-urlencoded"))
-        //            {
-        //                requestMessage.Content = new StringContent(body, Encoding.UTF8, "application/x-www-form-urlencoded");
-        //            }
-        //            else if (contentType.Contains("text/plain"))
-        //            {
-        //                requestMessage.Content = new StringContent(body, Encoding.UTF8, "text/plain");
-        //            }
-        //            else
-        //            {
-        //                // Любой другой тип (включая multipart/form-data)
-        //                var bytes = Encoding.UTF8.GetBytes(body);
-        //                requestMessage.Content = new ByteArrayContent(bytes);
-        //                requestMessage.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
-        //            }
-        //        }
-
-        //        // Проксируем
-        //        var response = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
-        //        var contentTypeHeader = response.Content.Headers.ContentType?.ToString();
-        //        var charset = response.Content.Headers.ContentType?.CharSet ?? "utf-8";
-
-        //        var bytess = await response.Content.ReadAsByteArrayAsync();
-
-        //        // === Обработка JS ===
-        //        if (contentTypeHeader.Contains("javascript") || contentTypeHeader.EndsWith(".js") || contentTypeHeader.Contains("text/css"))
-        //        {
-        //            var text = Encoding.UTF8.GetString(bytess);
-
-
-        //            // Переписываем все пути к /web/
-        //            text = text.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
-        //            text = text.Replace("'/web/", "'/api/proxy/web/");
-        //            text = text.Replace("\"/web/", "\"/api/proxy/web/");
-
-        //            return Content(text, contentTypeHeader + "; charset=utf-8", Encoding.UTF8);
-        //        }
-
-        //        if (contentTypeHeader != null && contentTypeHeader.Contains("text/html"))
-        //        {
-        //            // --- Обработка HTML ---
-        //            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-        //            Encoding sourceEncoding;
-        //            try { sourceEncoding = Encoding.GetEncoding(charset); }
-        //            catch { sourceEncoding = Encoding.UTF8; }
-
-        //            var html = await response.Content.ReadAsStringAsync();
-        //            var doc = new HtmlDocument();
-        //            doc.LoadHtml(html);
-
-        //            RewriteRelativeUrls(doc);
-
-        //            var head = doc.DocumentNode.SelectSingleNode("//head");
-        //            if (head != null)
-        //            {
-        //                var oldMetas = head.SelectNodes(".//meta[@charset]") ?? new HtmlNodeCollection(null);
-        //                foreach (var m in oldMetas) m.Remove();
-        //                var httpEquivMetas = head.SelectNodes(".//meta[translate(@http-equiv,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='content-type']") ?? new HtmlNodeCollection(null);
-        //                foreach (var m in httpEquivMetas) m.Remove();
-
-        //                var metaCharset = doc.CreateElement("meta");
-        //                metaCharset.SetAttributeValue("charset", "utf-8");
-        //                head.PrependChild(metaCharset);
-
-        //                var baseTag = doc.CreateElement("base");
-        //                baseTag.SetAttributeValue("href", "/api/proxy/web/");
-        //                head.PrependChild(baseTag);
-        //            }
-
-        //            // JS-интерцептор
-        //            var jsInterceptor = @"
-        //            (function() {
-        //                const rewriteUrl = (url) => {
-        //                    if (!url) return url;
-        //                    if (url.startsWith('https://galaxy.mobstudio.ru/'))
-        //                        return url.replace('https://galaxy.mobstudio.ru/', '/api/proxy/');
-        //                    if (url.startsWith('/web/'))
-        //                        return '/api/proxy' + url;
-        //                    if (url.startsWith('/'))
-        //                        return '/api/proxy' + url;
-        //                    return url;
-        //                };
-
-        //                // fetch
-        //                const origFetch = window.fetch;
-        //                window.fetch = function(url, opts) {
-        //                    return origFetch(rewriteUrl(url), opts);
-        //                };
-
-        //                // XMLHttpRequest
-        //                const origOpen = XMLHttpRequest.prototype.open;
-        //                XMLHttpRequest.prototype.open = function(method, url) {
-        //                    return origOpen.apply(this, [method, rewriteUrl(url)]);
-        //                };
-
-        //                // WebSocket
-        //                const origWs = window.WebSocket;
-        //                window.WebSocket = function(url, protocols) {
-        //                    return new origWs(rewriteUrl(url), protocols);
-        //                };
-
-        //                console.log('✅ GalaxyProxy: полная ротация URL активна');
-        //            })();
-        //        ";
-
-        //            var scriptNode = HtmlNode.CreateNode($"<script>{jsInterceptor}</script>");
-        //            var body = doc.DocumentNode.SelectSingleNode("//body");
-        //            body?.AppendChild(scriptNode);
-
-        //            var modifiedHtml = doc.DocumentNode.OuterHtml;
-        //            return Content(modifiedHtml, "text/html; charset=utf-8", Encoding.UTF8);
-        //        }
-
-        //        // --- Остальные типы контента ---
-        //        var content = await response.Content.ReadAsByteArrayAsync();
-        //        return new FileContentResult(content, contentTypeHeader ?? "application/octet-stream")
-        //        {
-        //            FileDownloadName = Path.GetFileName(targetUrl.LocalPath)
-        //        };
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, "Ошибка при проксировании запроса {Method} {Url}", Request.Method, targetUrl);
-        //        return StatusCode(500, $"Ошибка прокси: {ex.Message}");
-        //    }
-        //}
-
-        //private void RewriteRelativeUrls(HtmlDocument doc)
-        //{
-        //    var nodes = doc.DocumentNode.SelectNodes("//*[@src or @href or @action]");
-        //    if (nodes == null) return;
-
-        //    foreach (var node in nodes)
-        //    {
-        //        foreach (var attr in new[] { "src", "href", "action" })
-        //        {
-        //            var value = node.GetAttributeValue(attr, null);
-        //            if (string.IsNullOrEmpty(value)) continue;
-
-        //            // Игнорируем якоря, mailto, data:
-        //            if (value.StartsWith("#") || value.StartsWith("data:") || value.StartsWith("mailto:"))
-        //                continue;
-
-        //            if (value.StartsWith("https://galaxy.mobstudio.ru/"))
-        //            {
-        //                value = value.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
-        //            }
-        //            else if (value.StartsWith("/web/"))
-        //            {
-        //                value = "/api/proxy" + value;
-        //            }
-        //            else if (value.StartsWith("/"))
-        //            {
-        //                value = "/api/proxy" + value;
-        //            }
-
-        //            node.SetAttributeValue(attr, value);
-        //        }
-        //    }
-        //}
+                    node.SetAttributeValue(attr, value);
+                }
+            }
+        }
     }
 }
