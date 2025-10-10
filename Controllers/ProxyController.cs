@@ -78,7 +78,7 @@ namespace Api.Controllers
                     }
 
                     var modifiedHtml = doc.DocumentNode.OuterHtml;
-                    return Content(modifiedHtml, "text/html", Encoding.UTF8);
+                    return Content(modifiedHtml, "text/html; charset=utf-8", Encoding.UTF8);
                 }
                 else
                 {
