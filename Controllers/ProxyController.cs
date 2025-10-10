@@ -18,17 +18,35 @@ namespace Api.Controllers
             _logger = logger;
         }
 
+        // Добавляем заголовки для Galaxy
+        private void AddGalaxyHeaders(HttpRequestMessage request)
+        {
+            request.Headers.Add("x-galaxy-client-ver", "9.5");
+            request.Headers.Add("x-galaxy-kbv", "352");
+            request.Headers.Add("x-galaxy-lng", "ru");
+            request.Headers.Add("x-galaxy-model", "chrome 140.0.0.0");
+            request.Headers.Add("x-galaxy-orientation", "portrait");
+            request.Headers.Add("x-galaxy-os-ver", "1");
+            request.Headers.Add("x-galaxy-platform", "web");
+            request.Headers.Add("x-galaxy-scr-dpi", "1");
+            request.Headers.Add("x-galaxy-scr-h", "945");
+            request.Headers.Add("x-galaxy-scr-w", "700");
+            request.Headers.Add("x-galaxy-user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36");
+        }
+
         [HttpGet]
         [Route("{*path}")]
         public async Task<IActionResult> Get(string path = "")
         {
             var client = _httpClientFactory.CreateClient();
-            // Если путь пустой, используем базовый URL, иначе конструируем полный URL
             var targetUrl = string.IsNullOrEmpty(path) ? new Uri(TargetBaseUrl) : new Uri(new Uri(TargetBaseUrl), path);
 
             try
             {
-                var response = await client.GetAsync(targetUrl);
+                var request = new HttpRequestMessage(HttpMethod.Get, targetUrl);
+                AddGalaxyHeaders(request);
+
+                var response = await client.SendAsync(request);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -43,23 +61,21 @@ namespace Api.Controllers
                     var doc = new HtmlDocument();
                     doc.LoadHtml(html);
 
-                    // 1. Агрессивное удаление Service Worker
+                    // Удаляем Service Worker
                     var scriptNodes = doc.DocumentNode.SelectNodes("//script");
                     if (scriptNodes != null)
                     {
                         foreach (var script in scriptNodes.ToList())
                         {
-                            // Проверяем и встроенный код, и внешние ссылки
                             var src = script.GetAttributeValue("src", string.Empty);
                             if (script.InnerHtml.Contains("serviceWorker.register") || src.Contains("sw.js") || src.Contains("service-worker"))
                             {
                                 script.Remove();
-                                _logger.LogInformation("Удален скрипт Service Worker.");
                             }
                         }
                     }
 
-                    // 2. Внедряем <base> тег
+                    // Внедряем <base> и <meta charset>
                     var head = doc.DocumentNode.SelectSingleNode("//head");
                     if (head != null)
                     {
@@ -72,21 +88,20 @@ namespace Api.Controllers
                         head.PrependChild(metaCharset);
                     }
 
-                    // 3. Внедряем наш кастомный скрипт
+                    // Внедряем JS для перехвата fetch/XHR
                     var body = doc.DocumentNode.SelectSingleNode("//body");
                     if (body != null)
                     {
-                        // Найдите основной скрипт
-                        var mainScript = doc.DocumentNode.SelectSingleNode("//script[@src]");
-                        var testScript = doc.CreateElement("script");
-                        var jsCode = @"(function() {
+                        var proxyScript = doc.CreateElement("script");
+                        proxyScript.InnerHtml = @"
+(function() {
     const proxyPrefix = '/api/proxy';
     // fetch
     const origFetch = window.fetch;
     window.fetch = function(input, init) {
         let url = typeof input === 'string' ? input : input.url;
-        if (url.startsWith('/') || url.startsWith('https://galaxy.mobstudio.ru')) {
-            let newUrl = proxyPrefix + (url.startsWith('/') ? url : url.replace('https://galaxy.mobstudio.ru', ''));
+        if (url.startsWith('/web') || url.startsWith('https://galaxy.mobstudio.ru/web')) {
+            let newUrl = proxyPrefix + (url.startsWith('/web') ? url : url.replace('https://galaxy.mobstudio.ru', ''));
             if (typeof input === 'string') input = newUrl;
             else input.url = newUrl;
         }
@@ -95,23 +110,19 @@ namespace Api.Controllers
     // XMLHttpRequest
     const origOpen = XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open = function(method, url, ...args) {
-        if (url.startsWith('/') || url.startsWith('https://galaxy.mobstudio.ru')) {
-            url = proxyPrefix + (url.startsWith('/') ? url : url.replace('https://galaxy.mobstudio.ru', ''));
+        if (url.startsWith('/web') || url.startsWith('https://galaxy.mobstudio.ru/web')) {
+            url = proxyPrefix + (url.startsWith('/web') ? url : url.replace('https://galaxy.mobstudio.ru', ''));
         }
         return origOpen.call(this, method, url, ...args);
     };
-})();";
-                        testScript.InnerHtml = jsCode;
-
+})();
+";
+                        // Вставляем перед основным скриптом или в конец body
+                        var mainScript = doc.DocumentNode.SelectSingleNode("//script[@src]");
                         if (mainScript != null)
-                        {
-                            mainScript.ParentNode.InsertBefore(testScript, mainScript);
-                        }
+                            mainScript.ParentNode.InsertBefore(proxyScript, mainScript);
                         else
-                        {
-                            // fallback: добавьте в конец body
-                            body.AppendChild(testScript);
-                        }
+                            body.AppendChild(proxyScript);
                     }
 
                     var modifiedHtml = doc.DocumentNode.OuterHtml;
@@ -125,8 +136,8 @@ namespace Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при проксировании запроса на {Url}", targetUrl);
-                return StatusCode(500, "Внутренняя ошибка сервера при проксировании запроса.");
+                _logger.LogError(ex, "Ошибка при проксировании GET {Url}", targetUrl);
+                return StatusCode(500, "Внутренняя ошибка сервера при проксировании GET.");
             }
         }
 
@@ -137,18 +148,29 @@ namespace Api.Controllers
             var client = _httpClientFactory.CreateClient();
             var targetUrl = string.IsNullOrEmpty(path) ? new Uri(TargetBaseUrl) : new Uri(new Uri(TargetBaseUrl), path);
 
-            var content = new StreamContent(Request.Body);
-            foreach (var header in Request.Headers)
+            var requestBody = await new StreamReader(Request.Body).ReadToEndAsync();
+            var contentType = Request.ContentType ?? "application/x-www-form-urlencoded";
+            var content = new StringContent(requestBody, Encoding.UTF8, contentType);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, targetUrl)
             {
-                if (!header.Key.StartsWith(":"))
-                    content.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
+                Content = content
+            };
+            AddGalaxyHeaders(request);
+
+            try
+            {
+                var response = await client.SendAsync(request);
+                var responseBytes = await response.Content.ReadAsByteArrayAsync();
+                var respContentType = response.Content.Headers.ContentType?.ToString();
+
+                return new FileContentResult(responseBytes, respContentType ?? "application/octet-stream");
             }
-
-            var response = await client.PostAsync(targetUrl, content);
-            var responseBytes = await response.Content.ReadAsByteArrayAsync();
-            var contentType = response.Content.Headers.ContentType?.ToString();
-
-            return new FileContentResult(responseBytes, contentType ?? "application/octet-stream");
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при проксировании POST {Url}", targetUrl);
+                return StatusCode(500, "Внутренняя ошибка сервера при проксировании POST.");
+            }
         }
     }
 }
