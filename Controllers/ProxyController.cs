@@ -1463,6 +1463,10 @@ namespace Api.Controllers
                     {
                         value = "/api/proxy" + value;
                     }
+                    else if (value.StartsWith("web/")) // <-- добавьте этот блок
+                    {
+                        value = "/api/proxy/" + value;
+                    }
 
                     node.SetAttributeValue(attr, value);
                 }
