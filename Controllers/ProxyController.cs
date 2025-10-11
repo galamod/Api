@@ -89,7 +89,6 @@ namespace Api.Controllers
 
                 var bytess = await response.Content.ReadAsByteArrayAsync();
 
-                // === Обработка JS ===
                 if (contentTypeHeader.Contains("javascript") || contentTypeHeader.EndsWith(".js") || contentTypeHeader.Contains("text/css") || contentTypeHeader.Contains("text/plain"))
                 {
                     var text = Encoding.UTF8.GetString(bytess);
