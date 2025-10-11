@@ -1,6 +1,8 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.Intrinsics.Arm;
 using System.Text;
+using static System.Net.WebRequestMethods;
 
 namespace Api.Controllers
 {
@@ -18,28 +20,25 @@ namespace Api.Controllers
             _logger = logger;
         }
 
-        // Добавляем заголовки для Galaxy
-        private void AddGalaxyHeaders(HttpRequestMessage request)
-        {
-            request.Headers.Add("x-galaxy-client-ver", "9.5");
-            request.Headers.Add("x-galaxy-kbv", "352");
-            request.Headers.Add("x-galaxy-lng", "ru");
-            request.Headers.Add("x-galaxy-model", "chrome 140.0.0.0");
-            request.Headers.Add("x-galaxy-orientation", "portrait");
-            request.Headers.Add("x-galaxy-os-ver", "1");
-            request.Headers.Add("x-galaxy-platform", "web");
-            request.Headers.Add("x-galaxy-scr-dpi", "1");
-            request.Headers.Add("x-galaxy-scr-h", "945");
-            request.Headers.Add("x-galaxy-scr-w", "700");
-            request.Headers.Add("x-galaxy-user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36");
-        }
-
         // Универсальный метод для любых HTTP-запросов
         [HttpGet, HttpPost, HttpPut, HttpPatch, HttpDelete, HttpOptions]
         [Route("{*path}")]
         public async Task<IActionResult> HandleRequest(string path = "")
         {
             var client = _httpClientFactory.CreateClient();
+
+            client.DefaultRequestHeaders.Add("x-galaxy-client-ver", "9.5");
+            client.DefaultRequestHeaders.Add("x-galaxy-kbv", "352");
+            client.DefaultRequestHeaders.Add("x-galaxy-lng", "ru");
+            client.DefaultRequestHeaders.Add("x-galaxy-model", "chrome 140.0.0.0");
+            client.DefaultRequestHeaders.Add("x-galaxy-orientation", "portrait");
+            client.DefaultRequestHeaders.Add("x-galaxy-os-ver", "1");
+            client.DefaultRequestHeaders.Add("x-galaxy-platform", "web");
+            client.DefaultRequestHeaders.Add("x-galaxy-scr-dpi", $"1");
+            client.DefaultRequestHeaders.Add("x-galaxy-scr-h", $"945");
+            client.DefaultRequestHeaders.Add("x-galaxy-scr-w", $"700");
+            client.DefaultRequestHeaders.Add("x-galaxy-user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36");
+
             var targetUrl = string.IsNullOrEmpty(path)
                 ? new Uri(TargetBaseUrl)
                 : new Uri(new Uri(TargetBaseUrl), path);
@@ -49,7 +48,6 @@ namespace Api.Controllers
                 // Создаём исходящий запрос
                 var method = new HttpMethod(Request.Method);
                 var requestMessage = new HttpRequestMessage(method, targetUrl);
-                AddGalaxyHeaders(requestMessage);
 
                 // Если есть тело запроса — копируем его
                 if (Request.ContentLength > 0 &&
