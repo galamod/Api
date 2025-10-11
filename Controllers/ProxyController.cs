@@ -18,6 +18,22 @@ namespace Api.Controllers
             _logger = logger;
         }
 
+        // Добавляем заголовки для Galaxy
+        private void AddGalaxyHeaders(HttpRequestMessage request)
+        {
+            request.Headers.Add("x-galaxy-client-ver", "9.5");
+            request.Headers.Add("x-galaxy-kbv", "352");
+            request.Headers.Add("x-galaxy-lng", "ru");
+            request.Headers.Add("x-galaxy-model", "chrome 140.0.0.0");
+            request.Headers.Add("x-galaxy-orientation", "portrait");
+            request.Headers.Add("x-galaxy-os-ver", "1");
+            request.Headers.Add("x-galaxy-platform", "web");
+            request.Headers.Add("x-galaxy-scr-dpi", "1");
+            request.Headers.Add("x-galaxy-scr-h", "945");
+            request.Headers.Add("x-galaxy-scr-w", "700");
+            request.Headers.Add("x-galaxy-user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36");
+        }
+
         // Универсальный метод для любых HTTP-запросов
         [HttpGet, HttpPost, HttpPut, HttpPatch, HttpDelete, HttpOptions]
         [Route("{*path}")]
@@ -33,21 +49,8 @@ namespace Api.Controllers
                 // Создаём исходящий запрос
                 var method = new HttpMethod(Request.Method);
                 var requestMessage = new HttpRequestMessage(method, targetUrl);
-                //AddGalaxyHeaders(requestMessage);
-                // Копируем все заголовки из входящего запроса
-                foreach (var header in Request.Headers)
-                {
-                    if (!requestMessage.Headers.Contains(header.Key) &&
-                        !header.Key.Equals("Host", StringComparison.OrdinalIgnoreCase) &&
-                        !header.Key.StartsWith(":"))
-                    {
-                        try
-                        {
-                            requestMessage.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
-                        }
-                        catch { /* Игнорируем ошибки для невалидных заголовков */ }
-                    }
-                }
+                AddGalaxyHeaders(requestMessage);
+
                 // Если есть тело запроса — копируем его
                 if (Request.ContentLength > 0 &&
                     (method == HttpMethod.Post || method == HttpMethod.Put || method.Method == "PATCH"))
