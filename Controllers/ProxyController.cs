@@ -50,21 +50,6 @@ namespace Api.Controllers
                 var method = new HttpMethod(Request.Method);
                 var requestMessage = new HttpRequestMessage(method, targetUrl);
                 AddGalaxyHeaders(requestMessage);
-                // Копируем все заголовки из входящего запроса
-                foreach (var header in Request.Headers)
-                {
-                    // Пропускаем заголовки, которые не разрешено копировать или уже добавлены вручную
-                    if (!requestMessage.Headers.Contains(header.Key) &&
-                        !header.Key.Equals("Host", StringComparison.OrdinalIgnoreCase) &&
-                        !header.Key.StartsWith(":"))
-                    {
-                        try
-                        {
-                            requestMessage.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
-                        }
-                        catch { /* Игнорируем ошибки для невалидных заголовков */ }
-                    }
-                }
 
                 // Если есть тело запроса — копируем его
                 if (Request.ContentLength > 0 &&
@@ -1481,10 +1466,6 @@ namespace Api.Controllers
                     else if (value.StartsWith("web/"))
                     {
                         value = "/api/proxy/" + value;
-                    }
-                    else if (value.EndsWith(".css") || value.EndsWith(".js"))
-                    {
-                        value = "/api/proxy/web/" + value;
                     }
 
                     node.SetAttributeValue(attr, value);
