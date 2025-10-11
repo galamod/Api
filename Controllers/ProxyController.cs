@@ -90,7 +90,7 @@ namespace Api.Controllers
                 var bytess = await response.Content.ReadAsByteArrayAsync();
 
                 // === Обработка JS ===
-                if (contentTypeHeader.Contains("javascript") || contentTypeHeader.EndsWith(".js") || contentTypeHeader.Contains("text/css"))
+                if (contentTypeHeader.Contains("javascript") || contentTypeHeader.EndsWith(".js") || contentTypeHeader.Contains("text/css") || contentTypeHeader.Contains("text/plain"))
                 {
                     var text = Encoding.UTF8.GetString(bytess);
 
@@ -109,7 +109,8 @@ namespace Api.Controllers
                     contentTypeHeader.Contains("application/xml") ||
                     contentTypeHeader.Contains("text/javascript") ||
                     contentTypeHeader.Contains("application/javascript") ||
-                    contentTypeHeader.Contains("text/css")))
+                    contentTypeHeader.Contains("text/css") || 
+                    contentTypeHeader.Contains("text/plain")))
                 {
                     var text = await response.Content.ReadAsStringAsync();
 
@@ -137,6 +138,8 @@ namespace Api.Controllers
                             baseTag.SetAttributeValue("href", "/api/proxy/web/");
                             head.PrependChild(baseTag);
                         }
+
+                        var body = doc.DocumentNode.SelectSingleNode("//body");
 
                         var jsCode = @"(function () {
     try {
@@ -1407,18 +1410,15 @@ namespace Api.Controllers
     }
 })();";
                         var scriptNode = HtmlNode.CreateNode($"<script>{jsInterceptor}</script>");
+                        body?.AppendChild(scriptNode);
 
-                        var body = doc.DocumentNode.SelectSingleNode("//body");
                         if (body != null)
                         {
                             var mainScript = doc.DocumentNode.SelectSingleNode("//script[@src]");
                             if (mainScript != null)
                                 mainScript.ParentNode.InsertBefore(proxyScript, mainScript);
                             else
-                            {
-                                body.AppendChild(scriptNode);
                                 body.AppendChild(proxyScript);
-                            }
                         }
 
                         var modifiedHtml = doc.DocumentNode.OuterHtml;
