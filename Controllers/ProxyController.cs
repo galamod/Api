@@ -123,7 +123,7 @@ namespace Api.Controllers
                             head.PrependChild(metaCharset);
 
                             var baseTag = doc.CreateElement("base");
-                            baseTag.SetAttributeValue("href", "/api/proxy/");
+                            baseTag.SetAttributeValue("href", "/api/proxy/web/");
                             head.PrependChild(baseTag);
                         }
 
