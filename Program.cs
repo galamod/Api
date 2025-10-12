@@ -10,7 +10,16 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Добавьте эту строку для регистрации IHttpClientFactory
-builder.Services.AddHttpClient();
+builder.Services.AddHttpClient("GalaxyClient", client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(30);
+})
+.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+{
+    AutomaticDecompression = System.Net.DecompressionMethods.All, // Поддержка gzip/deflate/br
+    UseCookies = true,
+    CookieContainer = new System.Net.CookieContainer()
+});
 
 string[] allowedOrigins =
 {

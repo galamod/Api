@@ -20,19 +20,33 @@ namespace Api.Controllers
         }
         private void AddGalaxyHeaders(HttpRequestMessage request)
         {
+            // Копируем важные заголовки из входящего запроса
+            if (Request.Headers.TryGetValue("Cookie", out var cookies))
+            {
+                request.Headers.TryAddWithoutValidation("Cookie", cookies.ToString());
+            }
+
+            // Стандартные заголовки браузера
             request.Headers.TryAddWithoutValidation("Accept", "*/*");
             request.Headers.TryAddWithoutValidation("Accept-Language", "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7");
+            request.Headers.TryAddWithoutValidation("Accept-Encoding", "gzip, deflate, br");
             request.Headers.TryAddWithoutValidation("Cache-Control", "no-cache");
             request.Headers.TryAddWithoutValidation("Pragma", "no-cache");
-            request.Headers.TryAddWithoutValidation("Sec-Ch-Ua", "\"Chromium\";v=\"140\", \"Google Chrome\";v=\"140\", \";Not A Brand\";v=\"99\"");
-            request.Headers.TryAddWithoutValidation("Sec-Ch-Ua-Mobile", "?0");
-            request.Headers.TryAddWithoutValidation("Sec-Ch-Ua-Platform", "\"Windows\"");
+
+            // Важно: Origin должен соответствовать оригинальному домену
+            request.Headers.TryAddWithoutValidation("Origin", "https://galaxy.mobstudio.ru");
+            request.Headers.TryAddWithoutValidation("Referer", "https://galaxy.mobstudio.ru/");
+
+            // Sec-Fetch заголовки
             request.Headers.TryAddWithoutValidation("Sec-Fetch-Dest", "empty");
             request.Headers.TryAddWithoutValidation("Sec-Fetch-Mode", "cors");
             request.Headers.TryAddWithoutValidation("Sec-Fetch-Site", "same-origin");
-            request.Headers.TryAddWithoutValidation("Referer", "https://galaxy.mobstudio.ru/");
-            request.Headers.TryAddWithoutValidation("Referrer-Policy", "strict-origin-when-cross-origin");
-            request.Headers.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36");
+
+            // User-Agent
+            request.Headers.TryAddWithoutValidation("User-Agent",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36");
+
+            // Galaxy-специфичные заголовки
             request.Headers.TryAddWithoutValidation("x-galaxy-client-ver", "9.5");
             request.Headers.TryAddWithoutValidation("x-galaxy-kbv", "352");
             request.Headers.TryAddWithoutValidation("x-galaxy-lng", "ru");
@@ -43,7 +57,8 @@ namespace Api.Controllers
             request.Headers.TryAddWithoutValidation("x-galaxy-scr-dpi", "1");
             request.Headers.TryAddWithoutValidation("x-galaxy-scr-h", "945");
             request.Headers.TryAddWithoutValidation("x-galaxy-scr-w", "700");
-            request.Headers.TryAddWithoutValidation("x-galaxy-user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36");
+            request.Headers.TryAddWithoutValidation("x-galaxy-user-agent",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36");
         }
 
         // Универсальный метод для любых HTTP-запросов
@@ -51,7 +66,7 @@ namespace Api.Controllers
         [Route("{*path}")]
         public async Task<IActionResult> HandleRequest(string path = "")
         {
-            var client = _httpClientFactory.CreateClient();
+            var client = _httpClientFactory.CreateClient("GalaxyClient");
             var targetUrl = string.IsNullOrEmpty(path)
                 ? new Uri(TargetBaseUrl)
                 : new Uri(new Uri(TargetBaseUrl), path);
@@ -94,10 +109,17 @@ namespace Api.Controllers
                     }
                 }
 
+                _logger.LogInformation("Proxying {Method} request to {Url}", method.Method, targetUrl);
+                _logger.LogInformation("Request headers: {Headers}", 
+                    string.Join(", ", requestMessage.Headers.Select(h => $"{h.Key}={string.Join(",", h.Value)}")));
+
                 // Проксируем
                 var response = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
                 var contentTypeHeader = response.Content.Headers.ContentType?.ToString();
                 var charset = response.Content.Headers.ContentType?.CharSet ?? "utf-8";
+
+                _logger.LogInformation("Response status: {StatusCode}, ContentType: {ContentType}", 
+                    response.StatusCode, contentTypeHeader);
 
                 // Универсальная обработка контента
                 if (contentTypeHeader != null && (
