@@ -17,6 +17,20 @@ namespace Api.Controllers
             _httpClientFactory = httpClientFactory;
             _logger = logger;
         }
+        private void AddGalaxyHeaders(HttpRequestMessage request)
+        {
+            request.Headers.TryAddWithoutValidation("x-galaxy-client-ver", "9.5");
+            request.Headers.TryAddWithoutValidation("x-galaxy-kbv", "352");
+            request.Headers.TryAddWithoutValidation("x-galaxy-lng", "ru");
+            request.Headers.TryAddWithoutValidation("x-galaxy-model", "chrome 140.0.0.0");
+            request.Headers.TryAddWithoutValidation("x-galaxy-orientation", "portrait");
+            request.Headers.TryAddWithoutValidation("x-galaxy-os-ver", "1");
+            request.Headers.TryAddWithoutValidation("x-galaxy-platform", "web");
+            request.Headers.TryAddWithoutValidation("x-galaxy-scr-dpi", "1");
+            request.Headers.TryAddWithoutValidation("x-galaxy-scr-h", "945");
+            request.Headers.TryAddWithoutValidation("x-galaxy-scr-w", "700");
+            request.Headers.TryAddWithoutValidation("x-galaxy-user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36");
+        }
 
         // Универсальный метод для любых HTTP-запросов
         [HttpGet, HttpPost, HttpPut, HttpPatch, HttpDelete, HttpOptions]
@@ -24,19 +38,6 @@ namespace Api.Controllers
         public async Task<IActionResult> HandleRequest(string path = "")
         {
             var client = _httpClientFactory.CreateClient();
-
-            client.DefaultRequestHeaders.Add("x-galaxy-client-ver", "9.5");
-            client.DefaultRequestHeaders.Add("x-galaxy-kbv", "352");
-            client.DefaultRequestHeaders.Add("x-galaxy-lng", "ru");
-            client.DefaultRequestHeaders.Add("x-galaxy-model", "chrome 140.0.0.0");
-            client.DefaultRequestHeaders.Add("x-galaxy-orientation", "portrait");
-            client.DefaultRequestHeaders.Add("x-galaxy-os-ver", "1");
-            client.DefaultRequestHeaders.Add("x-galaxy-platform", "web");
-            client.DefaultRequestHeaders.Add("x-galaxy-scr-dpi", $"1");
-            client.DefaultRequestHeaders.Add("x-galaxy-scr-h", $"945");
-            client.DefaultRequestHeaders.Add("x-galaxy-scr-w", $"700");
-            client.DefaultRequestHeaders.Add("x-galaxy-user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36");
-
             var targetUrl = string.IsNullOrEmpty(path)
                 ? new Uri(TargetBaseUrl)
                 : new Uri(new Uri(TargetBaseUrl), path);
@@ -46,6 +47,7 @@ namespace Api.Controllers
                 // Создаём исходящий запрос
                 var method = new HttpMethod(Request.Method);
                 var requestMessage = new HttpRequestMessage(method, targetUrl);
+                AddGalaxyHeaders(requestMessage);
 
                 // Если есть тело запроса — копируем его
                 if (Request.ContentLength > 0 &&
@@ -1441,38 +1443,64 @@ namespace Api.Controllers
 
         private void RewriteRelativeUrls(HtmlDocument doc)
         {
-            var nodes = doc.DocumentNode.SelectNodes("//*[@src or @href or @action]");
+            var nodes = doc.DocumentNode.SelectNodes("//*[@src or @href or @action or @data]");
             if (nodes == null) return;
 
             foreach (var node in nodes)
             {
-                foreach (var attr in new[] { "src", "href", "action" })
+                foreach (var attr in new[] { "src", "href", "action", "data" })
                 {
                     var value = node.GetAttributeValue(attr, null);
                     if (string.IsNullOrEmpty(value)) continue;
 
-                    // Игнорируем якоря, mailto, data:
-                    if (value.StartsWith("#") || value.StartsWith("data:") || value.StartsWith("mailto:"))
+                    // Игнорируем специальные протоколы
+                    if (value.StartsWith("#") || value.StartsWith("data:") || value.StartsWith("blob:") ||
+                        value.StartsWith("mailto:") || value.StartsWith("javascript:"))
                         continue;
 
+                    // Абсолютные URL с доменом
                     if (value.StartsWith("https://galaxy.mobstudio.ru/"))
                     {
                         value = value.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
                     }
+                    else if (value.StartsWith("//galaxy.mobstudio.ru/"))
+                    {
+                        value = "/api/proxy/" + value.Substring("//galaxy.mobstudio.ru/".Length);
+                    }
+                    // Пути, начинающиеся с /web/
                     else if (value.StartsWith("/web/"))
                     {
                         value = "/api/proxy" + value;
                     }
+                    // Все остальные абсолютные пути
                     else if (value.StartsWith("/"))
                     {
                         value = "/api/proxy" + value;
                     }
+                    // Относительные пути
                     else if (value.StartsWith("web/"))
                     {
                         value = "/api/proxy/" + value;
                     }
 
                     node.SetAttributeValue(attr, value);
+                }
+            }
+
+            // Дополнительно: переписываем inline styles с background-image
+            var nodesWithStyle = doc.DocumentNode.SelectNodes("//*[@style]");
+            if (nodesWithStyle != null)
+            {
+                foreach (var node in nodesWithStyle)
+                {
+                    var style = node.GetAttributeValue("style", "");
+                    if (style.Contains("url("))
+                    {
+                        style = System.Text.RegularExpressions.Regex.Replace(style,
+                            @"url\(['""]?(/web/[^)'""]*)['""]\)",
+                            m => $"url('/api/proxy{m.Groups[1].Value}')");
+                        node.SetAttributeValue("style", style);
+                    }
                 }
             }
         }
