@@ -52,12 +52,34 @@ namespace Api.Controllers
                 AddGalaxyHeaders(requestMessage);
 
                 // Если есть тело запроса — копируем его
-                if (Request.ContentLength > 0 && (method == HttpMethod.Post || method == HttpMethod.Put || method.Method == "PATCH"))
+                if (Request.ContentLength > 0 &&
+                    (method == HttpMethod.Post || method == HttpMethod.Put || method.Method == "PATCH"))
                 {
                     using var reader = new StreamReader(Request.Body);
                     var body = await reader.ReadToEndAsync();
+
                     var contentType = Request.ContentType ?? "application/octet-stream";
-                    requestMessage.Content = new StringContent(body, Encoding.UTF8, contentType);
+
+                    // Определяем тип контента
+                    if (contentType.Contains("application/json"))
+                    {
+                        requestMessage.Content = new StringContent(body, Encoding.UTF8, "application/json");
+                    }
+                    else if (contentType.Contains("application/x-www-form-urlencoded"))
+                    {
+                        requestMessage.Content = new StringContent(body, Encoding.UTF8, "application/x-www-form-urlencoded");
+                    }
+                    else if (contentType.Contains("text/plain"))
+                    {
+                        requestMessage.Content = new StringContent(body, Encoding.UTF8, "text/plain");
+                    }
+                    else
+                    {
+                        // Любой другой тип (включая multipart/form-data)
+                        var bytes = Encoding.UTF8.GetBytes(body);
+                        requestMessage.Content = new ByteArrayContent(bytes);
+                        requestMessage.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
+                    }
                 }
 
                 // Проксируем
@@ -93,10 +115,16 @@ namespace Api.Controllers
                         {
                             var oldMetas = head.SelectNodes(".//meta[@charset]") ?? new HtmlNodeCollection(null);
                             foreach (var m in oldMetas) m.Remove();
+                            var httpEquivMetas = head.SelectNodes(".//meta[translate(@http-equiv,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='content-type']") ?? new HtmlNodeCollection(null);
+                            foreach (var m in httpEquivMetas) m.Remove();
 
                             var metaCharset = doc.CreateElement("meta");
                             metaCharset.SetAttributeValue("charset", "utf-8");
                             head.PrependChild(metaCharset);
+
+                            var baseTag = doc.CreateElement("base");
+                            baseTag.SetAttributeValue("href", "/api/proxy/");
+                            head.PrependChild(baseTag);
                         }
 
                         var body = doc.DocumentNode.SelectSingleNode("//body");
