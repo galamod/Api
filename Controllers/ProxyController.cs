@@ -98,9 +98,9 @@ namespace Api.Controllers
                 {
                     var text = await response.Content.ReadAsStringAsync();
 
-                    // Переписываем все пути к /web/, КРОМЕ PNG изображений
                     text = text.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
-                    text = Regex.Replace(text, @"(['""])/web/(?!.*\.png)", "$1/api/proxy/web/");
+                    text = text.Replace("'/web/", "'/api/proxy/web/");
+                    text = text.Replace("\"/web/", "\"/api/proxy/web/");
 
                     // Внедрение скрипта только для HTML
                     if (contentTypeHeader.Contains("text/html"))
