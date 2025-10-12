@@ -116,40 +116,39 @@ namespace Api.Controllers
                     if (contentTypeHeader.Contains("text/css"))
                     {
                         // В CSS-файлах заменяем url(/web/assets/...) на url(https://galaxy.mobstudio.ru/web/assets/...)
-                        text = Regex.Replace(text, @"url\(\s*/web/assets/([^)]+)\)", "url(https://galaxy.mobstudio.ru/web/assets/$1)");
-
-                        // Также обрабатываем варианты с кавычками
-                        text = Regex.Replace(text, @"url\(\s*['""]?/web/assets/([^)'""\s]+)['""]?\s*\)", "url(https://galaxy.mobstudio.ru/web/assets/$1)");
+                        // ВАЖНО: Проверяем, что перед /web/assets/ НЕТ уже домена
+                        text = Regex.Replace(text, @"url\(\s*(['""]?)(?<!https://galaxy\.mobstudio\.ru)(/web/assets/[^)'""\s]+)\1\s*\)",
+                            "url($1https://galaxy.mobstudio.ru$2$1)");
                     }
                     // СПЕЦИАЛЬНАЯ ОБРАБОТКА ДЛЯ JS - переписываем строки с /web/assets/ на абсолютные пути
                     else if (contentTypeHeader.Contains("javascript"))
                     {
-                        // В JS-файлах заменяем строковые литералы "/web/assets/..." и '/web/assets/...'
-                        text = Regex.Replace(text, @"(['""])/web/assets/([^'""]+)(['""])", "$1https://galaxy.mobstudio.ru/web/assets/$2$3");
-
-                        // Также для шаблонных строк (backticks)
-                        text = Regex.Replace(text, @"(`[^`]*)/web/assets/([^`]+`)", "$1https://galaxy.mobstudio.ru/web/assets/$2");
+                        // В JS-файлах заменяем строковые литералы, но только если перед /web/assets/ нет домена
+                        text = Regex.Replace(text, @"(['""])(?<!https://galaxy\.mobstudio\.ru)(/web/assets/[^'""]+)\1",
+                            "$1https://galaxy.mobstudio.ru$2$1");
 
                         // Для остальных путей (НЕ /web/assets/) применяем обычное проксирование
                         text = Regex.Replace(text, @"https://galaxy\.mobstudio\.ru/(?!web/assets/)([^'""\s>]*)", "/api/proxy/$1");
-                        text = Regex.Replace(text, @"(['""])/web/(?!assets/)([^'""<>]*)", "$1/api/proxy/web/$2");
+                        text = Regex.Replace(text, @"(['""])(?<!https://galaxy\.mobstudio\.ru)(/web/(?!assets/)[^'""<>]*)", "$1/api/proxy$2");
                     }
                     // СПЕЦИАЛЬНАЯ ОБРАБОТКА ДЛЯ MANIFEST.JSON - переписываем /web/assets/ на абсолютные пути
                     else if (contentTypeHeader.Contains("application/json") || contentTypeHeader.Contains("application/manifest+json") || path.EndsWith("manifest.json"))
                     {
-                        // В JSON/Manifest заменяем строки "/web/assets/..." на абсолютные пути
-                        text = Regex.Replace(text, @"""(/web/assets/[^""]+)""", "\"https://galaxy.mobstudio.ru$1\"");
+                        // В JSON/Manifest заменяем строки "/web/assets/...", но только если перед ними нет домена
+                        text = Regex.Replace(text, @"""(?<!https://galaxy\.mobstudio\.ru)(/web/assets/[^""]+)""",
+                            "\"https://galaxy.mobstudio.ru$1\"");
 
                         // Для остальных /web/ путей (НЕ /web/assets/) применяем обычное проксирование
-                        text = Regex.Replace(text, @"""(/web/(?!assets/)[^""]+)""", "\"/api/proxy$1\"");
+                        text = Regex.Replace(text, @"""(?<!https://galaxy\.mobstudio\.ru|/api/proxy)(/web/(?!assets/)[^""]+)""",
+                            "\"/api/proxy$1\"");
                     }
                     else
                     {
                         // Для остальных типов файлов (HTML и т.д.) - общая замена, но НЕ для /web/assets/
                         text = Regex.Replace(text, @"https://galaxy\.mobstudio\.ru/(?!web/assets/)([^'""\s>]*)", "/api/proxy/$1");
 
-                        // Заменяем '/web/ на '/api/proxy/web/', но НЕ для /web/assets/
-                        text = Regex.Replace(text, @"(['""])/web/(?!assets/)([^'""<>]*)", "$1/api/proxy/web/$2");
+                        // Заменяем '/web/ на '/api/proxy/web/', но НЕ для /web/assets/ и только если перед ними нет домена
+                        text = Regex.Replace(text, @"(['""])(?<!https://galaxy\.mobstudio\.ru)(/web/(?!assets/)[^'""<>]*)", "$1/api/proxy$2");
                     }
 
                     // Внедрение скрипта только для HTML
