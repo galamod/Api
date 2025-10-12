@@ -18,6 +18,7 @@ namespace Api.Controllers
             _httpClientFactory = httpClientFactory;
             _logger = logger;
         }
+
         private void AddGalaxyHeaders(HttpRequestMessage request)
         {
             // Копируем важные заголовки из входящего запроса
@@ -26,18 +27,28 @@ namespace Api.Controllers
                 request.Headers.TryAddWithoutValidation("Cookie", cookies.ToString());
             }
 
+            // Копируем X-Requested-With (часто требуется для AJAX)
+            if (Request.Headers.TryGetValue("X-Requested-With", out var xRequestedWith))
+            {
+                request.Headers.TryAddWithoutValidation("X-Requested-With", xRequestedWith.ToString());
+            }
+
             // Стандартные заголовки браузера
-            request.Headers.TryAddWithoutValidation("Accept", "*/*");
+            request.Headers.TryAddWithoutValidation("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8");
             request.Headers.TryAddWithoutValidation("Accept-Language", "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7");
             request.Headers.TryAddWithoutValidation("Accept-Encoding", "gzip, deflate, br");
             request.Headers.TryAddWithoutValidation("Cache-Control", "no-cache");
             request.Headers.TryAddWithoutValidation("Pragma", "no-cache");
 
-            // Важно: Origin должен соответствовать оригинальному домену
-            request.Headers.TryAddWithoutValidation("Origin", "https://galaxy.mobstudio.ru");
-            request.Headers.TryAddWithoutValidation("Referer", "https://galaxy.mobstudio.ru/");
+            // ВАЖНО: Для /services/ используем правильный Referer
+            var referer = Request.Path.Value?.Contains("/services") == true
+                ? "https://galaxy.mobstudio.ru/"
+                : "https://galaxy.mobstudio.ru/";
 
-            // Sec-Fetch заголовки
+            request.Headers.TryAddWithoutValidation("Origin", "https://galaxy.mobstudio.ru");
+            request.Headers.TryAddWithoutValidation("Referer", referer);
+
+            // Sec-Fetch заголовки (КРИТИЧЕСКИ ВАЖНО для /services/)
             request.Headers.TryAddWithoutValidation("Sec-Fetch-Dest", "empty");
             request.Headers.TryAddWithoutValidation("Sec-Fetch-Mode", "cors");
             request.Headers.TryAddWithoutValidation("Sec-Fetch-Site", "same-origin");
@@ -46,19 +57,34 @@ namespace Api.Controllers
             request.Headers.TryAddWithoutValidation("User-Agent",
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36");
 
-            // Galaxy-специфичные заголовки
-            request.Headers.TryAddWithoutValidation("x-galaxy-client-ver", "9.5");
-            request.Headers.TryAddWithoutValidation("x-galaxy-kbv", "352");
-            request.Headers.TryAddWithoutValidation("x-galaxy-lng", "ru");
-            request.Headers.TryAddWithoutValidation("x-galaxy-model", "chrome 140.0.0.0");
-            request.Headers.TryAddWithoutValidation("x-galaxy-orientation", "portrait");
-            request.Headers.TryAddWithoutValidation("x-galaxy-os-ver", "1");
-            request.Headers.TryAddWithoutValidation("x-galaxy-platform", "web");
-            request.Headers.TryAddWithoutValidation("x-galaxy-scr-dpi", "1");
-            request.Headers.TryAddWithoutValidation("x-galaxy-scr-h", "945");
-            request.Headers.TryAddWithoutValidation("x-galaxy-scr-w", "700");
-            request.Headers.TryAddWithoutValidation("x-galaxy-user-agent",
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36");
+            // Galaxy-специфичные заголовки (КОПИРУЕМ ИХ ИЗ ВХОДЯЩЕГО ЗАПРОСА!)
+            foreach (var header in new[] { "x-galaxy-client-ver", "x-galaxy-kbv", "x-galaxy-lng",
+                                     "x-galaxy-model", "x-galaxy-orientation", "x-galaxy-os-ver",
+                                     "x-galaxy-platform", "x-galaxy-scr-dpi", "x-galaxy-scr-h",
+                                     "x-galaxy-scr-w", "x-galaxy-user-agent" })
+            {
+                if (Request.Headers.TryGetValue(header, out var value))
+                {
+                    request.Headers.TryAddWithoutValidation(header, value.ToString());
+                }
+            }
+
+            // Если заголовки не были скопированы - используем значения по умолчанию
+            if (!request.Headers.Contains("x-galaxy-client-ver"))
+            {
+                request.Headers.TryAddWithoutValidation("x-galaxy-client-ver", "9.5");
+                request.Headers.TryAddWithoutValidation("x-galaxy-kbv", "352");
+                request.Headers.TryAddWithoutValidation("x-galaxy-lng", "ru");
+                request.Headers.TryAddWithoutValidation("x-galaxy-model", "chrome 140.0.0.0");
+                request.Headers.TryAddWithoutValidation("x-galaxy-orientation", "portrait");
+                request.Headers.TryAddWithoutValidation("x-galaxy-os-ver", "1");
+                request.Headers.TryAddWithoutValidation("x-galaxy-platform", "web");
+                request.Headers.TryAddWithoutValidation("x-galaxy-scr-dpi", "1");
+                request.Headers.TryAddWithoutValidation("x-galaxy-scr-h", "945");
+                request.Headers.TryAddWithoutValidation("x-galaxy-scr-w", "700");
+                request.Headers.TryAddWithoutValidation("x-galaxy-user-agent",
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36");
+            }
         }
 
         // Универсальный метод для любых HTTP-запросов
@@ -67,9 +93,14 @@ namespace Api.Controllers
         public async Task<IActionResult> HandleRequest(string path = "")
         {
             var client = _httpClientFactory.CreateClient("GalaxyClient");
-            var targetUrl = string.IsNullOrEmpty(path)
+
+            // ВАЖНО: Добавляем query string из оригинального запроса
+            var queryString = Request.QueryString.HasValue ? Request.QueryString.Value : "";
+            var fullPath = string.IsNullOrEmpty(path) ? "" : path + queryString;
+
+            var targetUrl = string.IsNullOrEmpty(fullPath)
                 ? new Uri(TargetBaseUrl)
-                : new Uri(new Uri(TargetBaseUrl), path);
+                : new Uri(new Uri(TargetBaseUrl), fullPath);
 
             try
             {
