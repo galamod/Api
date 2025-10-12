@@ -1362,13 +1362,17 @@ namespace Api.Controllers
         if (!url || url.startsWith('#') || url.startsWith('data:') || url.startsWith('blob:') || url.startsWith('mailto:')) 
             return url;
         
-        // Абсолютные URL
+        // Абсолютные URL с доменом
         if (url.startsWith('https://galaxy.mobstudio.ru/'))
             return url.replace('https://galaxy.mobstudio.ru/', proxyPrefix);
         if (url.startsWith('//galaxy.mobstudio.ru/'))
             return proxyPrefix + url.substring('//galaxy.mobstudio.ru/'.length);
         
-        // Относительные URL
+        // ВАЖНО: Явно обрабатываем пути /web/
+        if (url.startsWith('/web/'))
+            return proxyPrefix + url.substring(1); // убираем первый слеш
+        
+        // Все остальные абсолютные пути
         if (url.startsWith('/'))
             return proxyPrefix + url.substring(1);
         
@@ -1407,6 +1411,28 @@ namespace Api.Controllers
             form.action = rewriteUrl(form.action);
         }
     }, true);
+    
+    // НОВОЕ: Перехват динамических изменений src/href в DOM
+    const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+            if (mutation.type === 'attributes') {
+                const el = mutation.target;
+                const attrName = mutation.attributeName;
+                if (attrName === 'src' || attrName === 'href') {
+                    const val = el.getAttribute(attrName);
+                    if (val && !val.startsWith(proxyPrefix) && !val.startsWith('#') && !val.startsWith('data:')) {
+                        el.setAttribute(attrName, rewriteUrl(val));
+                    }
+                }
+            }
+        });
+    });
+    
+    observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['src', 'href'],
+        subtree: true
+    });
 })();";
                         var scriptNode = HtmlNode.CreateNode($"<script>{jsInterceptor}</script>");
                         body?.AppendChild(scriptNode);
@@ -1445,38 +1471,64 @@ namespace Api.Controllers
 
         private void RewriteRelativeUrls(HtmlDocument doc)
         {
-            var nodes = doc.DocumentNode.SelectNodes("//*[@src or @href or @action]");
+            var nodes = doc.DocumentNode.SelectNodes("//*[@src or @href or @action or @data]");
             if (nodes == null) return;
 
             foreach (var node in nodes)
             {
-                foreach (var attr in new[] { "src", "href", "action" })
+                foreach (var attr in new[] { "src", "href", "action", "data" })
                 {
                     var value = node.GetAttributeValue(attr, null);
                     if (string.IsNullOrEmpty(value)) continue;
 
-                    // Игнорируем якоря, mailto, data:
-                    if (value.StartsWith("#") || value.StartsWith("data:") || value.StartsWith("mailto:"))
+                    // Игнорируем специальные протоколы
+                    if (value.StartsWith("#") || value.StartsWith("data:") || value.StartsWith("blob:") ||
+                        value.StartsWith("mailto:") || value.StartsWith("javascript:"))
                         continue;
 
+                    // Абсолютные URL с доменом
                     if (value.StartsWith("https://galaxy.mobstudio.ru/"))
                     {
                         value = value.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
                     }
+                    else if (value.StartsWith("//galaxy.mobstudio.ru/"))
+                    {
+                        value = "/api/proxy/" + value.Substring("//galaxy.mobstudio.ru/".Length);
+                    }
+                    // Пути, начинающиеся с /web/
                     else if (value.StartsWith("/web/"))
                     {
                         value = "/api/proxy" + value;
                     }
+                    // Все остальные абсолютные пути
                     else if (value.StartsWith("/"))
                     {
                         value = "/api/proxy" + value;
                     }
+                    // Относительные пути
                     else if (value.StartsWith("web/"))
                     {
                         value = "/api/proxy/" + value;
                     }
 
                     node.SetAttributeValue(attr, value);
+                }
+            }
+
+            // Дополнительно: переписываем inline styles с background-image
+            var nodesWithStyle = doc.DocumentNode.SelectNodes("//*[@style]");
+            if (nodesWithStyle != null)
+            {
+                foreach (var node in nodesWithStyle)
+                {
+                    var style = node.GetAttributeValue("style", "");
+                    if (style.Contains("url("))
+                    {
+                        style = System.Text.RegularExpressions.Regex.Replace(style,
+                            @"url\(['""]?(/web/[^)'""]*)['""]\)",
+                            m => $"url('/api/proxy{m.Groups[1].Value}')");
+                        node.SetAttributeValue("style", style);
+                    }
                 }
             }
         }
