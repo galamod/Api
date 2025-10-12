@@ -93,16 +93,10 @@ namespace Api.Controllers
                         {
                             var oldMetas = head.SelectNodes(".//meta[@charset]") ?? new HtmlNodeCollection(null);
                             foreach (var m in oldMetas) m.Remove();
-                            var httpEquivMetas = head.SelectNodes(".//meta[translate(@http-equiv,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='content-type']") ?? new HtmlNodeCollection(null);
-                            foreach (var m in httpEquivMetas) m.Remove();
 
                             var metaCharset = doc.CreateElement("meta");
                             metaCharset.SetAttributeValue("charset", "utf-8");
                             head.PrependChild(metaCharset);
-
-                            var baseTag = doc.CreateElement("base");
-                            baseTag.SetAttributeValue("href", "/api/proxy/web/");
-                            head.PrependChild(baseTag);
                         }
 
                         var body = doc.DocumentNode.SelectSingleNode("//body");
