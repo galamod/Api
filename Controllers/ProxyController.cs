@@ -20,6 +20,19 @@ namespace Api.Controllers
         }
         private void AddGalaxyHeaders(HttpRequestMessage request)
         {
+            request.Headers.TryAddWithoutValidation("Accept", "*/*");
+            request.Headers.TryAddWithoutValidation("Accept-Language", "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7");
+            request.Headers.TryAddWithoutValidation("Cache-Control", "no-cache");
+            request.Headers.TryAddWithoutValidation("Pragma", "no-cache");
+            request.Headers.TryAddWithoutValidation("Sec-Ch-Ua", "\"Chromium\";v=\"140\", \"Google Chrome\";v=\"140\", \";Not A Brand\";v=\"99\"");
+            request.Headers.TryAddWithoutValidation("Sec-Ch-Ua-Mobile", "?0");
+            request.Headers.TryAddWithoutValidation("Sec-Ch-Ua-Platform", "\"Windows\"");
+            request.Headers.TryAddWithoutValidation("Sec-Fetch-Dest", "empty");
+            request.Headers.TryAddWithoutValidation("Sec-Fetch-Mode", "cors");
+            request.Headers.TryAddWithoutValidation("Sec-Fetch-Site", "same-origin");
+            request.Headers.TryAddWithoutValidation("Referer", "https://galaxy.mobstudio.ru/");
+            request.Headers.TryAddWithoutValidation("Referrer-Policy", "strict-origin-when-cross-origin");
+            request.Headers.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36");
             request.Headers.TryAddWithoutValidation("x-galaxy-client-ver", "9.5");
             request.Headers.TryAddWithoutValidation("x-galaxy-kbv", "352");
             request.Headers.TryAddWithoutValidation("x-galaxy-lng", "ru");
