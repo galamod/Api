@@ -39,17 +39,19 @@ namespace Api.Controllers
         public async Task<IActionResult> HandleRequest(string path = "")
         {
             var client = _httpClientFactory.CreateClient();
+
             var targetUrl = string.IsNullOrEmpty(path)
                 ? new Uri(TargetBaseUrl)
                 : new Uri(new Uri(TargetBaseUrl), path);
 
             try
             {
+                // Создаём исходящий запрос
                 var method = new HttpMethod(Request.Method);
                 var requestMessage = new HttpRequestMessage(method, targetUrl);
-                
                 AddGalaxyHeaders(requestMessage);
 
+                // Если есть тело запроса — копируем его
                 if (Request.ContentLength > 0 && (method == HttpMethod.Post || method == HttpMethod.Put || method.Method == "PATCH"))
                 {
                     using var reader = new StreamReader(Request.Body);
@@ -58,14 +60,18 @@ namespace Api.Controllers
                     requestMessage.Content = new StringContent(body, Encoding.UTF8, contentType);
                 }
 
+                // Проксируем
                 var response = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
-                var contentTypeHeader = response.Content.Headers.ContentType?.ToString() ?? "application/octet-stream";
+                var contentTypeHeader = response.Content.Headers.ContentType?.ToString();
+                var charset = response.Content.Headers.ContentType?.CharSet ?? "utf-8";
 
-                // Для всех текстовых типов контента (HTML, JS, CSS, JSON, XML)
-                if (contentTypeHeader.Contains("text/") || 
+                var bytess = await response.Content.ReadAsByteArrayAsync();
+
+                // Универсальная обработка контента
+                if (contentTypeHeader != null && (contentTypeHeader.Contains("text/") ||
                     contentTypeHeader.Contains("application/json") ||
                     contentTypeHeader.Contains("application/javascript") ||
-                    contentTypeHeader.Contains("application/xml"))
+                    contentTypeHeader.Contains("application/xml")))
                 {
                     var text = await response.Content.ReadAsStringAsync();
 
@@ -73,121 +79,35 @@ namespace Api.Controllers
                     text = text.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
                     text = text.Replace("\"//galaxy.mobstudio.ru/", "\"/api/proxy/");
                     text = text.Replace("'//galaxy.mobstudio.ru/", "'/api/proxy/");
-                    
-                    // Для HTML добавляем перехватчики и внедряем ваш скрипт
+
+                    // Внедрение скрипта только для HTML
                     if (contentTypeHeader.Contains("text/html"))
                     {
                         var doc = new HtmlDocument();
                         doc.LoadHtml(text);
 
-                        // Удаляем старые мета-теги кодировки и добавляем UTF-8
+                        RewriteRelativeUrls(doc);
+
                         var head = doc.DocumentNode.SelectSingleNode("//head");
                         if (head != null)
                         {
                             var oldMetas = head.SelectNodes(".//meta[@charset]") ?? new HtmlNodeCollection(null);
                             foreach (var m in oldMetas) m.Remove();
-                            
+                            var httpEquivMetas = head.SelectNodes(".//meta[translate(@http-equiv,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='content-type']") ?? new HtmlNodeCollection(null);
+                            foreach (var m in httpEquivMetas) m.Remove();
+
                             var metaCharset = doc.CreateElement("meta");
                             metaCharset.SetAttributeValue("charset", "utf-8");
                             head.PrependChild(metaCharset);
 
-                            // НЕ добавляем <base>, чтобы избежать конфликтов
+                            var baseTag = doc.CreateElement("base");
+                            baseTag.SetAttributeValue("href", "/api/proxy/web/");
+                            head.PrependChild(baseTag);
                         }
 
                         var body = doc.DocumentNode.SelectSingleNode("//body");
-                        if (body != null)
-                        {
-                            // Перехватчик для fetch/XHR/форм/ссылок
-                            var jsInterceptor = @"
-<script>
-(function() {
-    const proxyPrefix = '/api/proxy/';
-    
-    function rewriteUrl(url) {
-        if (!url || url.startsWith('#') || url.startsWith('data:') || url.startsWith('blob:') || url.startsWith('mailto:')) 
-            return url;
-        
-        // Абсолютные URL
-        if (url.startsWith('https://galaxy.mobstudio.ru/'))
-            return url.replace('https://galaxy.mobstudio.ru/', proxyPrefix);
-        if (url.startsWith('//galaxy.mobstudio.ru/'))
-            return proxyPrefix + url.substring('//galaxy.mobstudio.ru/'.length);
-        
-        // Относительные URL
-        if (url.startsWith('/'))
-            return proxyPrefix + url.substring(1);
-        
-        return url;
-    }
-    
-    // Перехват fetch
-    const origFetch = window.fetch;
-    window.fetch = function(input, init) {
-        if (typeof input === 'string') {
-            input = rewriteUrl(input);
-        } else if (input && input.url) {
-            input = new Request(rewriteUrl(input.url), input);
-        }
-        return origFetch.call(this, input, init);
-    };
-    
-    // Перехват XMLHttpRequest
-    const origOpen = XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open = function(method, url, ...args) {
-        return origOpen.call(this, method, rewriteUrl(url), ...args);
-    };
-    
-    // Перехват кликов по ссылкам
-    document.addEventListener('click', function(e) {
-        const a = e.target.closest('a');
-        if (a && a.href && !a.href.startsWith('javascript:')) {
-            a.href = rewriteUrl(a.href);
-        }
-    }, true);
-    
-    // Перехват отправки форм
-    document.addEventListener('submit', function(e) {
-        const form = e.target;
-        if (form && form.action) {
-            form.action = rewriteUrl(form.action);
-        }
-    }, true);
-})();
-</script>";
-                            body.PrependChild(HtmlNode.CreateNode(jsInterceptor));
 
-                            var jsCode = GetYourGameScript();
-                            var proxyScript = HtmlNode.CreateNode($"<script>{jsCode}</script>");
-                            var mainScript = doc.DocumentNode.SelectSingleNode("//script[@src]");
-                            if (mainScript != null)
-                                mainScript.ParentNode.InsertBefore(proxyScript, mainScript);
-                            else
-                                body.AppendChild(proxyScript);
-                        }
-
-                        text = doc.DocumentNode.OuterHtml;
-                    }
-
-                    return Content(text, contentTypeHeader + "; charset=utf-8", Encoding.UTF8);
-                }
-                else
-                {
-                    // Бинарные файлы (картинки, звуки, шрифты и т.д.)
-                    var content = await response.Content.ReadAsByteArrayAsync();
-                    return new FileContentResult(content, contentTypeHeader);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при проксировании {Method} {Url}", Request.Method, targetUrl);
-                return StatusCode(500, $"Ошибка прокси: {ex.Message}");
-            }
-        }
-
-        private string GetYourGameScript()
-        {
-            // Ваш огромный скрипт из кода выше
-            return @"(function () {
+                        var jsCode = @"(function () {
     try {
         if (window.__ws_hooked) return;
         window.__ws_hooked = true;
@@ -1411,6 +1331,132 @@ namespace Api.Controllers
         console.log(""ws_error"", { error: error.message });
     }
 })();";
+                        var proxyScript = HtmlNode.CreateNode($"<script>{jsCode}</script>");
+
+                        var jsInterceptor = @"(function() {
+    const proxyPrefix = '/api/proxy/';
+    
+    function rewriteUrl(url) {
+        if (!url || url.startsWith('#') || url.startsWith('data:') || url.startsWith('blob:') || url.startsWith('mailto:')) 
+            return url;
+        
+        // Абсолютные URL
+        if (url.startsWith('https://galaxy.mobstudio.ru/'))
+            return url.replace('https://galaxy.mobstudio.ru/', proxyPrefix);
+        if (url.startsWith('//galaxy.mobstudio.ru/'))
+            return proxyPrefix + url.substring('//galaxy.mobstudio.ru/'.length);
+        
+        // Относительные URL
+        if (url.startsWith('/'))
+            return proxyPrefix + url.substring(1);
+        
+        return url;
+    }
+    
+    // Перехват fetch
+    const origFetch = window.fetch;
+    window.fetch = function(input, init) {
+        if (typeof input === 'string') {
+            input = rewriteUrl(input);
+        } else if (input && input.url) {
+            input = new Request(rewriteUrl(input.url), input);
+        }
+        return origFetch.call(this, input, init);
+    };
+    
+    // Перехват XMLHttpRequest
+    const origOpen = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function(method, url, ...args) {
+        return origOpen.call(this, method, rewriteUrl(url), ...args);
+    };
+    
+    // Перехват кликов по ссылкам
+    document.addEventListener('click', function(e) {
+        const a = e.target.closest('a');
+        if (a && a.href && !a.href.startsWith('javascript:')) {
+            a.href = rewriteUrl(a.href);
+        }
+    }, true);
+    
+    // Перехват отправки форм
+    document.addEventListener('submit', function(e) {
+        const form = e.target;
+        if (form && form.action) {
+            form.action = rewriteUrl(form.action);
+        }
+    }, true);
+})();";
+                        var scriptNode = HtmlNode.CreateNode($"<script>{jsInterceptor}</script>");
+                        body?.AppendChild(scriptNode);
+
+                        if (body != null)
+                        {
+                            var mainScript = doc.DocumentNode.SelectSingleNode("//script[@src]");
+                            if (mainScript != null)
+                                mainScript.ParentNode.InsertBefore(proxyScript, mainScript);
+                            else
+                                body.AppendChild(proxyScript);
+                        }
+
+                        var modifiedHtml = doc.DocumentNode.OuterHtml;
+                        return Content(modifiedHtml, contentTypeHeader + "; charset=utf-8", Encoding.UTF8);
+                    }
+
+                    // Для остальных текстовых типов просто возвращаем текст
+                    return Content(text, contentTypeHeader + "; charset=utf-8", Encoding.UTF8);
+                }
+                else
+                {
+                    var content = await response.Content.ReadAsByteArrayAsync();
+                    return new FileContentResult(content, contentTypeHeader ?? "application/octet-stream")
+                    {
+                        FileDownloadName = Path.GetFileName(targetUrl.LocalPath)
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при проксировании запроса {Method} {Url}", Request.Method, targetUrl);
+                return StatusCode(500, $"Ошибка прокси: {ex.Message}");
+            }
+        }
+
+        private void RewriteRelativeUrls(HtmlDocument doc)
+        {
+            var nodes = doc.DocumentNode.SelectNodes("//*[@src or @href or @action]");
+            if (nodes == null) return;
+
+            foreach (var node in nodes)
+            {
+                foreach (var attr in new[] { "src", "href", "action" })
+                {
+                    var value = node.GetAttributeValue(attr, null);
+                    if (string.IsNullOrEmpty(value)) continue;
+
+                    // Игнорируем якоря, mailto, data:
+                    if (value.StartsWith("#") || value.StartsWith("data:") || value.StartsWith("mailto:"))
+                        continue;
+
+                    if (value.StartsWith("https://galaxy.mobstudio.ru/"))
+                    {
+                        value = value.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
+                    }
+                    else if (value.StartsWith("/web/"))
+                    {
+                        value = "/api/proxy" + value;
+                    }
+                    else if (value.StartsWith("/"))
+                    {
+                        value = "/api/proxy" + value;
+                    }
+                    else if (value.StartsWith("web/"))
+                    {
+                        value = "/api/proxy/" + value;
+                    }
+
+                    node.SetAttributeValue(attr, value);
+                }
+            }
         }
     }
 }
