@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Api.Controllers
 {
@@ -85,20 +86,6 @@ namespace Api.Controllers
                 var contentTypeHeader = response.Content.Headers.ContentType?.ToString();
                 var charset = response.Content.Headers.ContentType?.CharSet ?? "utf-8";
 
-                var bytess = await response.Content.ReadAsByteArrayAsync();
-
-                if (contentTypeHeader.Contains("javascript") || contentTypeHeader.EndsWith(".js") || contentTypeHeader.Contains("text/css") || contentTypeHeader.Contains("text/plain"))
-                {
-                    var text = Encoding.UTF8.GetString(bytess);
-
-                    // Переписываем все пути к /web/
-                    text = text.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
-                    text = text.Replace("'/web/", "'/api/proxy/web/");
-                    text = text.Replace("\"/web/", "\"/api/proxy/web/");
-
-                    return Content(text, contentTypeHeader + "; charset=utf-8", Encoding.UTF8);
-                }
-
                 // Универсальная обработка контента
                 if (contentTypeHeader != null && (
                     contentTypeHeader.Contains("text/html") ||
@@ -110,6 +97,8 @@ namespace Api.Controllers
                     contentTypeHeader.Contains("text/plain")))
                 {
                     var text = await response.Content.ReadAsStringAsync();
+                    text = text.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
+                    text = Regex.Replace(text, @"(['""])/web/(?!.*\.png)", "$1/api/proxy/web/");
 
                     // Внедрение скрипта только для HTML
                     if (contentTypeHeader.Contains("text/html"))
