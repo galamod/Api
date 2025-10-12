@@ -93,8 +93,9 @@ namespace Api.Controllers
                     contentTypeHeader.Contains("application/xml") ||
                     contentTypeHeader.Contains("text/javascript") ||
                     contentTypeHeader.Contains("application/javascript") ||
-                    contentTypeHeader.Contains("text/css") || 
-                    contentTypeHeader.Contains("text/plain")))
+                    contentTypeHeader.Contains("text/css") ||
+                    contentTypeHeader.Contains("text/plain") ||
+                    contentTypeHeader.Contains("application/manifest+json"))) // Добавляем manifest
                 {
                     var text = await response.Content.ReadAsStringAsync();
 
@@ -119,6 +120,15 @@ namespace Api.Controllers
                         // Для остальных путей (НЕ /web/assets/) применяем обычное проксирование
                         text = Regex.Replace(text, @"https://galaxy\.mobstudio\.ru/(?!web/assets/)([^'""\s>]*)", "/api/proxy/$1");
                         text = Regex.Replace(text, @"(['""])/web/(?!assets/)([^'""<>]*)", "$1/api/proxy/web/$2");
+                    }
+                    // СПЕЦИАЛЬНАЯ ОБРАБОТКА ДЛЯ MANIFEST.JSON - переписываем /web/assets/ на абсолютные пути
+                    else if (contentTypeHeader.Contains("application/json") || contentTypeHeader.Contains("application/manifest+json") || path.EndsWith("manifest.json"))
+                    {
+                        // В JSON/Manifest заменяем строки "/web/assets/..." на абсолютные пути
+                        text = Regex.Replace(text, @"""(/web/assets/[^""]+)""", "\"https://galaxy.mobstudio.ru$1\"");
+
+                        // Для остальных /web/ путей (НЕ /web/assets/) применяем обычное проксирование
+                        text = Regex.Replace(text, @"""(/web/(?!assets/)[^""]+)""", "\"/api/proxy$1\"");
                     }
                     else
                     {
