@@ -1365,46 +1365,83 @@ namespace Api.Controllers
                         var proxyScript = HtmlNode.CreateNode($"<script>{jsCode}</script>");
 
                         var jsInterceptor = @"(function() {
+    const proxyPrefix = '/api/proxy/';
+    
+    function rewriteUrl(url) {
+        if (!url || url.startsWith('#') || url.startsWith('data:') || url.startsWith('blob:') || url.startsWith('mailto:')) 
+            return url;
+        
+        // Абсолютные URL с доменом
+        if (url.startsWith('https://galaxy.mobstudio.ru/'))
+            return url.replace('https://galaxy.mobstudio.ru/', proxyPrefix);
+        if (url.startsWith('//galaxy.mobstudio.ru/'))
+            return proxyPrefix + url.substring('//galaxy.mobstudio.ru/'.length);
+        
+        // ВАЖНО: Явно обрабатываем пути /web/
+        if (url.startsWith('/web/'))
+            return proxyPrefix + url.substring(1); // убираем первый слеш
+        
+        // Все остальные абсолютные пути
+        if (url.startsWith('/'))
+            return proxyPrefix + url.substring(1);
+        
+        return url;
+    }
+    
     // Перехват fetch
     const origFetch = window.fetch;
-    window.fetch = function(url, opts) {
-        url = rewriteUrl(url);
-        return origFetch(url, opts);
+    window.fetch = function(input, init) {
+        if (typeof input === 'string') {
+            input = rewriteUrl(input);
+        } else if (input && input.url) {
+            input = new Request(rewriteUrl(input.url), input);
+        }
+        return origFetch.call(this, input, init);
     };
-
+    
     // Перехват XMLHttpRequest
     const origOpen = XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open = function(method, url) {
-        url = rewriteUrl(url);
-        return origOpen.apply(this, [method, url]);
+    XMLHttpRequest.prototype.open = function(method, url, ...args) {
+        return origOpen.call(this, method, rewriteUrl(url), ...args);
     };
-
-    // Перехват переходов по ссылкам
+    
+    // Перехват кликов по ссылкам
     document.addEventListener('click', function(e) {
         const a = e.target.closest('a');
-        if (a && a.href) {
+        if (a && a.href && !a.href.startsWith('javascript:')) {
             a.href = rewriteUrl(a.href);
         }
     }, true);
-
-    // Перехват форм
+    
+    // Перехват отправки форм
     document.addEventListener('submit', function(e) {
         const form = e.target;
         if (form && form.action) {
             form.action = rewriteUrl(form.action);
         }
     }, true);
-
-    function rewriteUrl(url) {
-        if (!url) return url;
-        if (url.startsWith('https://galaxy.mobstudio.ru/'))
-            return url.replace('https://galaxy.mobstudio.ru/', '/api/proxy/');
-        if (url.startsWith('/web/'))
-            return '/api/proxy' + url;
-        if (url.startsWith('/'))
-            return '/api/proxy' + url;
-        return url;
-    }
+    
+    // НОВОЕ: Перехват динамических изменений src/href в DOM
+    const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+            if (mutation.type === 'attributes') {
+                const el = mutation.target;
+                const attrName = mutation.attributeName;
+                if (attrName === 'src' || attrName === 'href') {
+                    const val = el.getAttribute(attrName);
+                    if (val && !val.startsWith(proxyPrefix) && !val.startsWith('#') && !val.startsWith('data:')) {
+                        el.setAttribute(attrName, rewriteUrl(val));
+                    }
+                }
+            }
+        });
+    });
+    
+    observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['src', 'href'],
+        subtree: true
+    });
 })();";
                         var scriptNode = HtmlNode.CreateNode($"<script>{jsInterceptor}</script>");
                         body?.AppendChild(scriptNode);
