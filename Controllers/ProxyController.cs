@@ -18,27 +18,24 @@ namespace Api.Controllers
             _logger = logger;
         }
 
-        private void AddGalaxyHeaders(HttpRequestMessage request)
-        {
-            request.Headers.TryAddWithoutValidation("x-galaxy-client-ver", "9.5");
-            request.Headers.TryAddWithoutValidation("x-galaxy-kbv", "352");
-            request.Headers.TryAddWithoutValidation("x-galaxy-lng", "ru");
-            request.Headers.TryAddWithoutValidation("x-galaxy-model", "chrome 140.0.0.0");
-            request.Headers.TryAddWithoutValidation("x-galaxy-orientation", "portrait");
-            request.Headers.TryAddWithoutValidation("x-galaxy-os-ver", "1");
-            request.Headers.TryAddWithoutValidation("x-galaxy-platform", "web");
-            request.Headers.TryAddWithoutValidation("x-galaxy-scr-dpi", "1");
-            request.Headers.TryAddWithoutValidation("x-galaxy-scr-h", "945");
-            request.Headers.TryAddWithoutValidation("x-galaxy-scr-w", "700");
-            request.Headers.TryAddWithoutValidation("x-galaxy-user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36");
-        }
-
         // Универсальный метод для любых HTTP-запросов
         [HttpGet, HttpPost, HttpPut, HttpPatch, HttpDelete, HttpOptions]
         [Route("{*path}")]
         public async Task<IActionResult> HandleRequest(string path = "")
         {
             var client = _httpClientFactory.CreateClient();
+
+            client.DefaultRequestHeaders.Add("x-galaxy-client-ver", "9.5");
+            client.DefaultRequestHeaders.Add("x-galaxy-kbv", "352");
+            client.DefaultRequestHeaders.Add("x-galaxy-lng", "ru");
+            client.DefaultRequestHeaders.Add("x-galaxy-model", "chrome 140.0.0.0");
+            client.DefaultRequestHeaders.Add("x-galaxy-orientation", "portrait");
+            client.DefaultRequestHeaders.Add("x-galaxy-os-ver", "1");
+            client.DefaultRequestHeaders.Add("x-galaxy-platform", "web");
+            client.DefaultRequestHeaders.Add("x-galaxy-scr-dpi", $"1");
+            client.DefaultRequestHeaders.Add("x-galaxy-scr-h", $"945");
+            client.DefaultRequestHeaders.Add("x-galaxy-scr-w", $"700");
+            client.DefaultRequestHeaders.Add("x-galaxy-user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36");
 
             var targetUrl = string.IsNullOrEmpty(path)
                 ? new Uri(TargetBaseUrl)
@@ -49,7 +46,6 @@ namespace Api.Controllers
                 // Создаём исходящий запрос
                 var method = new HttpMethod(Request.Method);
                 var requestMessage = new HttpRequestMessage(method, targetUrl);
-                AddGalaxyHeaders(requestMessage);
 
                 // Если есть тело запроса — копируем его
                 if (Request.ContentLength > 0 &&
@@ -89,18 +85,29 @@ namespace Api.Controllers
 
                 var bytess = await response.Content.ReadAsByteArrayAsync();
 
+                if (contentTypeHeader.Contains("javascript") || contentTypeHeader.EndsWith(".js") || contentTypeHeader.Contains("text/css") || contentTypeHeader.Contains("text/plain"))
+                {
+                    var text = Encoding.UTF8.GetString(bytess);
+
+                    // Переписываем все пути к /web/
+                    text = text.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
+                    text = text.Replace("'/web/", "'/api/proxy/web/");
+                    text = text.Replace("\"/web/", "\"/api/proxy/web/");
+
+                    return Content(text, contentTypeHeader + "; charset=utf-8", Encoding.UTF8);
+                }
+
                 // Универсальная обработка контента
-                if (contentTypeHeader != null && (contentTypeHeader.Contains("text/") ||
+                if (contentTypeHeader != null && (
+                    contentTypeHeader.Contains("text/html") ||
                     contentTypeHeader.Contains("application/json") ||
+                    contentTypeHeader.Contains("application/xml") ||
+                    contentTypeHeader.Contains("text/javascript") ||
                     contentTypeHeader.Contains("application/javascript") ||
-                    contentTypeHeader.Contains("application/xml")))
+                    contentTypeHeader.Contains("text/css") || 
+                    contentTypeHeader.Contains("text/plain")))
                 {
                     var text = await response.Content.ReadAsStringAsync();
-
-                    // Глобальная замена всех путей на прокси
-                    text = text.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
-                    text = text.Replace("\"//galaxy.mobstudio.ru/", "\"/api/proxy/");
-                    text = text.Replace("'//galaxy.mobstudio.ru/", "'/api/proxy/");
 
                     // Внедрение скрипта только для HTML
                     if (contentTypeHeader.Contains("text/html"))
@@ -1356,83 +1363,46 @@ namespace Api.Controllers
                         var proxyScript = HtmlNode.CreateNode($"<script>{jsCode}</script>");
 
                         var jsInterceptor = @"(function() {
-    const proxyPrefix = '/api/proxy/';
-    
-    function rewriteUrl(url) {
-        if (!url || url.startsWith('#') || url.startsWith('data:') || url.startsWith('blob:') || url.startsWith('mailto:')) 
-            return url;
-        
-        // Абсолютные URL с доменом
-        if (url.startsWith('https://galaxy.mobstudio.ru/'))
-            return url.replace('https://galaxy.mobstudio.ru/', proxyPrefix);
-        if (url.startsWith('//galaxy.mobstudio.ru/'))
-            return proxyPrefix + url.substring('//galaxy.mobstudio.ru/'.length);
-        
-        // ВАЖНО: Явно обрабатываем пути /web/
-        if (url.startsWith('/web/'))
-            return proxyPrefix + url.substring(1); // убираем первый слеш
-        
-        // Все остальные абсолютные пути
-        if (url.startsWith('/'))
-            return proxyPrefix + url.substring(1);
-        
-        return url;
-    }
-    
     // Перехват fetch
     const origFetch = window.fetch;
-    window.fetch = function(input, init) {
-        if (typeof input === 'string') {
-            input = rewriteUrl(input);
-        } else if (input && input.url) {
-            input = new Request(rewriteUrl(input.url), input);
-        }
-        return origFetch.call(this, input, init);
+    window.fetch = function(url, opts) {
+        url = rewriteUrl(url);
+        return origFetch(url, opts);
     };
-    
+
     // Перехват XMLHttpRequest
     const origOpen = XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open = function(method, url, ...args) {
-        return origOpen.call(this, method, rewriteUrl(url), ...args);
+    XMLHttpRequest.prototype.open = function(method, url) {
+        url = rewriteUrl(url);
+        return origOpen.apply(this, [method, url]);
     };
-    
-    // Перехват кликов по ссылкам
+
+    // Перехват переходов по ссылкам
     document.addEventListener('click', function(e) {
         const a = e.target.closest('a');
-        if (a && a.href && !a.href.startsWith('javascript:')) {
+        if (a && a.href) {
             a.href = rewriteUrl(a.href);
         }
     }, true);
-    
-    // Перехват отправки форм
+
+    // Перехват форм
     document.addEventListener('submit', function(e) {
         const form = e.target;
         if (form && form.action) {
             form.action = rewriteUrl(form.action);
         }
     }, true);
-    
-    // НОВОЕ: Перехват динамических изменений src/href в DOM
-    const observer = new MutationObserver(mutations => {
-        mutations.forEach(mutation => {
-            if (mutation.type === 'attributes') {
-                const el = mutation.target;
-                const attrName = mutation.attributeName;
-                if (attrName === 'src' || attrName === 'href') {
-                    const val = el.getAttribute(attrName);
-                    if (val && !val.startsWith(proxyPrefix) && !val.startsWith('#') && !val.startsWith('data:')) {
-                        el.setAttribute(attrName, rewriteUrl(val));
-                    }
-                }
-            }
-        });
-    });
-    
-    observer.observe(document.documentElement, {
-        attributes: true,
-        attributeFilter: ['src', 'href'],
-        subtree: true
-    });
+
+    function rewriteUrl(url) {
+        if (!url) return url;
+        if (url.startsWith('https://galaxy.mobstudio.ru/'))
+            return url.replace('https://galaxy.mobstudio.ru/', '/api/proxy/');
+        if (url.startsWith('/web/'))
+            return '/api/proxy' + url;
+        if (url.startsWith('/'))
+            return '/api/proxy' + url;
+        return url;
+    }
 })();";
                         var scriptNode = HtmlNode.CreateNode($"<script>{jsInterceptor}</script>");
                         body?.AppendChild(scriptNode);
@@ -1471,64 +1441,38 @@ namespace Api.Controllers
 
         private void RewriteRelativeUrls(HtmlDocument doc)
         {
-            var nodes = doc.DocumentNode.SelectNodes("//*[@src or @href or @action or @data]");
+            var nodes = doc.DocumentNode.SelectNodes("//*[@src or @href or @action]");
             if (nodes == null) return;
 
             foreach (var node in nodes)
             {
-                foreach (var attr in new[] { "src", "href", "action", "data" })
+                foreach (var attr in new[] { "src", "href", "action" })
                 {
                     var value = node.GetAttributeValue(attr, null);
                     if (string.IsNullOrEmpty(value)) continue;
 
-                    // Игнорируем специальные протоколы
-                    if (value.StartsWith("#") || value.StartsWith("data:") || value.StartsWith("blob:") ||
-                        value.StartsWith("mailto:") || value.StartsWith("javascript:"))
+                    // Игнорируем якоря, mailto, data:
+                    if (value.StartsWith("#") || value.StartsWith("data:") || value.StartsWith("mailto:"))
                         continue;
 
-                    // Абсолютные URL с доменом
                     if (value.StartsWith("https://galaxy.mobstudio.ru/"))
                     {
                         value = value.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
                     }
-                    else if (value.StartsWith("//galaxy.mobstudio.ru/"))
-                    {
-                        value = "/api/proxy/" + value.Substring("//galaxy.mobstudio.ru/".Length);
-                    }
-                    // Пути, начинающиеся с /web/
                     else if (value.StartsWith("/web/"))
                     {
                         value = "/api/proxy" + value;
                     }
-                    // Все остальные абсолютные пути
                     else if (value.StartsWith("/"))
                     {
                         value = "/api/proxy" + value;
                     }
-                    // Относительные пути
                     else if (value.StartsWith("web/"))
                     {
                         value = "/api/proxy/" + value;
                     }
 
                     node.SetAttributeValue(attr, value);
-                }
-            }
-
-            // Дополнительно: переписываем inline styles с background-image
-            var nodesWithStyle = doc.DocumentNode.SelectNodes("//*[@style]");
-            if (nodesWithStyle != null)
-            {
-                foreach (var node in nodesWithStyle)
-                {
-                    var style = node.GetAttributeValue("style", "");
-                    if (style.Contains("url("))
-                    {
-                        style = System.Text.RegularExpressions.Regex.Replace(style,
-                            @"url\(['""]?(/web/[^)'""]*)['""]\)",
-                            m => $"url('/api/proxy{m.Groups[1].Value}')");
-                        node.SetAttributeValue("style", style);
-                    }
                 }
             }
         }
