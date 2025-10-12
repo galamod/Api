@@ -86,19 +86,6 @@ namespace Api.Controllers
                 var contentTypeHeader = response.Content.Headers.ContentType?.ToString();
                 var charset = response.Content.Headers.ContentType?.CharSet ?? "utf-8";
 
-                var bytess = await response.Content.ReadAsByteArrayAsync();
-
-                if (contentTypeHeader.Contains("javascript") || contentTypeHeader.EndsWith(".js") || contentTypeHeader.Contains("text/css") || contentTypeHeader.Contains("text/plain"))
-                {
-                    var text = Encoding.UTF8.GetString(bytess);
-
-                    // Переписываем все пути к /web/, КРОМЕ PNG изображений
-                    text = text.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
-                    text = Regex.Replace(text, @"(['""])/web/(?!.*\.png)", "$1/api/proxy/web/");
-
-                    return Content(text, contentTypeHeader + "; charset=utf-8", Encoding.UTF8);
-                }
-
                 // Универсальная обработка контента
                 if (contentTypeHeader != null && (
                     contentTypeHeader.Contains("text/html") ||
@@ -110,6 +97,10 @@ namespace Api.Controllers
                     contentTypeHeader.Contains("text/plain")))
                 {
                     var text = await response.Content.ReadAsStringAsync();
+
+                    // Переписываем все пути к /web/, КРОМЕ PNG изображений
+                    text = text.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
+                    text = Regex.Replace(text, @"(['""])/web/(?!.*\.png)", "$1/api/proxy/web/");
 
                     // Внедрение скрипта только для HTML
                     if (contentTypeHeader.Contains("text/html"))
@@ -1365,87 +1356,46 @@ namespace Api.Controllers
                         var proxyScript = HtmlNode.CreateNode($"<script>{jsCode}</script>");
 
                         var jsInterceptor = @"(function() {
-    const proxyPrefix = '/api/proxy/';
-    
-    function rewriteUrl(url) {
-        if (!url || url.startsWith('#') || url.startsWith('data:') || url.startsWith('blob:') || url.startsWith('mailto:')) 
-            return url;
-        
-        // НЕ переписываем PNG изображения - пусть загружаются напрямую
-        if (url.toLowerCase().endsWith('.png'))
-            return url;
-        
-        // Абсолютные URL с доменом
-        if (url.startsWith('https://galaxy.mobstudio.ru/'))
-            return url.replace('https://galaxy.mobstudio.ru/', proxyPrefix);
-        if (url.startsWith('//galaxy.mobstudio.ru/'))
-            return proxyPrefix + url.substring('//galaxy.mobstudio.ru/'.length);
-        
-        // ВАЖНО: Явно обрабатываем пути /web/
-        if (url.startsWith('/web/'))
-            return proxyPrefix + url.substring(1);
-        
-        // Все остальные абсолютные пути
-        if (url.startsWith('/'))
-            return proxyPrefix + url.substring(1);
-        
-        return url;
-    }
-    
     // Перехват fetch
     const origFetch = window.fetch;
-    window.fetch = function(input, init) {
-        if (typeof input === 'string') {
-            input = rewriteUrl(input);
-        } else if (input && input.url) {
-            input = new Request(rewriteUrl(input.url), input);
-        }
-        return origFetch.call(this, input, init);
+    window.fetch = function(url, opts) {
+        url = rewriteUrl(url);
+        return origFetch(url, opts);
     };
-    
+
     // Перехват XMLHttpRequest
     const origOpen = XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open = function(method, url, ...args) {
-        return origOpen.call(this, method, rewriteUrl(url), ...args);
+    XMLHttpRequest.prototype.open = function(method, url) {
+        url = rewriteUrl(url);
+        return origOpen.apply(this, [method, url]);
     };
-    
-    // Перехват кликов по ссылкам
+
+    // Перехват переходов по ссылкам
     document.addEventListener('click', function(e) {
         const a = e.target.closest('a');
-        if (a && a.href && !a.href.startsWith('javascript:')) {
+        if (a && a.href) {
             a.href = rewriteUrl(a.href);
         }
     }, true);
-    
-    // Перехват отправки форм
+
+    // Перехват форм
     document.addEventListener('submit', function(e) {
         const form = e.target;
         if (form && form.action) {
             form.action = rewriteUrl(form.action);
         }
     }, true);
-    
-    // Перехват динамических изменений src/href в DOM
-    const observer = new MutationObserver(mutations => {
-        mutations.forEach(mutation => {
-            if (mutation.type === 'attributes') {
-                const el = mutation.target;
-                const attrName = mutation.attributeName;
-                if (attrName === 'src' || attrName === 'href') {
-                    const val = el.getAttribute(attrName);
-                    if (val && !val.startsWith(proxyPrefix) && !val.startsWith('#') && !val.startsWith('data:')) {
-                        el.setAttribute(attrName, rewriteUrl(val));
-                    }
-                }
-            }
-        });
-    });
-    
-    observer.observe(document.documentElement, {
-        attributes: true,
-        attributeFilter: ['src', 'href'],
-        subtree: true
-    });
+
+    function rewriteUrl(url) {
+        if (!url) return url;
+        if (url.startsWith('https://galaxy.mobstudio.ru/'))
+            return url.replace('https://galaxy.mobstudio.ru/', '/api/proxy/');
+        if (url.startsWith('/web/'))
+            return '/api/proxy' + url;
+        if (url.startsWith('/'))
+            return '/api/proxy' + url;
+        return url;
+    }
 })();";
                         var scriptNode = HtmlNode.CreateNode($"<script>{jsInterceptor}</script>");
                         body?.AppendChild(scriptNode);
