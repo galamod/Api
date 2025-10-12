@@ -98,9 +98,18 @@ namespace Api.Controllers
                 {
                     var text = await response.Content.ReadAsStringAsync();
 
-                    text = text.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
-                    text = text.Replace("'/web/", "'/api/proxy/web/");
-                    text = text.Replace("\"/web/", "\"/api/proxy/web/");
+                    // Глобальная замена ВСЕХ путей, кроме PNG изображений
+                    text = Regex.Replace(text, @"https://galaxy\.mobstudio\.ru/((?!.*\.png).*?)(?=['""\s>])", "/api/proxy/$1");
+
+                    // Заменяем '/web/ на '/api/proxy/web/, но НЕ для PNG
+                    text = Regex.Replace(text, @"(['""])/web/((?:(?!\.png)[^'""<>])*)", m =>
+                    {
+                        var path = m.Groups[2].Value;
+                        // Проверяем, не заканчивается ли путь на .png
+                        if (path.ToLower().EndsWith(".png") || path.ToLower().Contains(".png"))
+                            return m.Value; // Оставляем как есть
+                        return $"{m.Groups[1].Value}/api/proxy/web/{path}";
+                    });
 
                     // Внедрение скрипта только для HTML
                     if (contentTypeHeader.Contains("text/html"))
