@@ -92,22 +92,11 @@ namespace Api.Controllers
         [Route("{*path}")]
         public async Task<IActionResult> HandleRequest(string path = "")
         {
-            // ВАЖНО: Для /services/public/ перенаправляем напрямую на оригинальный домен
-            if (path.StartsWith("services/public/", StringComparison.OrdinalIgnoreCase))
-            {
-                var queryString = Request.QueryString.HasValue ? Request.QueryString.Value : "";
-                var directUrl = $"https://galaxy.mobstudio.ru/{path}{queryString}";
-
-                _logger.LogInformation("Redirecting /services/public/ directly to {Url}", directUrl);
-
-                return Redirect(directUrl);
-            }
-
             var client = _httpClientFactory.CreateClient("GalaxyClient");
 
             // ВАЖНО: Добавляем query string из оригинального запроса
-            var queryStr = Request.QueryString.HasValue ? Request.QueryString.Value : "";
-            var fullPath = string.IsNullOrEmpty(path) ? "" : path + queryStr;
+            var queryString = Request.QueryString.HasValue ? Request.QueryString.Value : "";
+            var fullPath = string.IsNullOrEmpty(path) ? "" : path + queryString;
 
             var targetUrl = string.IsNullOrEmpty(fullPath)
                 ? new Uri(TargetBaseUrl)
@@ -162,6 +151,19 @@ namespace Api.Controllers
 
                 _logger.LogInformation("Response status: {StatusCode}, ContentType: {ContentType}", 
                     response.StatusCode, contentTypeHeader);
+
+                // ВАЖНО: Для /services/public/ И manifest.json просто возвращаем как есть (БЕЗ МОДИФИКАЦИИ)
+                if (path.StartsWith("services/public/", StringComparison.OrdinalIgnoreCase) ||
+                    path.EndsWith("manifest.json", StringComparison.OrdinalIgnoreCase))
+                {
+                    var content = await response.Content.ReadAsByteArrayAsync();
+
+                    // Добавляем CORS-заголовки для манифеста
+                    Response.Headers.Append("Access-Control-Allow-Origin", "*");
+                    Response.Headers.Append("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+
+                    return new FileContentResult(content, contentTypeHeader ?? "application/octet-stream");
+                }
 
                 // Универсальная обработка контента
                 if (contentTypeHeader != null && (
@@ -1615,6 +1617,26 @@ namespace Api.Controllers
                     if (value.StartsWith("#") || value.StartsWith("data:") || value.StartsWith("blob:") ||
                         value.StartsWith("mailto:") || value.StartsWith("javascript:"))
                         continue;
+
+                    // ВАЖНО: Пропускаем УЖЕ обработанные пути
+                    if (value.StartsWith("/api/proxy") || value.StartsWith("https://"))
+                        continue;
+
+                    // /services/public/ — НЕ проксируем, делаем абсолютными к оригиналу
+                    if (value.Contains("/services/public/"))
+                    {
+                        if (value.StartsWith("/services/public/"))
+                            node.SetAttributeValue(attr, "https://galaxy.mobstudio.ru" + value);
+                        continue;
+                    }
+
+                    // /web/assets/ — НЕ проксируем
+                    if (value.Contains("/web/assets/"))
+                    {
+                        if (value.StartsWith("/web/assets/"))
+                            node.SetAttributeValue(attr, "https://galaxy.mobstudio.ru" + value);
+                        continue;
+                    }
 
                     // НЕ переписываем PNG изображения - оставляем оригинальные пути
                     if (value.ToLower().EndsWith(".png"))
