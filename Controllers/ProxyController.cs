@@ -1616,35 +1616,22 @@ namespace Api.Controllers
                         value.StartsWith("mailto:") || value.StartsWith("javascript:"))
                         continue;
 
-                    // ВАЖНО: Пропускаем УЖЕ обработанные пути
-                    if (value.StartsWith("/api/proxy") || value.StartsWith("https://"))
-                        continue;
-
-                    // /services/public/ — НЕ проксируем, делаем абсолютными к оригиналу
-                    if (value.Contains("/services/public/"))
-                    {
-                        if (value.StartsWith("/services/public/"))
-                            node.SetAttributeValue(attr, "https://galaxy.mobstudio.ru" + value);
-                        continue;
-                    }
-
-                    // /web/assets/ — НЕ проксируем
-                    if (value.Contains("/web/assets/"))
-                    {
-                        if (value.StartsWith("/web/assets/"))
-                            node.SetAttributeValue(attr, "https://galaxy.mobstudio.ru" + value);
-                        continue;
-                    }
-
-                    // PNG изображения — НЕ проксируем
+                    // НЕ переписываем PNG изображения - оставляем оригинальные пути
                     if (value.ToLower().EndsWith(".png"))
                     {
-                        if (value.StartsWith("/"))
+                        // Если это относительный путь к PNG, делаем его абсолютным к оригинальному серверу
+                        if (value.StartsWith("/web/"))
+                        {
                             node.SetAttributeValue(attr, "https://galaxy.mobstudio.ru" + value);
+                        }
+                        else if (value.StartsWith("/"))
+                        {
+                            node.SetAttributeValue(attr, "https://galaxy.mobstudio.ru" + value);
+                        }
                         continue;
                     }
 
-                    // Обрабатываем остальные пути
+                    // Абсолютные URL с доменом
                     if (value.StartsWith("https://galaxy.mobstudio.ru/"))
                     {
                         value = value.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
@@ -1653,14 +1640,17 @@ namespace Api.Controllers
                     {
                         value = "/api/proxy/" + value.Substring("//galaxy.mobstudio.ru/".Length);
                     }
+                    // Пути, начинающиеся с /web/
                     else if (value.StartsWith("/web/"))
                     {
                         value = "/api/proxy" + value;
                     }
+                    // Все остальные абсолютные пути
                     else if (value.StartsWith("/"))
                     {
                         value = "/api/proxy" + value;
                     }
+                    // Относительные пути
                     else if (value.StartsWith("web/"))
                     {
                         value = "/api/proxy/" + value;
@@ -1670,7 +1660,7 @@ namespace Api.Controllers
                 }
             }
 
-            // Обрабатываем inline styles
+            // Дополнительно: переписываем inline styles с background-image (но исключаем PNG)
             var nodesWithStyle = doc.DocumentNode.SelectNodes("//*[@style]");
             if (nodesWithStyle != null)
             {
@@ -1679,28 +1669,17 @@ namespace Api.Controllers
                     var style = node.GetAttributeValue("style", "");
                     if (style.Contains("url("))
                     {
+                        // Переписываем только не-PNG пути
                         style = Regex.Replace(style,
-                            @"url\(\s*(['""]?)(/[^)'""\s]+)\1\s*\)",
+                            @"url\(['""]?(/web/[^)'""]*)['""]\)",
                             m => {
-                                var path = m.Groups[2].Value;
-
-                                if (path.StartsWith("/api/proxy"))
-                                    return m.Value;
-
-                                // /services/public/ - напрямую
-                                if (path.Contains("/services/public/"))
-                                    return $"url({m.Groups[1].Value}https://galaxy.mobstudio.ru{path}{m.Groups[1].Value})";
-
-                                // /web/assets/ - напрямую
-                                if (path.Contains("/web/assets/"))
-                                    return $"url({m.Groups[1].Value}https://galaxy.mobstudio.ru{path}{m.Groups[1].Value})";
-
-                                // PNG - напрямую
+                                var path = m.Groups[1].Value;
                                 if (path.ToLower().EndsWith(".png"))
-                                    return $"url({m.Groups[1].Value}https://galaxy.mobstudio.ru{path}{m.Groups[1].Value})";
-
-                                // Остальное проксируем
-                                return $"url({m.Groups[1].Value}/api/proxy{path}{m.Groups[1].Value})";
+                                {
+                                    // PNG остаётся с оригинальным доменом
+                                    return $"url('https://galaxy.mobstudio.ru{path}')";
+                                }
+                                return $"url('/api/proxy{path}')";
                             });
                         node.SetAttributeValue("style", style);
                     }
