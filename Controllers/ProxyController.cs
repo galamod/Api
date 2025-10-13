@@ -1535,35 +1535,6 @@ namespace Api.Controllers
         }
     }, true);
     
-    // Перехват отправки форм
-    document.addEventListener('submit', function(e) {
-        const form = e.target;
-        if (form && form.action) {
-            form.action = rewriteUrl(form.action);
-        }
-    }, true);
-    
-    // Перехват динамических изменений src/href в DOM
-    const observer = new MutationObserver(mutations => {
-        mutations.forEach(mutation => {
-            if (mutation.type === 'attributes') {
-                const el = mutation.target;
-                const attrName = mutation.attributeName;
-                if (attrName === 'src' || attrName === 'href') {
-                    const val = el.getAttribute(attrName);
-                    if (val && !val.startsWith(proxyPrefix) && !val.startsWith('#') && !val.startsWith('data:') && !val.startsWith('https://galaxy.mobstudio.ru')) {
-                        el.setAttribute(attrName, rewriteUrl(val));
-                    }
-                }
-            }
-        });
-    });
-    
-    observer.observe(document.documentElement, {
-        attributes: true,
-        attributeFilter: ['src', 'href'],
-        subtree: true
-    });
 })();";
                         var scriptNode = HtmlNode.CreateNode($"<script>{jsInterceptor}</script>");
                         body?.AppendChild(scriptNode);
