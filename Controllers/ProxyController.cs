@@ -109,6 +109,15 @@ namespace Api.Controllers
                 var requestMessage = new HttpRequestMessage(method, targetUrl);
                 AddGalaxyHeaders(requestMessage);
 
+                // В начале HandleRequest добавьте:
+                if (Request.Method == "OPTIONS")
+                {
+                    Response.Headers.Append("Access-Control-Allow-Origin", "*");
+                    Response.Headers.Append("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+                    Response.Headers.Append("Access-Control-Allow-Headers", "Content-Type, Authorization");
+                    return Ok();
+                }
+
                 // Если есть тело запроса — копируем его
                 if (Request.ContentLength > 0 &&
                     (method == HttpMethod.Post || method == HttpMethod.Put || method.Method == "PATCH"))
@@ -1592,7 +1601,23 @@ namespace Api.Controllers
                                 body.AppendChild(proxyScript);
                         }
 
+                        // Разрешаем загрузку iframe с нашего домена
+                        Response.Headers.Append("X-Frame-Options", "ALLOWALL"); // Или "SAMEORIGIN" если нужна защита
+                        Response.Headers.Remove("X-Frame-Options"); // Убираем ограничения от оригинального сервера
+
+                        // Разрешаем CORS для iframe
+                        Response.Headers.Append("Access-Control-Allow-Origin", "*");
+                        Response.Headers.Append("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+                        Response.Headers.Append("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+                        // Разрешаем загрузку ресурсов из iframe
+                        Response.Headers.Remove("Content-Security-Policy");
+                        Response.Headers.Append("Content-Security-Policy", "frame-ancestors 'self' https://galabot.koyeb.app https://galaxy.mobstudio.ru");
+
                         var modifiedHtml = doc.DocumentNode.OuterHtml;
+
+                        _logger.LogInformation("✅ HTML modified and returned. Size: {Size} bytes", modifiedHtml.Length);
+
                         return Content(modifiedHtml, contentTypeHeader + "; charset=utf-8", Encoding.UTF8);
                     }
 
