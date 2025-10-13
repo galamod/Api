@@ -185,32 +185,16 @@ namespace Api.Controllers
                         text = Regex.Replace(text, @"url\(\s*(['""]?)(?<!https://galaxy\.mobstudio\.ru)(/web/assets/[^)'""\s]+)\1\s*\)",
                             "url($1https://galaxy.mobstudio.ru$2$1)");
                     }
-                    // СПЕЦИАЛЬНАЯ ОБРАБОТКА ДЛЯ JS
+                    // СПЕЦИАЛЬНАЯ ОБРАБОТКА ДЛЯ JS - переписываем строки с /web/assets/ на абсолютные пути
                     else if (contentTypeHeader.Contains("javascript"))
                     {
-                        // 1. Заменяем абсолютные URL на прокси
-                        text = Regex.Replace(text, @"https?://galaxy\.mobstudio\.ru/web/assets/",
-                            "https://galaxy.mobstudio.ru/web/assets/");
+                        // В JS-файлах заменяем строковые литералы, но только если перед /web/assets/ нет домена
+                        text = Regex.Replace(text, @"(['""])(?<!https://galaxy\.mobstudio\.ru)(/web/assets/[^'""]+)\1",
+                            "$1https://galaxy.mobstudio.ru$2$1");
 
-                        text = Regex.Replace(text, @"https?://galaxy\.mobstudio\.ru/services/",
-                            "/api/proxy/services/");
-
-                        text = Regex.Replace(text, @"https?://galaxy\.mobstudio\.ru/server_pics/",
-                            "/api/proxy/server_pics/");
-
-                        text = Regex.Replace(text, @"https?://galaxy\.mobstudio\.ru/clients/",
-                            "/api/proxy/clients/");
-
-                        // 2. Заменяем относительные пути (кроме /web/assets/)
-                        text = Regex.Replace(text, @"""(/web/(?!assets/)[^""]+)""",
-                            "\"/api/proxy$1\"");
-
-                        text = Regex.Replace(text, @"'(/web/(?!assets/)[^']+)'",
-                            "'/api/proxy$1'");
-
-                        // 3. WebSocket URI (если нужно проксировать)
-                        text = Regex.Replace(text, @"""uri""\s*:\s*""cs\.mobstudio\.ru""",
-                            "\"uri\":\"cs.mobstudio.ru\""); // Оставляем без изменений для WebSocket
+                        // Для остальных путей (НЕ /web/assets/) применяем обычное проксирование
+                        text = Regex.Replace(text, @"https://galaxy\.mobstudio\.ru/(?!web/assets/)([^'""\s>]*)", "/api/proxy/$1");
+                        text = Regex.Replace(text, @"(['""])(?<!https://galaxy\.mobstudio\.ru)(/web/(?!assets/)[^'""<>]*)", "$1/api/proxy$2");
                     }
                     // СПЕЦИАЛЬНАЯ ОБРАБОТКА ДЛЯ MANIFEST.JSON - переписываем /web/assets/ на абсолютные пути
                     else if (contentTypeHeader.Contains("application/json") || contentTypeHeader.Contains("application/manifest+json") || path.EndsWith("manifest.json"))
