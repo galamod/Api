@@ -1630,7 +1630,16 @@ namespace Api.Controllers
                         continue;
                     }
 
-                    // /web/assets/ — НЕ проксируем
+                    // ИСКЛЮЧЕНИЕ: manifest.json — ПРОКСИРУЕМ (для модификации и избежания CORS)
+                    if (value.EndsWith("manifest.json", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (value.StartsWith("/"))
+                            value = "/api/proxy" + value;
+                        node.SetAttributeValue(attr, value);
+                        continue;
+                    }
+
+                    // /web/assets/ (НЕ manifest.json) — НЕ проксируем
                     if (value.Contains("/web/assets/"))
                     {
                         if (value.StartsWith("/web/assets/"))
@@ -1638,18 +1647,11 @@ namespace Api.Controllers
                         continue;
                     }
 
-                    // НЕ переписываем PNG изображения - оставляем оригинальные пути
+                    // PNG изображения — НЕ проксируем
                     if (value.ToLower().EndsWith(".png"))
                     {
-                        // Если это относительный путь к PNG, делаем его абсолютным к оригинальному серверу
-                        if (value.StartsWith("/web/"))
-                        {
+                        if (value.StartsWith("/"))
                             node.SetAttributeValue(attr, "https://galaxy.mobstudio.ru" + value);
-                        }
-                        else if (value.StartsWith("/"))
-                        {
-                            node.SetAttributeValue(attr, "https://galaxy.mobstudio.ru" + value);
-                        }
                         continue;
                     }
 
