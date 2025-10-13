@@ -153,7 +153,7 @@ namespace Api.Controllers
                     response.StatusCode, contentTypeHeader);
 
                 // ВАЖНО: Для /services/public/ И manifest.json просто возвращаем как есть (БЕЗ МОДИФИКАЦИИ)
-                if (path.StartsWith("services/public/", StringComparison.OrdinalIgnoreCase) || path.StartsWith("web/assets/", StringComparison.OrdinalIgnoreCase))
+                if (path.StartsWith("services/public/", StringComparison.OrdinalIgnoreCase))
                 {
                     var content = await response.Content.ReadAsByteArrayAsync();
 
@@ -1621,15 +1621,6 @@ namespace Api.Controllers
                     if (value.StartsWith("/api/proxy") || value.StartsWith("https://"))
                         continue;
 
-                    // ИСКЛЮЧЕНИЕ: manifest.json — ПРОКСИРУЕМ (для модификации и избежания CORS)
-                    if (value.EndsWith("manifest.json", StringComparison.OrdinalIgnoreCase))
-                    {
-                        if (value.StartsWith("/"))
-                            value = "/api/proxy" + value;
-                        node.SetAttributeValue(attr, value);
-                        continue;
-                    }
-
                     // /services/public/ — НЕ проксируем, делаем абсолютными к оригиналу
                     if (value.Contains("/services/public/"))
                     {
@@ -1638,7 +1629,7 @@ namespace Api.Controllers
                         continue;
                     }
 
-                    // /web/assets/ (НЕ manifest.json) — НЕ проксируем
+                    // /web/assets/ — НЕ проксируем
                     if (value.Contains("/web/assets/"))
                     {
                         if (value.StartsWith("/web/assets/"))
@@ -1646,11 +1637,18 @@ namespace Api.Controllers
                         continue;
                     }
 
-                    // PNG изображения — НЕ проксируем
+                    // НЕ переписываем PNG изображения - оставляем оригинальные пути
                     if (value.ToLower().EndsWith(".png"))
                     {
-                        if (value.StartsWith("/"))
+                        // Если это относительный путь к PNG, делаем его абсолютным к оригинальному серверу
+                        if (value.StartsWith("/web/"))
+                        {
                             node.SetAttributeValue(attr, "https://galaxy.mobstudio.ru" + value);
+                        }
+                        else if (value.StartsWith("/"))
+                        {
+                            node.SetAttributeValue(attr, "https://galaxy.mobstudio.ru" + value);
+                        }
                         continue;
                     }
 
