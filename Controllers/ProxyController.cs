@@ -1510,31 +1510,6 @@ namespace Api.Controllers
         return url;
     }
     
-    // Перехват fetch
-    const origFetch = window.fetch;
-    window.fetch = function(input, init) {
-        if (typeof input === 'string') {
-            input = rewriteUrl(input);
-        } else if (input && input.url) {
-            input = new Request(rewriteUrl(input.url), input);
-        }
-        return origFetch.call(this, input, init);
-    };
-    
-    // Перехват XMLHttpRequest
-    const origOpen = XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open = function(method, url, ...args) {
-        return origOpen.call(this, method, rewriteUrl(url), ...args);
-    };
-    
-    // Перехват кликов по ссылкам
-    document.addEventListener('click', function(e) {
-        const a = e.target.closest('a');
-        if (a && a.href && !a.href.startsWith('javascript:')) {
-            a.href = rewriteUrl(a.href);
-        }
-    }, true);
-    
 })();";
                         var scriptNode = HtmlNode.CreateNode($"<script>{jsInterceptor}</script>");
                         body?.AppendChild(scriptNode);
