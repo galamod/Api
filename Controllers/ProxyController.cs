@@ -214,8 +214,6 @@ namespace Api.Controllers
                         var doc = new HtmlDocument();
                         doc.LoadHtml(text);
 
-                        RewriteRelativeUrls(doc);
-
                         var head = doc.DocumentNode.SelectSingleNode("//head");
                         if (head != null)
                         {
@@ -1582,109 +1580,6 @@ namespace Api.Controllers
             {
                 _logger.LogError(ex, "Ошибка при проксировании запроса {Method} {Url}", Request.Method, targetUrl);
                 return StatusCode(500, $"Ошибка прокси: {ex.Message}");
-            }
-        }
-
-        private void RewriteRelativeUrls(HtmlDocument doc)
-        {
-            var nodes = doc.DocumentNode.SelectNodes("//*[@src or @href or @action or @data]");
-            if (nodes == null) return;
-
-            foreach (var node in nodes)
-            {
-                foreach (var attr in new[] { "src", "href", "action", "data" })
-                {
-                    var value = node.GetAttributeValue(attr, null);
-                    if (string.IsNullOrEmpty(value)) continue;
-
-                    // Игнорируем специальные протоколы
-                    if (value.StartsWith("#") || value.StartsWith("data:") || value.StartsWith("blob:") ||
-                        value.StartsWith("mailto:") || value.StartsWith("javascript:"))
-                        continue;
-
-                    // ВАЖНО: Пропускаем УЖЕ обработанные пути
-                    if (value.StartsWith("/api/proxy"))
-                        continue;
-
-                    // НЕ переписываем /web/assets/ - делаем абсолютными к оригиналу
-                    if (value.Contains("/web/assets/"))
-                    {
-                        if (value.StartsWith("/web/assets/") || value.StartsWith("/"))
-                        {
-                            if (!value.StartsWith("https://"))
-                                node.SetAttributeValue(attr, "https://galaxy.mobstudio.ru" + (value.StartsWith("/") ? value : "/" + value));
-                        }
-                        continue;
-                    }
-
-                    // НЕ переписываем PNG изображения
-                    if (value.ToLower().EndsWith(".png"))
-                    {
-                        if (value.StartsWith("/"))
-                        {
-                            node.SetAttributeValue(attr, "https://galaxy.mobstudio.ru" + value);
-                        }
-                        continue;
-                    }
-
-                    // Обрабатываем остальные пути
-                    if (value.StartsWith("https://galaxy.mobstudio.ru/"))
-                    {
-                        value = value.Replace("https://galaxy.mobstudio.ru/", "/api/proxy/");
-                    }
-                    else if (value.StartsWith("//galaxy.mobstudio.ru/"))
-                    {
-                        value = "/api/proxy/" + value.Substring("//galaxy.mobstudio.ru/".Length);
-                    }
-                    else if (value.StartsWith("/web/"))
-                    {
-                        value = "/api/proxy" + value;
-                    }
-                    else if (value.StartsWith("/"))
-                    {
-                        value = "/api/proxy" + value;
-                    }
-                    else if (value.StartsWith("web/"))
-                    {
-                        value = "/api/proxy/" + value;
-                    }
-
-                    node.SetAttributeValue(attr, value);
-                }
-            }
-
-            // Обрабатываем inline styles
-            var nodesWithStyle = doc.DocumentNode.SelectNodes("//*[@style]");
-            if (nodesWithStyle != null)
-            {
-                foreach (var node in nodesWithStyle)
-                {
-                    var style = node.GetAttributeValue("style", "");
-                    if (style.Contains("url("))
-                    {
-                        style = Regex.Replace(style,
-                            @"url\(\s*(['""]?)(/[^)'""\s]+)\1\s*\)",
-                            m => {
-                                var path = m.Groups[2].Value;
-
-                                // Пропускаем уже обработанные
-                                if (path.StartsWith("/api/proxy"))
-                                    return m.Value;
-
-                                // /web/assets/ - абсолютный путь
-                                if (path.Contains("/web/assets/"))
-                                    return $"url({m.Groups[1].Value}https://galaxy.mobstudio.ru{path}{m.Groups[1].Value})";
-
-                                // PNG - абсолютный путь
-                                if (path.ToLower().EndsWith(".png"))
-                                    return $"url({m.Groups[1].Value}https://galaxy.mobstudio.ru{path}{m.Groups[1].Value})";
-
-                                // Остальное проксируем
-                                return $"url({m.Groups[1].Value}/api/proxy{path}{m.Groups[1].Value})";
-                            });
-                        node.SetAttributeValue("style", style);
-                    }
-                }
             }
         }
     }
