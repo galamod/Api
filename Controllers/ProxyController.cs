@@ -153,8 +153,7 @@ namespace Api.Controllers
                     response.StatusCode, contentTypeHeader);
 
                 // ВАЖНО: Для /services/public/ И manifest.json просто возвращаем как есть (БЕЗ МОДИФИКАЦИИ)
-                if (path.StartsWith("services/public/", StringComparison.OrdinalIgnoreCase) ||
-                    path.EndsWith("manifest.json", StringComparison.OrdinalIgnoreCase))
+                if (path.StartsWith("services/public/", StringComparison.OrdinalIgnoreCase))
                 {
                     var content = await response.Content.ReadAsByteArrayAsync();
 
