@@ -1660,7 +1660,6 @@ namespace Api.Controllers
                 }
             }
 
-            // Дополнительно: переписываем inline styles с background-image (но исключаем PNG)
             // Обрабатываем inline styles (БЕЗ /services/public/)
             var nodesWithStyle = doc.DocumentNode.SelectNodes("//*[@style]");
             if (nodesWithStyle != null)
