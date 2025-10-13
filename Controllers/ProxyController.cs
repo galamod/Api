@@ -1483,32 +1483,34 @@ namespace Api.Controllers
         if (!url || url.startsWith('#') || url.startsWith('data:') || url.startsWith('blob:') || url.startsWith('mailto:')) 
             return url;
         
-        // УЖЕ обработанные пути не трогаем
-        if (url.startsWith(proxyPrefix))
-            return url;
-        
-        // Абсолютные URL к galaxy.mobstudio.ru НЕ трогаем (они уже правильные)
-        if (url.startsWith('https://galaxy.mobstudio.ru'))
-            return url;
-        
-        // PNG изображения — делаем абсолютными к оригиналу (без прокси)
+        // НЕ переписываем PNG изображения - оставляем оригинальные пути
         if (url.toLowerCase().endsWith('.png')) {
+            // Если это относительный путь, делаем абсолютным к оригинальному серверу
+            if (url.startsWith('/web/'))
+                return 'https://galaxy.mobstudio.ru' + url;
             if (url.startsWith('/'))
                 return 'https://galaxy.mobstudio.ru' + url;
             return url;
         }
         
-        // Пути /web/ — проксируем через /api/proxy/
+        // Абсолютные URL с доменом
+        if (url.startsWith('https://galaxy.mobstudio.ru/'))
+            return url.replace('https://galaxy.mobstudio.ru/', proxyPrefix);
+        if (url.startsWith('//galaxy.mobstudio.ru/'))
+            return proxyPrefix + url.substring('//galaxy.mobstudio.ru/'.length);
+        
+        // ВАЖНО: Явно обрабатываем пути /web/
         if (url.startsWith('/web/'))
             return proxyPrefix + url.substring(1);
         
-        // Все остальные абсолютные пути — проксируем
+        // Все остальные абсолютные пути
         if (url.startsWith('/'))
             return proxyPrefix + url.substring(1);
         
         return url;
     }
     
+    // Перехват fetch
     const origFetch = window.fetch;
     window.fetch = function(input, init) {
         if (typeof input === 'string') {
@@ -1519,30 +1521,49 @@ namespace Api.Controllers
         return origFetch.call(this, input, init);
     };
     
+    // Перехват XMLHttpRequest
     const origOpen = XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open = function(method, url, ...args) {
         return origOpen.call(this, method, rewriteUrl(url), ...args);
     };
     
+    // Перехват кликов по ссылкам
     document.addEventListener('click', function(e) {
         const a = e.target.closest('a');
         if (a && a.href && !a.href.startsWith('javascript:')) {
-            const newHref = rewriteUrl(a.href);
-            if (newHref !== a.href) {
-                a.href = newHref;
-            }
+            a.href = rewriteUrl(a.href);
         }
     }, true);
     
+    // Перехват отправки форм
     document.addEventListener('submit', function(e) {
         const form = e.target;
         if (form && form.action) {
-            const newAction = rewriteUrl(form.action);
-            if (newAction !== form.action) {
-                form.action = newAction;
-            }
+            form.action = rewriteUrl(form.action);
         }
     }, true);
+    
+    // Перехват динамических изменений src/href в DOM
+    const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+            if (mutation.type === 'attributes') {
+                const el = mutation.target;
+                const attrName = mutation.attributeName;
+                if (attrName === 'src' || attrName === 'href') {
+                    const val = el.getAttribute(attrName);
+                    if (val && !val.startsWith(proxyPrefix) && !val.startsWith('#') && !val.startsWith('data:') && !val.startsWith('https://galaxy.mobstudio.ru')) {
+                        el.setAttribute(attrName, rewriteUrl(val));
+                    }
+                }
+            }
+        });
+    });
+    
+    observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['src', 'href'],
+        subtree: true
+    });
 })();";
                         var scriptNode = HtmlNode.CreateNode($"<script>{jsInterceptor}</script>");
                         body?.AppendChild(scriptNode);
