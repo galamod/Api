@@ -1484,35 +1484,31 @@ namespace Api.Controllers
             return url;
         
         // УЖЕ обработанные пути не трогаем
-        if (url.startsWith(proxyPrefix) || url.startsWith('https://galaxy.mobstudio.ru'))
+        if (url.startsWith(proxyPrefix))
             return url;
         
-        // PNG изображения — делаем абсолютными
+        // Абсолютные URL к galaxy.mobstudio.ru НЕ трогаем (они уже правильные)
+        if (url.startsWith('https://galaxy.mobstudio.ru'))
+            return url;
+        
+        // PNG изображения — делаем абсолютными к оригиналу (без прокси)
         if (url.toLowerCase().endsWith('.png')) {
             if (url.startsWith('/'))
                 return 'https://galaxy.mobstudio.ru' + url;
             return url;
         }
         
-        // /web/assets/ — делаем абсолютными
-        if (url.includes('/web/assets/')) {
-            if (url.startsWith('/'))
-                return 'https://galaxy.mobstudio.ru' + url;
-            return url;
-        }
-        
-        // Остальные /web/ — проксируем
+        // Пути /web/ — проксируем через /api/proxy/
         if (url.startsWith('/web/'))
             return proxyPrefix + url.substring(1);
         
-        // Все остальные абсолютные пути
+        // Все остальные абсолютные пути — проксируем
         if (url.startsWith('/'))
             return proxyPrefix + url.substring(1);
         
         return url;
     }
     
-    // Перехват fetch
     const origFetch = window.fetch;
     window.fetch = function(input, init) {
         if (typeof input === 'string') {
@@ -1523,13 +1519,11 @@ namespace Api.Controllers
         return origFetch.call(this, input, init);
     };
     
-    // Перехват XMLHttpRequest
     const origOpen = XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open = function(method, url, ...args) {
         return origOpen.call(this, method, rewriteUrl(url), ...args);
     };
     
-    // Перехват кликов по ссылкам
     document.addEventListener('click', function(e) {
         const a = e.target.closest('a');
         if (a && a.href && !a.href.startsWith('javascript:')) {
@@ -1540,7 +1534,6 @@ namespace Api.Controllers
         }
     }, true);
     
-    // Перехват отправки форм
     document.addEventListener('submit', function(e) {
         const form = e.target;
         if (form && form.action) {
@@ -1550,42 +1543,6 @@ namespace Api.Controllers
             }
         }
     }, true);
-    
-    // ВАЖНО: Защита от бесконечного цикла с помощью флага
-    let isProcessing = false;
-    
-    const observer = new MutationObserver(mutations => {
-        if (isProcessing) return; // Защита от рекурсии
-        
-        isProcessing = true;
-        
-        mutations.forEach(mutation => {
-            if (mutation.type === 'attributes') {
-                const el = mutation.target;
-                const attrName = mutation.attributeName;
-                
-                if (attrName === 'src' || attrName === 'href') {
-                    const val = el.getAttribute(attrName);
-                    if (val) {
-                        const newVal = rewriteUrl(val);
-                        
-                        // ВАЖНО: Изменяем только если значение действительно изменилось
-                        if (newVal !== val) {
-                            el.setAttribute(attrName, newVal);
-                        }
-                    }
-                }
-            }
-        });
-        
-        isProcessing = false;
-    });
-    
-    observer.observe(document.documentElement, {
-        attributes: true,
-        attributeFilter: ['src', 'href'],
-        subtree: true
-    });
 })();";
                         var scriptNode = HtmlNode.CreateNode($"<script>{jsInterceptor}</script>");
                         body?.AppendChild(scriptNode);
