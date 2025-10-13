@@ -1617,26 +1617,6 @@ namespace Api.Controllers
                         value.StartsWith("mailto:") || value.StartsWith("javascript:"))
                         continue;
 
-                    // ВАЖНО: Пропускаем УЖЕ обработанные пути
-                    if (value.StartsWith("/api/proxy") || value.StartsWith("https://"))
-                        continue;
-
-                    // /services/public/ — НЕ проксируем, делаем абсолютными к оригиналу
-                    if (value.Contains("/services/public/"))
-                    {
-                        if (value.StartsWith("/services/public/"))
-                            node.SetAttributeValue(attr, "https://galaxy.mobstudio.ru" + value);
-                        continue;
-                    }
-
-                    // /web/assets/ — НЕ проксируем
-                    if (value.Contains("/web/assets/"))
-                    {
-                        if (value.StartsWith("/web/assets/"))
-                            node.SetAttributeValue(attr, "https://galaxy.mobstudio.ru" + value);
-                        continue;
-                    }
-
                     // НЕ переписываем PNG изображения - оставляем оригинальные пути
                     if (value.ToLower().EndsWith(".png"))
                     {
