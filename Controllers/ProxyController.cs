@@ -1477,34 +1477,32 @@ namespace Api.Controllers
 
                         var jsInterceptor = @"(function() {
     const proxyPrefix = '/api/proxy/';
-
+    
     function rewriteUrl(url) {
         if (!url || url.startsWith('#') || url.startsWith('data:') || url.startsWith('blob:') || url.startsWith('mailto:')) 
             return url;
         
-        // УЖЕ абсолютные URL не трогаем
-        if (url.startsWith('https://') || url.startsWith('http://'))
-            return url;
-        
-        // /services/public/ — НЕ проксируем
-        if (url.startsWith('/services/public/'))
-            return 'https://galaxy.mobstudio.ru' + url;
-        
-        // /web/assets/ — НЕ проксируем
-        if (url.startsWith('/web/assets/'))
-            return 'https://galaxy.mobstudio.ru' + url;
-        
-        // PNG изображения — НЕ проксируем
+        // НЕ переписываем PNG изображения - оставляем оригинальные пути
         if (url.toLowerCase().endsWith('.png')) {
+            // Если это относительный путь, делаем абсолютным к оригинальному серверу
+            if (url.startsWith('/web/'))
+                return 'https://galaxy.mobstudio.ru' + url;
             if (url.startsWith('/'))
                 return 'https://galaxy.mobstudio.ru' + url;
             return url;
         }
         
-        // Абсолютные пути проксируем
+        // Абсолютные URL с доменом
+        if (url.startsWith('https://galaxy.mobstudio.ru/'))
+            return url.replace('https://galaxy.mobstudio.ru/', proxyPrefix);
+        if (url.startsWith('//galaxy.mobstudio.ru/'))
+            return proxyPrefix + url.substring('//galaxy.mobstudio.ru/'.length);
+        
+        // ВАЖНО: Явно обрабатываем пути /web/
         if (url.startsWith('/web/'))
             return proxyPrefix + url.substring(1);
         
+        // Все остальные абсолютные пути
         if (url.startsWith('/'))
             return proxyPrefix + url.substring(1);
         
