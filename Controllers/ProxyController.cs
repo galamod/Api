@@ -109,15 +109,6 @@ namespace Api.Controllers
                 var requestMessage = new HttpRequestMessage(method, targetUrl);
                 AddGalaxyHeaders(requestMessage);
 
-                // В начале HandleRequest добавьте:
-                if (Request.Method == "OPTIONS")
-                {
-                    Response.Headers.Append("Access-Control-Allow-Origin", "*");
-                    Response.Headers.Append("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-                    Response.Headers.Append("Access-Control-Allow-Headers", "Content-Type, Authorization");
-                    return Ok();
-                }
-
                 // Если есть тело запроса — копируем его
                 if (Request.ContentLength > 0 &&
                     (method == HttpMethod.Post || method == HttpMethod.Put || method.Method == "PATCH"))
@@ -161,6 +152,18 @@ namespace Api.Controllers
                 _logger.LogInformation("Response status: {StatusCode}, ContentType: {ContentType}", 
                     response.StatusCode, contentTypeHeader);
 
+                // ВАЖНО: Для /services/public/ И manifest.json просто возвращаем как есть (БЕЗ МОДИФИКАЦИИ)
+                if (path.StartsWith("services/public/", StringComparison.OrdinalIgnoreCase))
+                {
+                    var content = await response.Content.ReadAsByteArrayAsync();
+
+                    // Добавляем CORS-заголовки для манифеста
+                    Response.Headers.Append("Access-Control-Allow-Origin", "*");
+                    Response.Headers.Append("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+
+                    return new FileContentResult(content, contentTypeHeader ?? "application/octet-stream");
+                }
+
                 // Универсальная обработка контента
                 if (contentTypeHeader != null && (
                     contentTypeHeader.Contains("text/html") ||
@@ -185,29 +188,29 @@ namespace Api.Controllers
                     // СПЕЦИАЛЬНАЯ ОБРАБОТКА ДЛЯ JS
                     else if (contentTypeHeader.Contains("javascript"))
                     {
-                        _logger.LogInformation("Processing JavaScript file: {Path}", path);
+                        // 1. Заменяем абсолютные URL на прокси
+                        text = Regex.Replace(text, @"https?://galaxy\.mobstudio\.ru/web/assets/",
+                            "https://galaxy.mobstudio.ru/web/assets/");
 
-                        // 1. Заменяем /web/assets/ на абсолютные пути (для статики)
-                        text = Regex.Replace(text, @"(['""])(/web/assets/[^'""]+)\1",
-                            "$1https://galaxy.mobstudio.ru$2$1");
+                        text = Regex.Replace(text, @"https?://galaxy\.mobstudio\.ru/services/",
+                            "/api/proxy/services/");
 
-                        // 2. Заменяем /services/ на проксированные пути
-                        text = Regex.Replace(text, @"(['""])(https?://galaxy\.mobstudio\.ru)?/services/([^'""]+)\1",
-                            "$1/api/proxy/services/$3$1");
+                        text = Regex.Replace(text, @"https?://galaxy\.mobstudio\.ru/server_pics/",
+                            "/api/proxy/server_pics/");
 
-                        // 3. Заменяем /server_pics/ на проксированные пути
-                        text = Regex.Replace(text, @"(['""])(https?://galaxy\.mobstudio\.ru)?/server_pics/([^'""]+)\1",
-                            "$1/api/proxy/server_pics/$3$1");
+                        text = Regex.Replace(text, @"https?://galaxy\.mobstudio\.ru/clients/",
+                            "/api/proxy/clients/");
 
-                        // 4. Заменяем /clients/ на проксированные пути
-                        text = Regex.Replace(text, @"(['""])(https?://galaxy\.mobstudio\.ru)?/clients/([^'""]+)\1",
-                            "$1/api/proxy/clients/$3$1");
+                        // 2. Заменяем относительные пути (кроме /web/assets/)
+                        text = Regex.Replace(text, @"""(/web/(?!assets/)[^""]+)""",
+                            "\"/api/proxy$1\"");
 
-                        // 5. Остальные /web/ (кроме /web/assets/) — проксируем
-                        text = Regex.Replace(text, @"(['""])(/web/(?!assets/)[^'""]+)\1",
-                            "$1/api/proxy$2$1");
+                        text = Regex.Replace(text, @"'(/web/(?!assets/)[^']+)'",
+                            "'/api/proxy$1'");
 
-                        _logger.LogInformation("JavaScript processing complete");
+                        // 3. WebSocket URI (если нужно проксировать)
+                        text = Regex.Replace(text, @"""uri""\s*:\s*""cs\.mobstudio\.ru""",
+                            "\"uri\":\"cs.mobstudio.ru\""); // Оставляем без изменений для WebSocket
                     }
                     // СПЕЦИАЛЬНАЯ ОБРАБОТКА ДЛЯ MANIFEST.JSON - переписываем /web/assets/ на абсолютные пути
                     else if (contentTypeHeader.Contains("application/json") || contentTypeHeader.Contains("application/manifest+json") || path.EndsWith("manifest.json"))
@@ -784,6 +787,7 @@ namespace Api.Controllers
             document.addEventListener('keydown', function (event) {
                 if (event.ctrlKey && event.altKey && event.key === 'p') {
                     isPaused = !isPaused;
+                    controlButton.innerText = isPaused ? '▶️' : '⏸️';
                     console.log(isPaused ? 'Script paused via Ctrl+P' : 'Script resumed via Ctrl+P');
                     console.log('log', { message: isPaused ? 'Script paused via Ctrl+P' : 'Script resumed via Ctrl+P' });
                 }
