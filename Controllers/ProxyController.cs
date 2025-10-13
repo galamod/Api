@@ -1478,7 +1478,37 @@ namespace Api.Controllers
 
                         var jsInterceptor = @"(function() {
     const proxyPrefix = '/api/proxy/';
-   
+    
+    function rewriteUrl(url) {
+        if (!url || url.startsWith('#') || url.startsWith('data:') || url.startsWith('blob:') || url.startsWith('mailto:')) 
+            return url;
+        
+        // НЕ переписываем PNG изображения - оставляем оригинальные пути
+        if (url.toLowerCase().endsWith('.png')) {
+            // Если это относительный путь, делаем абсолютным к оригинальному серверу
+            if (url.startsWith('/web/'))
+                return 'https://galaxy.mobstudio.ru' + url;
+            if (url.startsWith('/'))
+                return 'https://galaxy.mobstudio.ru' + url;
+            return url;
+        }
+        
+        // Абсолютные URL с доменом
+        if (url.startsWith('https://galaxy.mobstudio.ru/'))
+            return url.replace('https://galaxy.mobstudio.ru/', proxyPrefix);
+        if (url.startsWith('//galaxy.mobstudio.ru/'))
+            return proxyPrefix + url.substring('//galaxy.mobstudio.ru/'.length);
+        
+        // ВАЖНО: Явно обрабатываем пути /web/
+        if (url.startsWith('/web/'))
+            return proxyPrefix + url.substring(1);
+        
+        // Все остальные абсолютные пути
+        if (url.startsWith('/'))
+            return proxyPrefix + url.substring(1);
+        
+        return url;
+    }
     
     // Перехват fetch
     const origFetch = window.fetch;
@@ -1513,8 +1543,14 @@ namespace Api.Controllers
         }
     }, true);
     
-    // Перехват динамических изменений src/href в DOM
+    // ИСПРАВЛЕНИЕ: Защита от бесконечного цикла
+    let isObserverProcessing = false;
+    
     const observer = new MutationObserver(mutations => {
+        if (isObserverProcessing) return; // Защита от рекурсии
+        
+        isObserverProcessing = true;
+        
         mutations.forEach(mutation => {
             if (mutation.type === 'attributes') {
                 const el = mutation.target;
@@ -1522,11 +1558,20 @@ namespace Api.Controllers
                 if (attrName === 'src' || attrName === 'href') {
                     const val = el.getAttribute(attrName);
                     if (val && !val.startsWith(proxyPrefix) && !val.startsWith('#') && !val.startsWith('data:') && !val.startsWith('https://galaxy.mobstudio.ru')) {
-                        el.setAttribute(attrName, rewriteUrl(val));
+                        const newVal = rewriteUrl(val);
+                        // ВАЖНО: Изменяем только если значение РЕАЛЬНО изменилось
+                        if (newVal !== val) {
+                            el.setAttribute(attrName, newVal);
+                        }
                     }
                 }
             }
         });
+        
+        // Важно: Сбрасываем флаг ПОСЛЕ обработки всех мутаций
+        setTimeout(() => {
+            isObserverProcessing = false;
+        }, 0);
     });
     
     observer.observe(document.documentElement, {
