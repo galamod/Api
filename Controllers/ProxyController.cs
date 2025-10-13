@@ -153,7 +153,7 @@ namespace Api.Controllers
                     response.StatusCode, contentTypeHeader);
 
                 // ВАЖНО: Для /services/public/ И manifest.json просто возвращаем как есть (БЕЗ МОДИФИКАЦИИ)
-                if (path.StartsWith("services/public/", StringComparison.OrdinalIgnoreCase))
+                if (path.StartsWith("services/public/", StringComparison.OrdinalIgnoreCase) || path.StartsWith("web/assets/", StringComparison.OrdinalIgnoreCase))
                 {
                     var content = await response.Content.ReadAsByteArrayAsync();
 
@@ -1621,20 +1621,20 @@ namespace Api.Controllers
                     if (value.StartsWith("/api/proxy") || value.StartsWith("https://"))
                         continue;
 
-                    // /services/public/ — НЕ проксируем, делаем абсолютными к оригиналу
-                    if (value.Contains("/services/public/"))
-                    {
-                        if (value.StartsWith("/services/public/"))
-                            node.SetAttributeValue(attr, "https://galaxy.mobstudio.ru" + value);
-                        continue;
-                    }
-
                     // ИСКЛЮЧЕНИЕ: manifest.json — ПРОКСИРУЕМ (для модификации и избежания CORS)
                     if (value.EndsWith("manifest.json", StringComparison.OrdinalIgnoreCase))
                     {
                         if (value.StartsWith("/"))
                             value = "/api/proxy" + value;
                         node.SetAttributeValue(attr, value);
+                        continue;
+                    }
+
+                    // /services/public/ — НЕ проксируем, делаем абсолютными к оригиналу
+                    if (value.Contains("/services/public/"))
+                    {
+                        if (value.StartsWith("/services/public/"))
+                            node.SetAttributeValue(attr, "https://galaxy.mobstudio.ru" + value);
                         continue;
                     }
 
