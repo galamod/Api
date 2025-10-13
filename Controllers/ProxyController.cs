@@ -161,18 +161,6 @@ namespace Api.Controllers
                 _logger.LogInformation("Response status: {StatusCode}, ContentType: {ContentType}", 
                     response.StatusCode, contentTypeHeader);
 
-                // ВАЖНО: Для /services/public/ И manifest.json просто возвращаем как есть (БЕЗ МОДИФИКАЦИИ)
-                if (path.StartsWith("services/public/", StringComparison.OrdinalIgnoreCase))
-                {
-                    var content = await response.Content.ReadAsByteArrayAsync();
-
-                    // Добавляем CORS-заголовки для манифеста
-                    Response.Headers.Append("Access-Control-Allow-Origin", "*");
-                    Response.Headers.Append("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-
-                    return new FileContentResult(content, contentTypeHeader ?? "application/octet-stream");
-                }
-
                 // Универсальная обработка контента
                 if (contentTypeHeader != null && (
                     contentTypeHeader.Contains("text/html") ||
@@ -194,16 +182,32 @@ namespace Api.Controllers
                         text = Regex.Replace(text, @"url\(\s*(['""]?)(?<!https://galaxy\.mobstudio\.ru)(/web/assets/[^)'""\s]+)\1\s*\)",
                             "url($1https://galaxy.mobstudio.ru$2$1)");
                     }
-                    // СПЕЦИАЛЬНАЯ ОБРАБОТКА ДЛЯ JS - переписываем строки с /web/assets/ на абсолютные пути
+                    // СПЕЦИАЛЬНАЯ ОБРАБОТКА ДЛЯ JS
                     else if (contentTypeHeader.Contains("javascript"))
                     {
-                        // В JS-файлах заменяем строковые литералы, но только если перед /web/assets/ нет домена
-                        text = Regex.Replace(text, @"(['""])(?<!https://galaxy\.mobstudio\.ru)(/web/assets/[^'""]+)\1",
+                        _logger.LogInformation("Processing JavaScript file: {Path}", path);
+
+                        // 1. Заменяем /web/assets/ на абсолютные пути (для статики)
+                        text = Regex.Replace(text, @"(['""])(/web/assets/[^'""]+)\1",
                             "$1https://galaxy.mobstudio.ru$2$1");
 
-                        // Для остальных путей (НЕ /web/assets/) применяем обычное проксирование
-                        text = Regex.Replace(text, @"https://galaxy\.mobstudio\.ru/(?!web/assets/)([^'""\s>]*)", "/api/proxy/$1");
-                        text = Regex.Replace(text, @"(['""])(?<!https://galaxy\.mobstudio\.ru)(/web/(?!assets/)[^'""<>]*)", "$1/api/proxy$2");
+                        // 2. Заменяем /services/ на проксированные пути
+                        text = Regex.Replace(text, @"(['""])(https?://galaxy\.mobstudio\.ru)?/services/([^'""]+)\1",
+                            "$1/api/proxy/services/$3$1");
+
+                        // 3. Заменяем /server_pics/ на проксированные пути
+                        text = Regex.Replace(text, @"(['""])(https?://galaxy\.mobstudio\.ru)?/server_pics/([^'""]+)\1",
+                            "$1/api/proxy/server_pics/$3$1");
+
+                        // 4. Заменяем /clients/ на проксированные пути
+                        text = Regex.Replace(text, @"(['""])(https?://galaxy\.mobstudio\.ru)?/clients/([^'""]+)\1",
+                            "$1/api/proxy/clients/$3$1");
+
+                        // 5. Остальные /web/ (кроме /web/assets/) — проксируем
+                        text = Regex.Replace(text, @"(['""])(/web/(?!assets/)[^'""]+)\1",
+                            "$1/api/proxy$2$1");
+
+                        _logger.LogInformation("JavaScript processing complete");
                     }
                     // СПЕЦИАЛЬНАЯ ОБРАБОТКА ДЛЯ MANIFEST.JSON - переписываем /web/assets/ на абсолютные пути
                     else if (contentTypeHeader.Contains("application/json") || contentTypeHeader.Contains("application/manifest+json") || path.EndsWith("manifest.json"))
@@ -780,7 +784,6 @@ namespace Api.Controllers
             document.addEventListener('keydown', function (event) {
                 if (event.ctrlKey && event.altKey && event.key === 'p') {
                     isPaused = !isPaused;
-                    controlButton.innerText = isPaused ? '▶️' : '⏸️';
                     console.log(isPaused ? 'Script paused via Ctrl+P' : 'Script resumed via Ctrl+P');
                     console.log('log', { message: isPaused ? 'Script paused via Ctrl+P' : 'Script resumed via Ctrl+P' });
                 }
@@ -1600,19 +1603,6 @@ namespace Api.Controllers
                             else
                                 body.AppendChild(proxyScript);
                         }
-
-                        // Разрешаем загрузку iframe с нашего домена
-                        Response.Headers.Append("X-Frame-Options", "ALLOWALL"); // Или "SAMEORIGIN" если нужна защита
-                        Response.Headers.Remove("X-Frame-Options"); // Убираем ограничения от оригинального сервера
-
-                        // Разрешаем CORS для iframe
-                        Response.Headers.Append("Access-Control-Allow-Origin", "*");
-                        Response.Headers.Append("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-                        Response.Headers.Append("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-                        // Разрешаем загрузку ресурсов из iframe
-                        Response.Headers.Remove("Content-Security-Policy");
-                        Response.Headers.Append("Content-Security-Policy", "frame-ancestors 'self' https://galabot.koyeb.app https://galaxy.mobstudio.ru");
 
                         var modifiedHtml = doc.DocumentNode.OuterHtml;
 
