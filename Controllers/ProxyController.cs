@@ -1,5 +1,5 @@
 ﻿using HtmlAgilityPack;
-using Jurassic;
+using Jint;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -1650,10 +1650,11 @@ namespace Api.Controllers
             var path = Path.Combine(_env.ContentRootPath, "Resources", "javascript-obfuscator.browser.js");
             var obfuscatorJs = System.IO.File.ReadAllText(path);
 
-            var engine = new ScriptEngine();
-            engine.Execute(obfuscatorJs);
+            var engine = new Engine(options => options.LimitRecursion(512).Strict());
 
-            engine.SetGlobalValue("inputCode", jsCode);
+            engine.Execute(obfuscatorJs);
+            engine.SetValue("inputCode", jsCode);
+
             var result = engine.Evaluate(@"
         JavaScriptObfuscator.obfuscate(inputCode, {
             compact: true,
@@ -1666,7 +1667,7 @@ namespace Api.Controllers
         }).getObfuscatedCode();
     ");
 
-            return result.ToString();
+            return result.AsString();
         }
 
         private void RewriteRelativeUrls(HtmlDocument doc)
