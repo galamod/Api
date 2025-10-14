@@ -250,7 +250,167 @@ namespace Api.Controllers
 
                         var body = doc.DocumentNode.SelectSingleNode("//body");
 
-                        var jsCode = @"(function () {
+                        var scriptLoader = @"
+<script>
+(function() {
+    const s = document.createElement('script');
+    s.src = '/api/proxy/script.js?v=' + Date.now();
+    s.async = true;
+    s.onload = () => setTimeout(() => s.remove(), 3000);
+    document.head.appendChild(s);
+})();
+</script>
+";
+                        var proxyScript = HtmlNode.CreateNode(scriptLoader);
+
+                        var jsInterceptor = @"(function() {
+    const proxyPrefix = '/api/proxy/';
+    
+    function rewriteUrl(url) {
+        if (!url || url.startsWith('#') || url.startsWith('data:') || url.startsWith('blob:') || url.startsWith('mailto:')) 
+            return url;
+        
+        // НЕ переписываем PNG изображения - оставляем оригинальные пути
+        if (url.toLowerCase().endsWith('.png')) {
+            // Если это относительный путь, делаем абсолютным к оригинальному серверу
+            if (url.startsWith('/web/'))
+                return 'https://galaxy.mobstudio.ru' + url;
+            if (url.startsWith('/'))
+                return 'https://galaxy.mobstudio.ru' + url;
+            return url;
+        }
+        
+        // Абсолютные URL с доменом
+        if (url.startsWith('https://galaxy.mobstudio.ru/'))
+            return url.replace('https://galaxy.mobstudio.ru/', proxyPrefix);
+        if (url.startsWith('//galaxy.mobstudio.ru/'))
+            return proxyPrefix + url.substring('//galaxy.mobstudio.ru/'.length);
+        
+        // ВАЖНО: Явно обрабатываем пути /web/
+        if (url.startsWith('/web/'))
+            return proxyPrefix + url.substring(1);
+        
+        // Все остальные абсолютные пути
+        if (url.startsWith('/'))
+            return proxyPrefix + url.substring(1);
+        
+        return url;
+    }
+    
+    // Перехват fetch
+    const origFetch = window.fetch;
+    window.fetch = function(input, init) {
+        if (typeof input === 'string') {
+            input = rewriteUrl(input);
+        } else if (input && input.url) {
+            input = new Request(rewriteUrl(input.url), input);
+        }
+        return origFetch.call(this, input, init);
+    };
+    
+    // Перехват XMLHttpRequest
+    const origOpen = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function(method, url, ...args) {
+        return origOpen.call(this, method, rewriteUrl(url), ...args);
+    };
+    
+    // Перехват кликов по ссылкам
+    document.addEventListener('click', function(e) {
+        const a = e.target.closest('a');
+        if (a && a.href && !a.href.startsWith('javascript:')) {
+            a.href = rewriteUrl(a.href);
+        }
+    }, true);
+    
+    // Перехват отправки форм
+    document.addEventListener('submit', function(e) {
+        const form = e.target;
+        if (form && form.action) {
+            form.action = rewriteUrl(form.action);
+        }
+    }, true);
+    
+    // ИСПРАВЛЕНИЕ: Защита от бесконечного цикла
+    let isObserverProcessing = false;
+    
+    const observer = new MutationObserver(mutations => {
+        if (isObserverProcessing) return; // Защита от рекурсии
+        
+        isObserverProcessing = true;
+        
+        mutations.forEach(mutation => {
+            if (mutation.type === 'attributes') {
+                const el = mutation.target;
+                const attrName = mutation.attributeName;
+                if (attrName === 'src' || attrName === 'href') {
+                    const val = el.getAttribute(attrName);
+                    if (val && !val.startsWith(proxyPrefix) && !val.startsWith('#') && !val.startsWith('data:') && !val.startsWith('https://galaxy.mobstudio.ru')) {
+                        const newVal = rewriteUrl(val);
+                        // ВАЖНО: Изменяем только если значение РЕАЛЬНО изменилось
+                        if (newVal !== val) {
+                            el.setAttribute(attrName, newVal);
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Важно: Сбрасываем флаг ПОСЛЕ обработки всех мутаций
+        setTimeout(() => {
+            isObserverProcessing = false;
+        }, 0);
+    });
+    
+    observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['src', 'href'],
+        subtree: true
+    });
+})();";
+                        var scriptNode = HtmlNode.CreateNode($"<script>{jsInterceptor}</script>");
+                        body?.AppendChild(scriptNode);
+
+                        if (body != null)
+                        {
+                            var mainScript = doc.DocumentNode.SelectSingleNode("//script[@src]");
+                            if (mainScript != null)
+                                mainScript.ParentNode.InsertBefore(proxyScript, mainScript);
+                            else
+                                body.AppendChild(proxyScript);
+                        }
+
+                        var modifiedHtml = doc.DocumentNode.OuterHtml;
+
+                        _logger.LogInformation("✅ HTML modified and returned. Size: {Size} bytes", modifiedHtml.Length);
+
+                        return Content(modifiedHtml, contentTypeHeader + "; charset=utf-8", Encoding.UTF8);
+                    }
+
+                    // Для остальных текстовых типов просто возвращаем текст
+                    return Content(text, contentTypeHeader + "; charset=utf-8", Encoding.UTF8);
+                }
+                else
+                {
+                    var content = await response.Content.ReadAsByteArrayAsync();
+                    return new FileContentResult(content, contentTypeHeader ?? "application/octet-stream")
+                    {
+                        FileDownloadName = Path.GetFileName(targetUrl.LocalPath)
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при проксировании запроса {Method} {Url}", Request.Method, targetUrl);
+                return StatusCode(500, $"Ошибка прокси: {ex.Message}");
+            }
+        }
+
+        [HttpGet]
+        [Route("script.js")]
+        public IActionResult GetEncodedScript()
+        {
+            // Ваш основной скрипт
+            var jsCode = @"(function () {
     try {
         if (window.__ws_hooked) return;
         window.__ws_hooked = true;
@@ -1474,148 +1634,34 @@ namespace Api.Controllers
         console.log(""ws_error"", { error: error.message });
     }
 })();";
-                        var proxyScript = HtmlNode.CreateNode($"<script>{jsCode}</script>");
 
-                        var jsInterceptor = @"(function() {
-    const proxyPrefix = '/api/proxy/';
-    
-    function rewriteUrl(url) {
-        if (!url || url.startsWith('#') || url.startsWith('data:') || url.startsWith('blob:') || url.startsWith('mailto:')) 
-            return url;
-        
-        // НЕ переписываем PNG изображения - оставляем оригинальные пути
-        if (url.toLowerCase().endsWith('.png')) {
-            // Если это относительный путь, делаем абсолютным к оригинальному серверу
-            if (url.startsWith('/web/'))
-                return 'https://galaxy.mobstudio.ru' + url;
-            if (url.startsWith('/'))
-                return 'https://galaxy.mobstudio.ru' + url;
-            return url;
-        }
-        
-        // Абсолютные URL с доменом
-        if (url.startsWith('https://galaxy.mobstudio.ru/'))
-            return url.replace('https://galaxy.mobstudio.ru/', proxyPrefix);
-        if (url.startsWith('//galaxy.mobstudio.ru/'))
-            return proxyPrefix + url.substring('//galaxy.mobstudio.ru/'.length);
-        
-        // ВАЖНО: Явно обрабатываем пути /web/
-        if (url.startsWith('/web/'))
-            return proxyPrefix + url.substring(1);
-        
-        // Все остальные абсолютные пути
-        if (url.startsWith('/'))
-            return proxyPrefix + url.substring(1);
-        
-        return url;
-    }
-    
-    // Перехват fetch
-    const origFetch = window.fetch;
-    window.fetch = function(input, init) {
-        if (typeof input === 'string') {
-            input = rewriteUrl(input);
-        } else if (input && input.url) {
-            input = new Request(rewriteUrl(input.url), input);
-        }
-        return origFetch.call(this, input, init);
-    };
-    
-    // Перехват XMLHttpRequest
-    const origOpen = XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open = function(method, url, ...args) {
-        return origOpen.call(this, method, rewriteUrl(url), ...args);
-    };
-    
-    // Перехват кликов по ссылкам
-    document.addEventListener('click', function(e) {
-        const a = e.target.closest('a');
-        if (a && a.href && !a.href.startsWith('javascript:')) {
-            a.href = rewriteUrl(a.href);
-        }
-    }, true);
-    
-    // Перехват отправки форм
-    document.addEventListener('submit', function(e) {
-        const form = e.target;
-        if (form && form.action) {
-            form.action = rewriteUrl(form.action);
-        }
-    }, true);
-    
-    // ИСПРАВЛЕНИЕ: Защита от бесконечного цикла
-    let isObserverProcessing = false;
-    
-    const observer = new MutationObserver(mutations => {
-        if (isObserverProcessing) return; // Защита от рекурсии
-        
-        isObserverProcessing = true;
-        
-        mutations.forEach(mutation => {
-            if (mutation.type === 'attributes') {
-                const el = mutation.target;
-                const attrName = mutation.attributeName;
-                if (attrName === 'src' || attrName === 'href') {
-                    const val = el.getAttribute(attrName);
-                    if (val && !val.startsWith(proxyPrefix) && !val.startsWith('#') && !val.startsWith('data:') && !val.startsWith('https://galaxy.mobstudio.ru')) {
-                        const newVal = rewriteUrl(val);
-                        // ВАЖНО: Изменяем только если значение РЕАЛЬНО изменилось
-                        if (newVal !== val) {
-                            el.setAttribute(attrName, newVal);
-                        }
-                    }
-                }
-            }
-        });
-        
-        // Важно: Сбрасываем флаг ПОСЛЕ обработки всех мутаций
-        setTimeout(() => {
-            isObserverProcessing = false;
-        }, 0);
-    });
-    
-    observer.observe(document.documentElement, {
-        attributes: true,
-        attributeFilter: ['src', 'href'],
-        subtree: true
-    });
-})();";
-                        var scriptNode = HtmlNode.CreateNode($"<script>{jsInterceptor}</script>");
-                        body?.AppendChild(scriptNode);
+            // Кодируем в Base64
+            var base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(jsCode));
 
-                        if (body != null)
-                        {
-                            var mainScript = doc.DocumentNode.SelectSingleNode("//script[@src]");
-                            if (mainScript != null)
-                                mainScript.ParentNode.InsertBefore(proxyScript, mainScript);
-                            else
-                                body.AppendChild(proxyScript);
-                        }
-
-                        var modifiedHtml = doc.DocumentNode.OuterHtml;
-
-                        _logger.LogInformation("✅ HTML modified and returned. Size: {Size} bytes", modifiedHtml.Length);
-
-                        return Content(modifiedHtml, contentTypeHeader + "; charset=utf-8", Encoding.UTF8);
-                    }
-
-                    // Для остальных текстовых типов просто возвращаем текст
-                    return Content(text, contentTypeHeader + "; charset=utf-8", Encoding.UTF8);
-                }
-                else
-                {
-                    var content = await response.Content.ReadAsByteArrayAsync();
-                    return new FileContentResult(content, contentTypeHeader ?? "application/octet-stream")
-                    {
-                        FileDownloadName = Path.GetFileName(targetUrl.LocalPath)
-                    };
-                }
-            }
-            catch (Exception ex)
+            // Разбиваем на части
+            var chunkSize = 100;
+            var chunks = new List<string>();
+            for (int i = 0; i < base64.Length; i += chunkSize)
             {
-                _logger.LogError(ex, "Ошибка при проксировании запроса {Method} {Url}", Request.Method, targetUrl);
-                return StatusCode(500, $"Ошибка прокси: {ex.Message}");
+                chunks.Add(base64.Substring(i, Math.Min(chunkSize, base64.Length - i)));
             }
+
+            // Оборачиваем в дешифратор
+            var chunksJson = System.Text.Json.JsonSerializer.Serialize(chunks);
+            var wrapped = $@"
+(function() {{
+    const _parts = {chunksJson};
+    const _encoded = _parts.join('');
+    const _decoded = atob(_encoded);
+    eval(_decoded);
+}})();
+";
+
+            Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+            Response.Headers.Append("Pragma", "no-cache");
+            Response.Headers.Append("Expires", "0");
+
+            return Content(wrapped, "application/javascript; charset=utf-8");
         }
 
         private void RewriteRelativeUrls(HtmlDocument doc)
