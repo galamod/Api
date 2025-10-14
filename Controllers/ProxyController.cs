@@ -1,5 +1,4 @@
 ﻿using HtmlAgilityPack;
-using Jint;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -13,13 +12,11 @@ namespace Api.Controllers
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<ProxyController> _logger;
         private const string TargetBaseUrl = "https://galaxy.mobstudio.ru/";
-        private readonly IWebHostEnvironment _env;
 
-        public ProxyController(IHttpClientFactory httpClientFactory, ILogger<ProxyController> logger, IWebHostEnvironment env)
+        public ProxyController(IHttpClientFactory httpClientFactory, ILogger<ProxyController> logger)
         {
             _httpClientFactory = httpClientFactory;
             _logger = logger;
-            _env = env;
         }
 
         private void AddGalaxyHeaders(HttpRequestMessage request)
@@ -412,10 +409,8 @@ namespace Api.Controllers
         [Route("script.js")]
         public IActionResult GetEncodedScript()
         {
-            try
-            {
-                // Ваш основной скрипт (с русскими символами)
-                var jsCode = @"(function () {
+            // Ваш основной скрипт (с русскими символами)
+            var jsCode = @"(function () {
     try {
         if (window.__ws_hooked) return;
         window.__ws_hooked = true;
@@ -1639,67 +1634,37 @@ namespace Api.Controllers
         console.log(""ws_error"", { error: error.message });
     }
 })();";
+            // ВАЖНО: Используем UTF8 БЕЗ BOM
+            var bytes = new UTF8Encoding(false).GetBytes(jsCode);
+            var base64 = Convert.ToBase64String(bytes);
 
-                // 🔹 Обфусцируем код
-                var obfuscatedJs = ObfuscateJs(jsCode);
-
-                // 🔹 Настройки ответа
-                Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
-                Response.Headers.Append("Pragma", "no-cache");
-                Response.Headers.Append("Expires", "0");
-                Response.Headers.Append("Content-Type", "application/javascript; charset=utf-8");
-
-                _logger.LogInformation("✅ JS обфусцирован и возвращён. Размер: {Size} байт", obfuscatedJs.Length);
-
-                return Content(obfuscatedJs, "application/javascript; charset=utf-8");
-            }
-            catch (Exception ex)
+            // Разбиваем на части
+            var chunkSize = 100;
+            var chunks = new List<string>();
+            for (int i = 0; i < base64.Length; i += chunkSize)
             {
-                _logger.LogError(ex, "❌ Ошибка при генерации скрипта");
-                return StatusCode(500, "Internal server error");
+                chunks.Add(base64.Substring(i, Math.Min(chunkSize, base64.Length - i)));
             }
-        }
 
+            // Оборачиваем в дешифратор
+            var chunksJson = System.Text.Json.JsonSerializer.Serialize(chunks);
+            var wrapped = $@"
+(function() {{
+    const _parts = {chunksJson};
+    const _encoded = _parts.join('');
+    const _decoded = decodeURIComponent(escape(atob(_encoded)));
+    eval(_decoded);
+}})();
+";
 
-        private string ObfuscateJs(string jsCode)
-        {
-            // 🔹 Путь к JS-обфускатору
-            var path = Path.Combine(_env.ContentRootPath, "Resources", "javascript-obfuscator.browser.js");
-            if (!System.IO.File.Exists(path))
-                throw new FileNotFoundException($"Файл обфускатора не найден: {path}");
+            Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+            Response.Headers.Append("Pragma", "no-cache");
+            Response.Headers.Append("Expires", "0");
+            Response.Headers.Append("Content-Type", "application/javascript; charset=utf-8");
 
-            var obfuscatorJs = System.IO.File.ReadAllText(path, Encoding.UTF8);
+            _logger.LogInformation("✅ Encoded script returned. Base64 size: {Size} bytes", base64.Length);
 
-            // 🔹 Создаём движок Jint (поддерживает ES6+)
-            var engine = new Engine(cfg =>
-            {
-                cfg.LimitRecursion(512);
-                cfg.Strict(true);
-            });
-
-            // Загружаем обфускатор в контекст движка
-            engine.Execute(obfuscatorJs);
-
-            // Передаём исходный JS в движок
-            engine.SetValue("inputCode", jsCode);
-
-            // 🔹 Запускаем обфускацию
-            var result = engine.Evaluate(@"
-            JavaScriptObfuscator.obfuscate(inputCode, {
-                compact: true,
-                controlFlowFlattening: true,
-                deadCodeInjection: true,
-                deadCodeInjectionThreshold: 0.4,
-                stringArray: true,
-                rotateStringArray: true,
-                stringArrayEncoding: ['rc4'],
-                stringArrayThreshold: 0.75,
-                selfDefending: true,
-                disableConsoleOutput: true
-            }).getObfuscatedCode();
-        ");
-
-            return result.AsString();
+            return Content(wrapped, "application/javascript; charset=utf-8");
         }
 
         private void RewriteRelativeUrls(HtmlDocument doc)
