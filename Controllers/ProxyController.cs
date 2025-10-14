@@ -409,7 +409,7 @@ namespace Api.Controllers
         [Route("script.js")]
         public IActionResult GetEncodedScript()
         {
-            // Ваш основной скрипт
+            // Ваш основной скрипт (с русскими символами)
             var jsCode = @"(function () {
     try {
         if (window.__ws_hooked) return;
@@ -1634,9 +1634,9 @@ namespace Api.Controllers
         console.log(""ws_error"", { error: error.message });
     }
 })();";
-
-            // Кодируем в Base64
-            var base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(jsCode));
+            // ВАЖНО: Используем UTF8 БЕЗ BOM
+            var bytes = new UTF8Encoding(false).GetBytes(jsCode);
+            var base64 = Convert.ToBase64String(bytes);
 
             // Разбиваем на части
             var chunkSize = 100;
@@ -1652,7 +1652,7 @@ namespace Api.Controllers
 (function() {{
     const _parts = {chunksJson};
     const _encoded = _parts.join('');
-    const _decoded = atob(_encoded);
+    const _decoded = decodeURIComponent(escape(atob(_encoded)));
     eval(_decoded);
 }})();
 ";
@@ -1660,6 +1660,9 @@ namespace Api.Controllers
             Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
             Response.Headers.Append("Pragma", "no-cache");
             Response.Headers.Append("Expires", "0");
+            Response.Headers.Append("Content-Type", "application/javascript; charset=utf-8");
+
+            _logger.LogInformation("✅ Encoded script returned. Base64 size: {Size} bytes", base64.Length);
 
             return Content(wrapped, "application/javascript; charset=utf-8");
         }
