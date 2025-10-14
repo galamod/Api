@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -409,7 +410,7 @@ namespace Api.Controllers
         [Route("script.js")]
         public IActionResult GetEncodedScript()
         {
-            // Ваш основной скрипт (с русскими символами)
+            // 1) Ваш основной скрипт (UTF-8, русские символы)
             var jsCode = @"(function () {
     try {
         if (window.__ws_hooked) return;
@@ -1634,38 +1635,79 @@ namespace Api.Controllers
         console.log(""ws_error"", { error: error.message });
     }
 })();";
-            // ВАЖНО: Используем UTF8 БЕЗ BOM
-            var bytes = new UTF8Encoding(false).GetBytes(jsCode);
-            var base64 = Convert.ToBase64String(bytes);
 
-            // Разбиваем на части
-            var chunkSize = 100;
-            var chunks = new List<string>();
-            for (int i = 0; i < base64.Length; i += chunkSize)
+            // 2) Создаём временные файлы
+            var inputPath = Path.ChangeExtension(Path.GetTempFileName(), ".js");
+            var outputPath = Path.ChangeExtension(Path.GetTempFileName(), ".js");
+
+            System.IO.File.WriteAllText(inputPath, jsCode, new UTF8Encoding(false)); // UTF8 без BOM
+
+            try
             {
-                chunks.Add(base64.Substring(i, Math.Min(chunkSize, base64.Length - i)));
+                // 3) Команда для obfuscator — используем npx чтобы не требовать глобальной установки
+                // Настройки — подставляем нужные опции CLI
+                var obfArgs = $"javascript-obfuscator \"{inputPath}\" --output \"{outputPath}\" " +
+                              "--compact true " +
+                              "--control-flow-flattening true " +
+                              "--control-flow-flattening-threshold 0.75 " +
+                              "--dead-code-injection true " +
+                              "--dead-code-injection-threshold 0.4 " +
+                              "--string-array true " +
+                              "--string-array-encoding rc4 " +
+                              "--string-array-threshold 0.75 " +
+                              "--rotate-string-array true " +
+                              "--self-defending true " +
+                              "--debug-protection true " +
+                              "--disable-console-output true ";
+
+                var psi = new ProcessStartInfo
+                {
+                    FileName = "npx",
+                    Arguments = obfArgs,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory // или где у вас node_modules
+                };
+
+                using (var proc = Process.Start(psi))
+                {
+                    proc.WaitForExit(60_000); // ждём до 60s — тестируй по своему сценарию
+                    var err = proc.StandardError.ReadToEnd();
+                    var outp = proc.StandardOutput.ReadToEnd();
+
+                    if (proc.ExitCode != 0)
+                    {
+                        _logger.LogError("javascript-obfuscator failed: {Err}", err);
+                        // fallback: вернуть минимизированный (или исходный) скрипт
+                        Response.Headers.Append("Content-Type", "application/javascript; charset=utf-8");
+                        return Content(jsCode, "application/javascript; charset=utf-8");
+                    }
+                }
+
+                // 4) Прочитать обфусцированный результат
+                var obfuscated = System.IO.File.ReadAllText(outputPath, new UTF8Encoding(false));
+
+                // 5) HTTP-заголовки (как у тебя)
+                Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+                Response.Headers.Append("Pragma", "no-cache");
+                Response.Headers.Append("Expires", "0");
+                Response.Headers.Append("Content-Type", "application/javascript; charset=utf-8");
+
+                _logger.LogInformation("✅ Obfuscated script returned. Original {OrigLen} bytes, obf {ObfLen} bytes",
+                    jsCode.Length, obfuscated.Length);
+
+                return Content(obfuscated, "application/javascript; charset=utf-8");
             }
-
-            // Оборачиваем в дешифратор
-            var chunksJson = System.Text.Json.JsonSerializer.Serialize(chunks);
-            var wrapped = $@"
-(function() {{
-    const _parts = {chunksJson};
-    const _encoded = _parts.join('');
-    const _decoded = decodeURIComponent(escape(atob(_encoded)));
-    eval(_decoded);
-}})();
-";
-
-            Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
-            Response.Headers.Append("Pragma", "no-cache");
-            Response.Headers.Append("Expires", "0");
-            Response.Headers.Append("Content-Type", "application/javascript; charset=utf-8");
-
-            _logger.LogInformation("✅ Encoded script returned. Base64 size: {Size} bytes", base64.Length);
-
-            return Content(wrapped, "application/javascript; charset=utf-8");
+            finally
+            {
+                // cleanup temp files
+                try { if (System.IO.File.Exists(inputPath)) System.IO.File.Delete(inputPath); } catch { }
+                try { if (System.IO.File.Exists(outputPath)) System.IO.File.Delete(outputPath); } catch { }
+            }
         }
+
 
         private void RewriteRelativeUrls(HtmlDocument doc)
         {
