@@ -13,11 +13,13 @@ namespace Api.Controllers
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<ProxyController> _logger;
         private const string TargetBaseUrl = "https://galaxy.mobstudio.ru/";
+        private readonly IWebHostEnvironment _env;
 
-        public ProxyController(IHttpClientFactory httpClientFactory, ILogger<ProxyController> logger)
+        public ProxyController(IHttpClientFactory httpClientFactory, ILogger<ProxyController> logger, IWebHostEnvironment env)
         {
             _httpClientFactory = httpClientFactory;
             _logger = logger;
+            _env = env;
         }
 
         private void AddGalaxyHeaders(HttpRequestMessage request)
@@ -1645,8 +1647,10 @@ namespace Api.Controllers
 
         private string ObfuscateJs(string jsCode)
         {
+            var path = Path.Combine(_env.ContentRootPath, "Resources", "javascript-obfuscator.browser.js");
+            var obfuscatorJs = System.IO.File.ReadAllText(path);
+
             var engine = new ScriptEngine();
-            var obfuscatorJs = System.IO.File.ReadAllText("Resources/javascript-obfuscator.browser.js");
             engine.Execute(obfuscatorJs);
 
             engine.SetGlobalValue("inputCode", jsCode);
