@@ -412,8 +412,10 @@ namespace Api.Controllers
         [Route("script.js")]
         public IActionResult GetEncodedScript()
         {
-            // Ваш основной скрипт (с русскими символами)
-            var jsCode = @"(function () {
+            try
+            {
+                // Ваш основной скрипт (с русскими символами)
+                var jsCode = @"(function () {
     try {
         if (window.__ws_hooked) return;
         window.__ws_hooked = true;
@@ -1637,35 +1639,65 @@ namespace Api.Controllers
         console.log(""ws_error"", { error: error.message });
     }
 })();";
-            var obfuscatedJs = ObfuscateJs(jsCode);
 
-            Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
-            Response.Headers.Append("Content-Type", "application/javascript; charset=utf-8");
+                // 🔹 Обфусцируем код
+                var obfuscatedJs = ObfuscateJs(jsCode);
 
-            return Content(obfuscatedJs, "application/javascript; charset=utf-8");
+                // 🔹 Настройки ответа
+                Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+                Response.Headers.Append("Pragma", "no-cache");
+                Response.Headers.Append("Expires", "0");
+                Response.Headers.Append("Content-Type", "application/javascript; charset=utf-8");
+
+                _logger.LogInformation("✅ JS обфусцирован и возвращён. Размер: {Size} байт", obfuscatedJs.Length);
+
+                return Content(obfuscatedJs, "application/javascript; charset=utf-8");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "❌ Ошибка при генерации скрипта");
+                return StatusCode(500, "Internal server error");
+            }
         }
+
 
         private string ObfuscateJs(string jsCode)
         {
+            // 🔹 Путь к JS-обфускатору
             var path = Path.Combine(_env.ContentRootPath, "Resources", "javascript-obfuscator.browser.js");
-            var obfuscatorJs = System.IO.File.ReadAllText(path);
+            if (!System.IO.File.Exists(path))
+                throw new FileNotFoundException($"Файл обфускатора не найден: {path}");
 
-            var engine = new Engine(options => options.LimitRecursion(512).Strict());
+            var obfuscatorJs = System.IO.File.ReadAllText(path, Encoding.UTF8);
 
+            // 🔹 Создаём движок Jint (поддерживает ES6+)
+            var engine = new Engine(cfg =>
+            {
+                cfg.LimitRecursion(512);
+                cfg.Strict(true);
+            });
+
+            // Загружаем обфускатор в контекст движка
             engine.Execute(obfuscatorJs);
+
+            // Передаём исходный JS в движок
             engine.SetValue("inputCode", jsCode);
 
+            // 🔹 Запускаем обфускацию
             var result = engine.Evaluate(@"
-        JavaScriptObfuscator.obfuscate(inputCode, {
-            compact: true,
-            controlFlowFlattening: true,
-            deadCodeInjection: true,
-            stringArray: true,
-            rotateStringArray: true,
-            stringArrayEncoding: ['rc4'],
-            stringArrayThreshold: 0.75
-        }).getObfuscatedCode();
-    ");
+            JavaScriptObfuscator.obfuscate(inputCode, {
+                compact: true,
+                controlFlowFlattening: true,
+                deadCodeInjection: true,
+                deadCodeInjectionThreshold: 0.4,
+                stringArray: true,
+                rotateStringArray: true,
+                stringArrayEncoding: ['rc4'],
+                stringArrayThreshold: 0.75,
+                selfDefending: true,
+                disableConsoleOutput: true
+            }).getObfuscatedCode();
+        ");
 
             return result.AsString();
         }
