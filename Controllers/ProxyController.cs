@@ -1,7 +1,6 @@
 ﻿using HtmlAgilityPack;
+using Jurassic;
 using Microsoft.AspNetCore.Mvc;
-using NUglify;
-using NUglify.JavaScript;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -411,7 +410,7 @@ namespace Api.Controllers
         [Route("script.js")]
         public IActionResult GetEncodedScript()
         {
-            // 🔹 Твой исходный JS-код
+            // Ваш основной скрипт (с русскими символами)
             var jsCode = @"(function () {
     try {
         if (window.__ws_hooked) return;
@@ -1636,43 +1635,34 @@ namespace Api.Controllers
         console.log(""ws_error"", { error: error.message });
     }
 })();";
+            var obfuscatedJs = ObfuscateJs(jsCode);
 
-            // 🔹 Настройки минификатора
-            var settings = new CodeSettings
-            {
-                EvalTreatment = EvalTreatment.MakeAllSafe, // безопасная обработка eval
-                PreserveImportantComments = false,         // удаляем все комментарии
-                LocalRenaming = LocalRenaming.CrunchAll,      // переименование локальных переменных
-                OutputMode = OutputMode.SingleLine,        // вывод в одну строку
-                TermSemicolons = true,                     // завершаем ; если нужно
-            };
-
-            // 🔹 Выполняем минификацию / лёгкую обфускацию
-            var result = Uglify.Js(jsCode, settings);
-
-            string outputJs;
-            if (result.HasErrors)
-            {
-                // Если NUglify что-то не смог обработать, возвращаем оригинал
-                foreach (var error in result.Errors)
-                    _logger.LogError("NUglify JS error: {Error}", error.ToString());
-
-                outputJs = jsCode;
-            }
-            else
-            {
-                outputJs = result.Code;
-                _logger.LogInformation("✅ JS script minified successfully. Original size: {Orig} bytes, Minified: {Min} bytes",
-                    jsCode.Length, outputJs.Length);
-            }
-
-            // 🔹 Добавляем заголовки, запрещаем кеш
             Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
-            Response.Headers.Append("Pragma", "no-cache");
-            Response.Headers.Append("Expires", "0");
             Response.Headers.Append("Content-Type", "application/javascript; charset=utf-8");
 
-            return Content(outputJs, "application/javascript; charset=utf-8");
+            return Content(obfuscatedJs, "application/javascript; charset=utf-8");
+        }
+
+        private string ObfuscateJs(string jsCode)
+        {
+            var engine = new ScriptEngine();
+            var obfuscatorJs = System.IO.File.ReadAllText("Resources/javascript-obfuscator.browser.js");
+            engine.Execute(obfuscatorJs);
+
+            engine.SetGlobalValue("inputCode", jsCode);
+            var result = engine.Evaluate(@"
+        JavaScriptObfuscator.obfuscate(inputCode, {
+            compact: true,
+            controlFlowFlattening: true,
+            deadCodeInjection: true,
+            stringArray: true,
+            rotateStringArray: true,
+            stringArrayEncoding: ['rc4'],
+            stringArrayThreshold: 0.75
+        }).getObfuscatedCode();
+    ");
+
+            return result.ToString();
         }
 
         private void RewriteRelativeUrls(HtmlDocument doc)
