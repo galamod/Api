@@ -13,22 +13,6 @@ namespace Api.Controllers
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<ProxyController> _logger;
         private const string TargetBaseUrl = "https://galaxy.mobstudio.ru/";
-        // Однократная загрузка обфусцированного скрипта и вычисление ETag/версии
-        private static readonly Lazy<(byte[] Bytes, string ETag, string Version)> ObfScript = new(() =>
-        {
-            var path = Path.Combine(AppContext.BaseDirectory, "wwwroot", "proxy", "script.obf.js");
-            if (!System.IO.File.Exists(path))
-            {
-                return (Array.Empty<byte>(), "\"dev\"", "dev");
-            }
-
-            var bytes = System.IO.File.ReadAllBytes(path);
-            using var sha256 = SHA256.Create();
-            var hash = Convert.ToHexString(sha256.ComputeHash(bytes)).ToLowerInvariant();
-            var etag = $"W/\"{hash}\"";
-            var version = hash[..16]; // короткий токен для ?v=
-            return (bytes, etag, version);
-        }, isThreadSafe: true);
         public ProxyController(IHttpClientFactory httpClientFactory, ILogger<ProxyController> logger)
         {
             _httpClientFactory = httpClientFactory;
@@ -247,9 +231,6 @@ namespace Api.Controllers
 
                         RewriteRelativeUrls(doc);
 
-                        var scriptVersion = ObfScript.Value.Version;
-                        var scriptUrl = $"/api/proxy/script.js?v={scriptVersion}";
-
                         var head = doc.DocumentNode.SelectSingleNode("//head");
                         if (head != null)
                         {
@@ -265,14 +246,6 @@ namespace Api.Controllers
                             var baseTag = doc.CreateElement("base");
                             baseTag.SetAttributeValue("href", "/api/proxy/web/");
                             head.PrependChild(baseTag);
-
-                            // Добавляем preload для раннего скачивания скрипта
-                            var preloadLink = doc.CreateElement("link");
-                            preloadLink.SetAttributeValue("rel", "preload");
-                            preloadLink.SetAttributeValue("href", scriptUrl);
-                            preloadLink.SetAttributeValue("as", "script");
-                            preloadLink.SetAttributeValue("crossorigin", "anonymous");
-                            head.PrependChild(preloadLink);
 
                             var jsInterceptor = @"(function() {
     if (window.__gxProxyInjected) return;
@@ -377,36 +350,28 @@ namespace Api.Controllers
                             head.PrependChild(interceptorNode);
                         }
 
-
                         var body = doc.DocumentNode.SelectSingleNode("//body");
 
-                        // НОВЫЙ подход: добавляем defer скрипт ДО первого defer-скрипта страницы
-                        var scriptTag = doc.CreateElement("script");
-                        scriptTag.SetAttributeValue("src", scriptUrl);
-                        scriptTag.SetAttributeValue("defer", "defer");
-                        scriptTag.SetAttributeValue("crossorigin", "anonymous");
+                        var scriptLoader = @"
+<script>
+(function() {
+    const s = document.createElement('script');
+    s.src = '/api/proxy/script.js?v=' + Date.now();
+    s.async = true;
+    s.onload = () => setTimeout(() => s.remove(), 3000);
+    document.head.appendChild(s);
+})();
+</script>
+";
+                        var proxyScript = HtmlNode.CreateNode(scriptLoader);
 
                         if (body != null)
                         {
-                            // Ищем первый defer/async скрипт или просто первый скрипт
-                            var firstScript = doc.DocumentNode.SelectSingleNode("//script[@defer or @async or @src]");
-                            if (firstScript != null)
-                            {
-                                firstScript.ParentNode.InsertBefore(scriptTag, firstScript);
-                                _logger.LogInformation("✅ Injected defer script BEFORE first script");
-                            }
+                            var mainScript = doc.DocumentNode.SelectSingleNode("//script[@src]");
+                            if (mainScript != null)
+                                mainScript.ParentNode.InsertBefore(proxyScript, mainScript);
                             else
-                            {
-                                // Если нет скриптов, добавляем в конец body
-                                body.AppendChild(scriptTag);
-                                _logger.LogInformation("✅ Injected defer script at end of body");
-                            }
-                        }
-                        else if (head != null)
-                        {
-                            // Fallback: если нет body, добавляем в head
-                            head.AppendChild(scriptTag);
-                            _logger.LogInformation("⚠️ No body found, injected script in head");
+                                body.AppendChild(proxyScript);
                         }
 
                         var modifiedHtml = doc.DocumentNode.OuterHtml;
@@ -439,30 +404,39 @@ namespace Api.Controllers
         [Route("script.js")]
         public IActionResult GetEncodedScript()
         {
-            var (bytes, etag, version) = ObfScript.Value;
+            // Ваш основной скрипт (с русскими символами)
+            var jsCode = "alert('Привет, мир!');";
+            // ВАЖНО: Используем UTF8 БЕЗ BOM
+            var bytes = new UTF8Encoding(false).GetBytes(jsCode);
+            var base64 = Convert.ToBase64String(bytes);
 
-            // Проверяем ETag для 304 Not Modified
-            if (Request.Headers.TryGetValue("If-None-Match", out var clientEtag) && clientEtag == etag)
+            // Разбиваем на части
+            var chunkSize = 100;
+            var chunks = new List<string>();
+            for (int i = 0; i < base64.Length; i += chunkSize)
             {
-                _logger.LogInformation("✅ Script not modified (ETag match), returning 304");
-                return StatusCode(304);
+                chunks.Add(base64.Substring(i, Math.Min(chunkSize, base64.Length - i)));
             }
 
-            if (bytes.Length == 0)
-            {
-                _logger.LogWarning("⚠️ Obfuscated script not found, returning empty response");
-                return NotFound("Obfuscated script not found. Please place script.obf.js in wwwroot/proxy/");
-            }
+            // Оборачиваем в дешифратор
+            var chunksJson = System.Text.Json.JsonSerializer.Serialize(chunks);
+            var wrapped = $@"
+(function() {{
+    const _parts = {chunksJson};
+    const _encoded = _parts.join('');
+    const _decoded = decodeURIComponent(escape(atob(_encoded)));
+    eval(_decoded);
+}})();
+";
 
-            // Устанавливаем заголовки для агрессивного кэширования
-            Response.Headers.Append("ETag", etag);
-            Response.Headers.Append("Cache-Control", "public, max-age=31536000, immutable"); // 1 год
+            Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+            Response.Headers.Append("Pragma", "no-cache");
+            Response.Headers.Append("Expires", "0");
             Response.Headers.Append("Content-Type", "application/javascript; charset=utf-8");
-            Response.Headers.Append("X-Content-Type-Options", "nosniff");
 
-            _logger.LogInformation("✅ Serving obfuscated script. Size: {Size} bytes, Version: {Version}", bytes.Length, version);
+            _logger.LogInformation("✅ Encoded script returned. Base64 size: {Size} bytes", base64.Length);
 
-            return File(bytes, "application/javascript; charset=utf-8");
+            return Content(wrapped, "application/javascript; charset=utf-8");
         }
 
         private void RewriteRelativeUrls(HtmlDocument doc)
