@@ -1,1 +1,1224 @@
-﻿function _0x222e(_0x2062b3, _0x25a0b6) { const _0x59d2db = _0x503f(); return _0x222e = function (_0x11a6e9, _0x34c876) { _0x11a6e9 = _0x11a6e9 - 0x164; let _0x1dffb6 = _0x59d2db[_0x11a6e9]; if (_0x222e['incizL'] === undefined) { var _0x26e3d3 = function (_0x19b3ba) { const _0x28a817 = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/='; let _0x524587 = '', _0xb4bf0d = '', _0x4bcba9 = _0x524587 + _0x26e3d3; for (let _0x202167 = 0x0, _0x442b8c, _0xbf05e6, _0x2a0b0d = 0x0; _0xbf05e6 = _0x19b3ba['charAt'](_0x2a0b0d++); ~_0xbf05e6 && (_0x442b8c = _0x202167 % 0x4 ? _0x442b8c * 0x40 + _0xbf05e6 : _0xbf05e6, _0x202167++ % 0x4) ? _0x524587 += _0x4bcba9['charCodeAt'](_0x2a0b0d + 0xa) - 0xa !== 0x0 ? String['fromCharCode'](0xff & _0x442b8c >> (-0x2 * _0x202167 & 0x6)) : _0x202167 : 0x0) { _0xbf05e6 = _0x28a817['indexOf'](_0xbf05e6); } for (let _0x28c74e = 0x0, _0x4ffb7f = _0x524587['length']; _0x28c74e < _0x4ffb7f; _0x28c74e++) { _0xb4bf0d += '%' + ('00' + _0x524587['charCodeAt'](_0x28c74e)['toString'](0x10))['slice'](-0x2); } return decodeURIComponent(_0xb4bf0d); }; const _0x222ef2 = function (_0x1222f0, _0x311500) { let _0x9426a6 = [], _0x3e7ead = 0x0, _0x474816, _0x5e1b40 = ''; _0x1222f0 = _0x26e3d3(_0x1222f0); let _0x32297a; for (_0x32297a = 0x0; _0x32297a < 0x100; _0x32297a++) { _0x9426a6[_0x32297a] = _0x32297a; } for (_0x32297a = 0x0; _0x32297a < 0x100; _0x32297a++) { _0x3e7ead = (_0x3e7ead + _0x9426a6[_0x32297a] + _0x311500['charCodeAt'](_0x32297a % _0x311500['length'])) % 0x100, _0x474816 = _0x9426a6[_0x32297a], _0x9426a6[_0x32297a] = _0x9426a6[_0x3e7ead], _0x9426a6[_0x3e7ead] = _0x474816; } _0x32297a = 0x0, _0x3e7ead = 0x0; for (let _0x21f2eb = 0x0; _0x21f2eb < _0x1222f0['length']; _0x21f2eb++) { _0x32297a = (_0x32297a + 0x1) % 0x100, _0x3e7ead = (_0x3e7ead + _0x9426a6[_0x32297a]) % 0x100, _0x474816 = _0x9426a6[_0x32297a], _0x9426a6[_0x32297a] = _0x9426a6[_0x3e7ead], _0x9426a6[_0x3e7ead] = _0x474816, _0x5e1b40 += String['fromCharCode'](_0x1222f0['charCodeAt'](_0x21f2eb) ^ _0x9426a6[(_0x9426a6[_0x32297a] + _0x9426a6[_0x3e7ead]) % 0x100]); } return _0x5e1b40; }; _0x222e['WRGnqG'] = _0x222ef2, _0x2062b3 = arguments, _0x222e['incizL'] = !![]; } const _0x41f9f5 = _0x59d2db[0x0], _0x4f2288 = _0x11a6e9 + _0x41f9f5, _0x503f04 = _0x2062b3[_0x4f2288]; if (!_0x503f04) { if (_0x222e['MsqggM'] === undefined) { const _0x1d66bb = function (_0x3a4c01) { this['yIspMb'] = _0x3a4c01, this['SNgRUB'] = [0x1, 0x0, 0x0], this['ZHNQBz'] = function () { return 'newState'; }, this['GeQINM'] = '\x5cw+\x20*\x5c(\x5c)\x20*{\x5cw+\x20*', this['IClNUd'] = '[\x27|\x22].+[\x27|\x22];?\x20*}'; }; _0x1d66bb['prototype']['ajzlxn'] = function () { const _0x3c9455 = new RegExp(this['GeQINM'] + this['IClNUd']), _0x205968 = _0x3c9455['test'](this['ZHNQBz']['toString']()) ? --this['SNgRUB'][0x1] : --this['SNgRUB'][0x0]; return this['EnZoBh'](_0x205968); }, _0x1d66bb['prototype']['EnZoBh'] = function (_0x895e74) { if (!Boolean(~_0x895e74)) return _0x895e74; return this['qzxnFA'](this['yIspMb']); }, _0x1d66bb['prototype']['qzxnFA'] = function (_0x34036f) { for (let _0x486088 = 0x0, _0x3eae62 = this['SNgRUB']['length']; _0x486088 < _0x3eae62; _0x486088++) { this['SNgRUB']['push'](Math['round'](Math['random']())), _0x3eae62 = this['SNgRUB']['length']; } return _0x34036f(this['SNgRUB'][0x0]); }, new _0x1d66bb(_0x222e)['ajzlxn'](), _0x222e['MsqggM'] = !![]; } _0x1dffb6 = _0x222e['WRGnqG'](_0x1dffb6, _0x34c876), _0x2062b3[_0x4f2288] = _0x1dffb6; } else _0x1dffb6 = _0x503f04; return _0x1dffb6; }, _0x222e(_0x2062b3, _0x25a0b6); } (function (_0x227a26, _0x407a35) { const _0x4c6553 = _0x222e, _0xf09b31 = _0x227a26(); while (!![]) { try { const _0x43d719 = parseInt(_0x4c6553(0x2ac, 'qMhY')) / 0x1 + parseInt(_0x4c6553(0x1c6, 'HhCS')) / 0x2 + parseInt(_0x4c6553(0x28e, '(U](')) / 0x3 + -parseInt(_0x4c6553(0x44c, 'k8kt')) / 0x4 + -parseInt(_0x4c6553(0x42c, 'Q[vD')) / 0x5 * (parseInt(_0x4c6553(0x261, 'GJGH')) / 0x6) + parseInt(_0x4c6553(0x213, '8Xi*')) / 0x7 + -parseInt(_0x4c6553(0x3ec, '5NN1')) / 0x8; if (_0x43d719 === _0x407a35) break; else _0xf09b31['push'](_0xf09b31['shift']()); } catch (_0x29dff5) { _0xf09b31['push'](_0xf09b31['shift']()); } } }(_0x503f, 0x6687c), (function () { const _0x40d868 = _0x222e, _0x5586c2 = { 'Aamcs': '(((.+)+)+)+$', 'dCKqA': function (_0x12b8be, _0x3f1980) { return _0x12b8be(_0x3f1980); }, 'FiVSi': function (_0x5775b4, _0x1ddb81) { return _0x5775b4 + _0x1ddb81; }, 'IHVOs': 'return\x20(function()\x20', 'kzmic': '{}.constructor(\x22return\x20this\x22)(\x20)', 'aSnym': function (_0x15be62) { return _0x15be62(); }, 'lIMYz': _0x40d868(0x4f6, '5NN1'), 'XYnkY': 'warn', 'Lnfiu': _0x40d868(0x31e, 'UEbN'), 'oNZcw': 'error', 'DQxXk': _0x40d868(0x3d5, '4@#w'), 'gViOL': _0x40d868(0x366, 'Mm!H'), 'SrVyP': _0x40d868(0x1a4, 'ddmf'), 'lEJBO': function (_0x387cd7, _0x22b2e6) { return _0x387cd7 < _0x22b2e6; }, 'ylcVn': '1|4|7|5|2|11|10|0|3|9|12|8|6', 'eKkAa': _0x40d868(0x21b, 'Il#!'), 'GhCtR': _0x40d868(0x307, 'GJGH'), 'AsdhX': 'REGISTER', 'tJKYU': 'VIEW_SCRIPT', 'HsyhE': function (_0x579f82, _0x192ca9, _0x3e7231) { return _0x579f82(_0x192ca9, _0x3e7231); }, 'OcPAu': 'ADD_VIEW', 'rCIlV': _0x40d868(0x442, 'FfhT'), 'tRPeJ': _0x40d868(0x4e6, 'gQqX'), 'PIrnm': function (_0x27cc39, _0x56400b) { return _0x27cc39(_0x56400b); }, 'bVQmJ': function (_0xaef45b, _0x349b85) { return _0xaef45b(_0x349b85); }, 'xHjNB': 'JOIN', 'bbAcb': function (_0x1e63e9, _0x21e7a1, _0x2e0dd7, _0x488d5a) { return _0x1e63e9(_0x21e7a1, _0x2e0dd7, _0x488d5a); }, 'gowXQ': _0x40d868(0x350, '$%Ul'), 'BBHVk': _0x40d868(0x289, 'gQqX'), 'ZeWlW': function (_0x1b9d51, _0x2e6db2, _0x57f262) { return _0x1b9d51(_0x2e6db2, _0x57f262); }, 'IEgTL': _0x40d868(0x34f, 'OeWv'), 'WKYdj': function (_0x5ba66e, _0x6666a7, _0x1a757d) { return _0x5ba66e(_0x6666a7, _0x1a757d); }, 'QeNNW': _0x40d868(0x3bc, 'ddmf'), 'zUBUs': _0x40d868(0x196, '8[C4'), 'THeae': function (_0x3ee1cc, _0x3b6924) { return _0x3ee1cc(_0x3b6924); }, 'luiQq': _0x40d868(0x4b9, '5NN1'), 'EVcHE': function (_0x19148b) { return _0x19148b(); }, 'Qcela': _0x40d868(0x4c1, '9GGE'), 'vhmuv': _0x40d868(0x1b4, 'k8kt'), 'aSaZq': _0x40d868(0x211, '$%Ul'), 'UfItg': 'KICK', 'ubUXH': _0x40d868(0x18b, 'XTP]'), 'dsJYu': 'PRISON', 'RnjwL': function (_0xab4450, _0x38cddd) { return _0xab4450(_0x38cddd); }, 'ZMzFl': function (_0xf9780, _0x354091) { return _0xf9780(_0x354091); }, 'ARpKW': '40px', 'BWwhF': _0x40d868(0x1f8, 'qMhY'), 'GLAAn': _0x40d868(0x42d, 'Q[vD'), 'OJmGK': _0x40d868(0x4a3, 'H$G*'), 'OYUPD': 'none', 'uAPXS': _0x40d868(0x1d1, 'Q[vD'), 'PAyTJ': _0x40d868(0x19a, 'gW&!'), 'QrKaX': _0x40d868(0x2c7, 'gQqX'), 'AWSEp': _0x40d868(0x4b1, 'gQqX'), 'rkwYk': _0x40d868(0x3b0, 'qFQZ'), 'gbLEB': 'autoPause', 'GZSXC': function (_0x3f5c97, _0x3ff59b) { return _0x3f5c97 === _0x3ff59b; }, 'HfAEK': function (_0x47c2b9, _0x54ed0c) { return _0x47c2b9 === _0x54ed0c; }, 'HjeMR': _0x40d868(0x280, '8Xi*'), 'iqJco': _0x40d868(0x392, '$cA^'), 'QmAYo': _0x40d868(0x36b, 'Htfr'), 'FpdPE': _0x40d868(0x1b5, '(JNg'), 'Royca': function (_0x2c58ba, _0x1c4ea5) { return _0x2c58ba === _0x1c4ea5; }, 'bViCm': 'Script\x20paused\x20via\x20Ctrl+P', 'aNXcp': _0x40d868(0x23c, 'qFQZ'), 'LveHW': 'en-US', 'VkDza': _0x40d868(0x4b5, 'S0KG'), 'cxaNx': _0x40d868(0x43a, 'DnmJ'), 'mPqFW': function (_0x59bd9b, _0x55974e) { return _0x59bd9b === _0x55974e; }, 'XcbRV': 'true', 'SNPpK': function (_0x2ff066, _0x379599) { return _0x2ff066 === _0x379599; }, 'oTuZz': _0x40d868(0x443, '$cA^'), 'ngVXy': function (_0x342a18) { return _0x342a18(); }, 'danMG': function (_0x2a33fc, _0x1ec96b) { return _0x2a33fc === _0x1ec96b; }, 'dDybG': '✅\x20Скрипт\x20запущен!', 'KtYuM': function (_0x1594cf) { return _0x1594cf(); }, 'yqagO': function (_0x400015, _0x5bd4a1) { return _0x400015 > _0x5bd4a1; }, 'aCkQy': 'landscape', 'hPyAw': 'portrait', 'Imyeu': _0x40d868(0x164, 'yX!y'), 'SwVFN': _0x40d868(0x453, 'Bzn@'), 'wgGSI': _0x40d868(0x3a8, 'uHsm'), 'FzuyW': function (_0x473475, _0x224571, _0x152915) { return _0x473475(_0x224571, _0x152915); }, 'HYkmE': _0x40d868(0x249, '8Xi*'), 'FNJmb': _0x40d868(0x384, 'gQqX'), 'HNwje': _0x40d868(0x427, 'OeWv'), 'eeeLP': function (_0x6a03e7, _0x5ba982) { return _0x6a03e7 === _0x5ba982; }, 'odoUP': 'No\x20planet\x20names\x20found.', 'ByDeX': function (_0x26e5dc, _0x3f1810) { return _0x26e5dc * _0x3f1810; }, 'sypdY': _0x40d868(0x43b, '9GGE'), 'BGxUX': function (_0x3d9f42, _0x1a38bb, _0x15d1ee) { return _0x3d9f42(_0x1a38bb, _0x15d1ee); }, 'yybNV': function (_0x2323ad, _0x3d84cd) { return _0x2323ad / _0x3d84cd; }, 'JHXFQ': function (_0x3005be) { return _0x3005be(); }, 'QWNTd': function (_0x4a40aa, _0x19f750) { return _0x4a40aa || _0x19f750; }, 'KNLYs': function (_0x1b1d47, _0x3ec73d) { return _0x1b1d47 && _0x3ec73d; }, 'qOILD': function (_0x389a97, _0x5de415) { return _0x389a97(_0x5de415); }, 'qHMqf': function (_0x666959) { return _0x666959(); }, 'dmdzP': function (_0x234c7b, _0x5e69f7) { return _0x234c7b !== _0x5e69f7; }, 'VNTuI': function (_0x46737e) { return _0x46737e(); }, 'EkhvS': function (_0x4b02e4) { return _0x4b02e4(); }, 'IaXEg': function (_0x7187ab, _0x34716f) { return _0x7187ab === _0x34716f; }, 'FxOtX': _0x40d868(0x400, 'UEbN'), 'PXYYK': function (_0x1e39b0, _0x7bb965, _0x3e0378) { return _0x1e39b0(_0x7bb965, _0x3e0378); }, 'jlSyU': function (_0x13afc7, _0x3e4d4b) { return _0x13afc7(_0x3e4d4b); }, 'RcWjM': function (_0x4870d2, _0xee66fc) { return _0x4870d2(_0xee66fc); }, 'OstZO': function (_0x5288eb, _0x1ff635) { return _0x5288eb === _0x1ff635; }, 'xmHwp': function (_0x299a04, _0x2a0090) { return _0x299a04 === _0x2a0090; }, 'MDcOi': function (_0x43a7f5, _0x1bb9bc) { return _0x43a7f5 === _0x1bb9bc; }, 'hPYoJ': function (_0x2aaffb, _0x4b71d2) { return _0x2aaffb === _0x4b71d2; }, 'LamRK': function (_0x28b7e1, _0x4978b1, _0x13b8b1) { return _0x28b7e1(_0x4978b1, _0x13b8b1); }, 'jMBno': function (_0x4bcfe4, _0x59fbfd) { return _0x4bcfe4 === _0x59fbfd; }, 'ARFRo': function (_0x2065b0, _0xf06f65) { return _0x2065b0 === _0xf06f65; }, 'tWbut': function (_0x4db457, _0x297076, _0x19f33e) { return _0x4db457(_0x297076, _0x19f33e); }, 'yYhSy': function (_0x39ff54, _0x3f427c) { return _0x39ff54 !== _0x3f427c; }, 'hnXBf': _0x40d868(0x286, '8[C4'), 'GTbGD': function (_0x39ffdc, _0x1ab3d9) { return _0x39ffdc > _0x1ab3d9; }, 'vMqDD': _0x40d868(0x3e0, 'o(my'), 'dePEK': function (_0x213a19, _0x4c61a7, _0x295c42) { return _0x213a19(_0x4c61a7, _0x295c42); }, 'MWuci': function (_0x2431b6, _0x57779a) { return _0x2431b6 < _0x57779a; }, 'XsfmW': function (_0x90f813) { return _0x90f813(); }, 'yRAxC': _0x40d868(0x2d1, '$cA^'), 'UZIAm': _0x40d868(0x1a5, 'HhCS'), 'PJyRE': 'Заряжаем\x20разрывное\x20ядро!', 'NQkUe': _0x40d868(0x4b7, 'Z(Ox'), 'hNslW': 'Заряжаем\x20огненное\x20ядро!', 'puxIT': function (_0x5a7e07, _0x4f1045) { return _0x5a7e07 + _0x4f1045; }, 'FbLYO': function (_0x3233c8, _0x49a0b9) { return _0x3233c8 + _0x49a0b9; }, 'AYDcL': function (_0x5be000, _0x43f5f6) { return _0x5be000 + _0x43f5f6; }, 'daRtI': function (_0x202bab, _0x1c7a5f) { return _0x202bab * _0x1c7a5f; }, 'hkriC': function (_0x3fe434, _0x15ed29) { return _0x3fe434 + _0x15ed29; }, 'zfnfy': function (_0x119a2b, _0x18c062, _0x3e980b) { return _0x119a2b(_0x18c062, _0x3e980b); }, 'GYiBa': 'data', 'aXhWP': function (_0x524931, _0x1da368) { return _0x524931(_0x1da368); }, 'idpOA': function (_0x5a19ae, _0xb27ae0, _0x4a1231) { return _0x5a19ae(_0xb27ae0, _0x4a1231); }, 'lWBxm': function (_0x1fa919, _0xe78722) { return _0x1fa919(_0xe78722); }, 'VPhSS': function (_0x209c7b, _0x3c6340) { return _0x209c7b === _0x3c6340; }, 'pdrGp': function (_0x1049e2, _0x4b9140) { return _0x1049e2 + _0x4b9140; }, 'UeCTi': '.dialog__close-button', 'MmeaE': function (_0x32bc62, _0x2fe93c) { return _0x32bc62 <= _0x2fe93c; }, 'EDPxQ': _0x40d868(0x1cc, 'Bzn@'), 'oxRet': function (_0x3a0dfd, _0x40efa2) { return _0x3a0dfd >= _0x40efa2; }, 'rlJpz': _0x40d868(0x3aa, '(JNg'), 'liiEY': _0x40d868(0x1d5, '5NN1'), 'wBXzw': _0x40d868(0x3dc, 'gQqX'), 'jBUXO': 'ws_error', 'JxwRn': '45px', 'APqhZ': _0x40d868(0x1bb, '#*z6'), 'iozfF': _0x40d868(0x2b5, '4#r5'), 'ppNiW': _0x40d868(0x178, '#*z6'), 'tZauX': _0x40d868(0x2ad, 'Il#!'), 'nUIlF': _0x40d868(0x354, 'HhCS'), 'UUPsJ': _0x40d868(0x1b0, 'PjzU'), 'suUXv': '#ccc', 'jOctu': _0x40d868(0x316, 'UEbN'), 'bWxiI': 'Функция\x20включения\x20скрипта\x20сработала.', 'wwonM': function (_0x31bbb0, _0x428532) { return _0x31bbb0 !== _0x428532; }, 'BiAhM': _0x40d868(0x1eb, 'Il#!'), 'xyopE': function (_0x32a2b9, _0x2b67a7) { return _0x32a2b9 >= _0x2b67a7; }, 'PgfXc': _0x40d868(0x35e, 'S0KG'), 'JaaIA': _0x40d868(0x3a6, '^*Eq'), 'faoJz': function (_0xc05a48) { return _0xc05a48(); }, 'kIvum': _0x40d868(0x4ed, '$%Ul'), 'GgKBy': _0x40d868(0x4ec, 'ukSU'), 'yBUCt': 'Извлечено:', 'aMbvy': 'Автоматически\x20заряжаем\x20выбранное\x20ядро\x20в\x20пушку.', 'WMbJx': _0x40d868(0x2c8, '#*z6'), 'bbAxL': function (_0x144d24, _0xa41da6) { return _0x144d24 < _0xa41da6; }, 'ciTZp': _0x40d868(0x2b9, 'L4Sy'), 'FTihO': function (_0x4a4890, _0x460502, _0x10d434) { return _0x4a4890(_0x460502, _0x10d434); }, 'jZhce': function (_0x48f0a8, _0x24cb8c) { return _0x48f0a8(_0x24cb8c); }, 'OzFJM': _0x40d868(0x237, 'GJGH'), 'EwkWu': '300', 'liItx': function (_0x290a13, _0x318baf) { return _0x290a13 - _0x318baf; }, 'yWOkd': _0x40d868(0x239, 'Htfr'), 'RdiJo': _0x40d868(0x2e7, '$%Ul'), 'raFjr': _0x40d868(0x356, 'S0KG'), 'uutin': _0x40d868(0x18e, '$cA^'), 'BYQIW': 'Загорелся\x20красный\x20свет!', 'AbiUN': _0x40d868(0x336, 'F)#Z'), 'FzGOU': function (_0x162225, _0x8d799c) { return _0x162225 && _0x8d799c; }, 'caqaX': _0x40d868(0x3c7, 'L4Sy'), 'fPlPx': function (_0x4e9321, _0x63986c) { return _0x4e9321 / _0x63986c; }, 'lLBZT': _0x40d868(0x1d8, 'FfhT'), 'rqqGe': _0x40d868(0x16e, 'ukSU'), 'ZvNPU': function (_0xecc717, _0x5e2d4) { return _0xecc717 !== _0x5e2d4; }, 'TVrMS': function (_0x384502, _0x269cdb) { return _0x384502 <= _0x269cdb; }, 'Alqrf': function (_0x70362b, _0xae26c1) { return _0x70362b <= _0xae26c1; }, 'lgBpH': function (_0x2ae160, _0x218ea1) { return _0x2ae160 >= _0x218ea1; }, 'xiptf': function (_0x56b34c, _0x131861) { return _0x56b34c + _0x131861; }, 'yKYkM': function (_0xccdef4, _0x555c05) { return _0xccdef4 - _0x555c05; }, 'qCLvA': _0x40d868(0x1b8, '8[C4'), 'kmpQs': function (_0x3450bf, _0x5bbad7) { return _0x3450bf + _0x5bbad7; }, 'CFcPt': _0x40d868(0x45c, '(JNg'), 'gXXCi': _0x40d868(0x26e, 'L4Sy'), 'DOmOz': _0x40d868(0x28d, '(U]('), 'MxtzP': _0x40d868(0x225, '8Xi*'), 'aCXtQ': 'message', 'jHzcU': _0x40d868(0x381, '5NN1'), 'abGSe': _0x40d868(0x500, 'ddmf'), 'rhlbX': _0x40d868(0x32a, '@13h'), 'QtGeF': _0x40d868(0x45a, '5NN1'), 'vOros': '8px\x200\x200\x208px', 'dqTwi': _0x40d868(0x4d8, 'UEbN'), 'JMLlK': _0x40d868(0x375, 'gW&!'), 'cQDgu': '1000', 'HQLjI': _0x40d868(0x284, 'KZKM'), 'LXrOy': 'all\x200.3s\x20ease', 'JVaaL': _0x40d868(0x1c8, 'UEbN'), 'OrQNk': _0x40d868(0x43d, 'GJGH'), 'eCHbE': _0x40d868(0x334, 'ddmf'), 'HAPpq': _0x40d868(0x322, 'Bzn@'), 'ZdzhZ': '100%', 'gvopn': _0x40d868(0x3af, 'XTP]'), 'tYiAa': _0x40d868(0x506, 'DnmJ'), 'ElQod': 'fadeIn\x200.3s\x20ease', 'SNFBp': '#2E3440', 'ZjCte': _0x40d868(0x4ad, '@13h'), 'hePwy': '12px', 'xCroI': '320px', 'SAKGh': _0x40d868(0x3b3, '4#r5'), 'oPGtO': _0x40d868(0x1ba, '8[C4'), 'HNkQq': _0x40d868(0x233, 'ukSU'), 'DPCpp': _0x40d868(0x431, '9GGE'), 'gagbk': _0x40d868(0x401, '4@#w'), 'XbIGi': _0x40d868(0x23e, 'qMhY'), 'nPUeg': _0x40d868(0x39d, 'FfhT'), 'gAGaR': function (_0x29bcdf, _0x4621fb) { return _0x29bcdf === _0x4621fb; }, 'EHhaV': _0x40d868(0x20a, 'PjzU'), 'rXrSX': _0x40d868(0x21c, 'UEbN'), 'ltMlX': 'style', 'fIaHS': _0x40d868(0x229, '$%Ul'), 'JQZZM': _0x40d868(0x318, '4#r5'), 'TTaPi': _0x40d868(0x332, 'gW&!'), 'TLVni': _0x40d868(0x34e, 'gW&!'), 'djNjz': _0x40d868(0x2a1, ']xk7'), 'FZcVd': _0x40d868(0x217, 'Htfr'), 'ZzPUi': _0x40d868(0x475, 'F)#Z'), 'WExKi': _0x40d868(0x338, ']xk7'), 'ZkCeD': _0x40d868(0x46d, 'ddmf'), 'eTZJK': _0x40d868(0x1ef, 'Mm!H'), 'PIxSQ': _0x40d868(0x22d, 'gW&!'), 'KIIBE': _0x40d868(0x4af, 'PjzU'), 'EfpTo': function (_0x6f4eb6, _0x543bc8, _0x1b75f2) { return _0x6f4eb6(_0x543bc8, _0x1b75f2); }, 'mLsUt': function (_0x29bc5b, _0x3f62f1, _0x5c7479) { return _0x29bc5b(_0x3f62f1, _0x5c7479); }, 'KdOGx': function (_0xd2aa20) { return _0xd2aa20(); } }, _0x557138 = (function () { let _0x413f92 = !![]; return function (_0x1576f4, _0x5526a1) { const _0x4b4def = _0x413f92 ? function () { const _0x150e0c = _0x222e; if (_0x5526a1) { const _0x3bb1e2 = _0x5526a1[_0x150e0c(0x38f, 'GJGH')](_0x1576f4, arguments); return _0x5526a1 = null, _0x3bb1e2; } } : function () { }; return _0x413f92 = ![], _0x4b4def; }; }()), _0x17374c = _0x5586c2[_0x40d868(0x2ab, '(JNg')](_0x557138, this, function () { const _0x2992dd = _0x40d868; return _0x17374c[_0x2992dd(0x300, '4@#w')]()[_0x2992dd(0x4ca, 'qFQZ')](_0x5586c2[_0x2992dd(0x35f, '8Xi*')])[_0x2992dd(0x45b, 'FfhT')]()[_0x2992dd(0x420, '#*z6')](_0x17374c)[_0x2992dd(0x235, 'Bzn@')](_0x5586c2[_0x2992dd(0x2e9, 'ddmf')]); }); _0x5586c2[_0x40d868(0x2dd, '#*z6')](_0x17374c); const _0x114ed2 = (function () { let _0x1363da = !![]; return function (_0x56b4f8, _0x440204) { const _0x3ff734 = _0x1363da ? function () { const _0x5e8dba = _0x222e; if (_0x440204) { const _0x175fc1 = _0x440204[_0x5e8dba(0x1d0, 'KZKM')](_0x56b4f8, arguments); return _0x440204 = null, _0x175fc1; } } : function () { }; return _0x1363da = ![], _0x3ff734; }; }()), _0x4ea786 = _0x5586c2[_0x40d868(0x489, '$cA^')](_0x114ed2, this, function () { const _0x1eb116 = _0x40d868; let _0x32b2fb; try { const _0x35217b = _0x5586c2['dCKqA'](Function, _0x5586c2[_0x1eb116(0x291, 'DnmJ')](_0x5586c2['FiVSi'](_0x5586c2['IHVOs'], _0x5586c2['kzmic']), ');')); _0x32b2fb = _0x5586c2[_0x1eb116(0x185, 'gQqX')](_0x35217b); } catch (_0x194942) { _0x32b2fb = window; } const _0xff3720 = _0x32b2fb[_0x1eb116(0x3b1, 'Mm!H')] = _0x32b2fb['console'] || {}, _0x389129 = [_0x5586c2[_0x1eb116(0x454, '(U](')], _0x5586c2[_0x1eb116(0x40e, 'GJGH')], _0x5586c2[_0x1eb116(0x16d, 'k8kt')], _0x5586c2[_0x1eb116(0x4d3, 'ukSU')], _0x5586c2['DQxXk'], _0x5586c2[_0x1eb116(0x36a, 'k8kt')], _0x5586c2['SrVyP']]; for (let _0x136707 = 0x0; _0x5586c2['lEJBO'](_0x136707, _0x389129[_0x1eb116(0x4bf, '#*z6')]); _0x136707++) { const _0x3ae9aa = _0x114ed2['constructor'][_0x1eb116(0x273, 'HhCS')][_0x1eb116(0x22f, 'FfhT')](_0x114ed2), _0x2f9cec = _0x389129[_0x136707], _0x30c846 = _0xff3720[_0x2f9cec] || _0x3ae9aa; _0x3ae9aa['__proto__'] = _0x114ed2[_0x1eb116(0x3b6, 'W[AP')](_0x114ed2), _0x3ae9aa[_0x1eb116(0x4d5, 'k8kt')] = _0x30c846[_0x1eb116(0x2d6, 'vR46')]['bind'](_0x30c846), _0xff3720[_0x2f9cec] = _0x3ae9aa; } }); _0x5586c2[_0x40d868(0x4d0, 'S0KG')](_0x4ea786); try { if (window['__ws_hooked']) return; window[_0x40d868(0x4fd, 'Q[vD')] = !![]; const _0x3a5dd7 = window['WebSocket'], _0x4f50d6 = WebSocket[_0x40d868(0x2a5, '$cA^')][_0x40d868(0x16f, 'L4Sy')]; window['WebSocket'] = function (_0x34612a, _0xd42b3a) { const _0x4ecfe9 = _0x40d868, _0x177d61 = { 'CLWuB': _0x5586c2[_0x4ecfe9(0x26a, 'k8kt')], 'JQahO': function (_0x4e3df7, _0x50d81f) { const _0x4d9b2b = _0x4ecfe9; return _0x5586c2[_0x4d9b2b(0x476, '(JNg')](_0x4e3df7, _0x50d81f); }, 'KlcFQ': _0x5586c2[_0x4ecfe9(0x47d, 'hv62')], 'HVdmx': _0x5586c2[_0x4ecfe9(0x423, 'HhCS')], 'AnBCg': _0x5586c2['wBXzw'], 'PmRqu': _0x5586c2[_0x4ecfe9(0x3c2, 'UEbN')], 'juRDX': _0x5586c2[_0x4ecfe9(0x2b0, 'o(my')], 'XhqkF': _0x5586c2[_0x4ecfe9(0x3e8, '(JNg')], 'sMxAe': _0x5586c2[_0x4ecfe9(0x4e7, 'W[AP')], 'pnuNu': _0x5586c2[_0x4ecfe9(0x4c8, '@13h')], 'GpgLJ': _0x5586c2['ppNiW'], 'TlRiB': _0x5586c2[_0x4ecfe9(0x1e4, 'Htfr')], 'AGWDE': _0x5586c2[_0x4ecfe9(0x49a, 'Q[vD')], 'zmnOv': _0x5586c2[_0x4ecfe9(0x1fd, 'S0KG')], 'vMaKv': _0x5586c2[_0x4ecfe9(0x31f, '4#r5')], 'SwzUC': _0x5586c2[_0x4ecfe9(0x4be, 'KZKM')], 'qnJYp': _0x5586c2[_0x4ecfe9(0x328, 'o(my')], 'gDszs': _0x5586c2[_0x4ecfe9(0x317, 'H$G*')], 'pJlgz': _0x5586c2['jOctu'], 'JSsQw': _0x5586c2['bWxiI'], 'tfJwI': function (_0x1f028a) { const _0x195b21 = _0x4ecfe9; return _0x5586c2[_0x195b21(0x1be, 'Htfr')](_0x1f028a); }, 'Eriqt': function (_0x11abff, _0x1e2233) { return _0x5586c2['RnjwL'](_0x11abff, _0x1e2233); }, 'XnjED': function (_0x2c974f, _0x47eb53) { const _0x1eea81 = _0x4ecfe9; return _0x5586c2[_0x1eea81(0x394, 'DnmJ')](_0x2c974f, _0x47eb53); }, 'ZjJEI': _0x5586c2[_0x4ecfe9(0x2b4, '$cA^')], 'kyoJG': function (_0x354966, _0x26e81d) { const _0x7ec77c = _0x4ecfe9; return _0x5586c2[_0x7ec77c(0x253, 'qMhY')](_0x354966, _0x26e81d); }, 'SLqgz': _0x5586c2[_0x4ecfe9(0x4ac, 'W[AP')], 'YPrvo': _0x5586c2[_0x4ecfe9(0x49b, 'Z(Ox')], 'TTAih': _0x5586c2[_0x4ecfe9(0x165, 'ukSU')], 'vyCNI': function (_0x39e781) { const _0x14d7e9 = _0x4ecfe9; return _0x5586c2[_0x14d7e9(0x1ed, 'W[AP')](_0x39e781); }, 'FxWml': _0x5586c2[_0x4ecfe9(0x216, 'XTP]')], 'EQrhp': function (_0x5a59ee) { const _0x558877 = _0x4ecfe9; return _0x5586c2[_0x558877(0x1bd, '(JNg')](_0x5a59ee); }, 'SmWyu': _0x5586c2[_0x4ecfe9(0x202, 'KZKM')], 'Wynld': _0x5586c2['yBUCt'], 'ADtyp': _0x5586c2[_0x4ecfe9(0x3bf, 'vByk')], 'wAVRT': _0x5586c2[_0x4ecfe9(0x226, '$cA^')], 'DEHqB': function (_0x11040a, _0x4a55fe) { const _0x477278 = _0x4ecfe9; return _0x5586c2[_0x477278(0x446, 'uHsm')](_0x11040a, _0x4a55fe); }, 'mRUiQ': function (_0x87bfe8, _0x27fc13) { const _0x314968 = _0x4ecfe9; return _0x5586c2[_0x314968(0x47f, 'HhCS')](_0x87bfe8, _0x27fc13); }, 'oLHEW': function (_0x33c285, _0x1a3a02) { return _0x5586c2['SNPpK'](_0x33c285, _0x1a3a02); }, 'cxIRB': function (_0x59d77b, _0x288e78) { const _0x2bd2ce = _0x4ecfe9; return _0x5586c2[_0x2bd2ce(0x49e, 'qFQZ')](_0x59d77b, _0x288e78); }, 'bKFpN': function (_0x5dd7d, _0x1ae575) { const _0x2dee70 = _0x4ecfe9; return _0x5586c2[_0x2dee70(0x3f3, 'FmO6')](_0x5dd7d, _0x1ae575); }, 'GRntU': _0x5586c2[_0x4ecfe9(0x46c, 'OeWv')], 'CeYzn': function (_0x488204, _0x243ab6, _0x27c73a) { const _0x31e346 = _0x4ecfe9; return _0x5586c2[_0x31e346(0x419, '9GGE')](_0x488204, _0x243ab6, _0x27c73a); }, 'Zyvxw': function (_0x2c41f7, _0x7f4600, _0x28c75d) { return _0x5586c2['FTihO'](_0x2c41f7, _0x7f4600, _0x28c75d); }, 'DZrwr': function (_0x43a2e4, _0x3246b0) { const _0xf9b1bb = _0x4ecfe9; return _0x5586c2[_0xf9b1bb(0x1f9, '8Xi*')](_0x43a2e4, _0x3246b0); }, 'UvkXP': function (_0x33c78d, _0x5d9887) { const _0x8f0432 = _0x4ecfe9; return _0x5586c2[_0x8f0432(0x416, 'H$G*')](_0x33c78d, _0x5d9887); }, 'CpqFc': function (_0x368d06, _0x2e8c43) { const _0x4f8d50 = _0x4ecfe9; return _0x5586c2[_0x4f8d50(0x281, 'uHsm')](_0x368d06, _0x2e8c43); }, 'ueSTh': function (_0x4dc9b9, _0x51256e) { const _0x185e99 = _0x4ecfe9; return _0x5586c2[_0x185e99(0x3ce, 'w9AB')](_0x4dc9b9, _0x51256e); }, 'Ljyfl': _0x5586c2[_0x4ecfe9(0x3c9, 'o(my')], 'hKHZp': function (_0x1afcfc, _0x1e106c) { const _0x57cc51 = _0x4ecfe9; return _0x5586c2[_0x57cc51(0x357, 'F)#Z')](_0x1afcfc, _0x1e106c); }, 'rPFpr': _0x5586c2[_0x4ecfe9(0x1b9, 'ddmf')], 'DwnWc': function (_0x322508, _0x262c16) { return _0x5586c2['liItx'](_0x322508, _0x262c16); }, 'Zfemf': function (_0x3942af, _0x32659d) { const _0x162a58 = _0x4ecfe9; return _0x5586c2[_0x162a58(0x2a4, 'OeWv')](_0x3942af, _0x32659d); }, 'Irsfx': function (_0x1aad5d, _0x175448) { const _0x58cfe1 = _0x4ecfe9; return _0x5586c2[_0x58cfe1(0x3f9, 'UEbN')](_0x1aad5d, _0x175448); }, 'WsmYz': _0x5586c2['yWOkd'], 'rmGQk': _0x5586c2[_0x4ecfe9(0x3c6, '$cA^')], 'tEmpb': _0x5586c2[_0x4ecfe9(0x2b7, '9GGE')], 'zMtVy': _0x5586c2['uutin'], 'jXpLi': _0x5586c2['BYQIW'], 'KQvfX': _0x5586c2[_0x4ecfe9(0x1ff, 'qMhY')], 'FvOBE': function (_0x28ce27, _0x3c64a5) { return _0x5586c2['FzGOU'](_0x28ce27, _0x3c64a5); }, 'ZJlSA': _0x5586c2[_0x4ecfe9(0x345, '@13h')], 'yXpEM': function (_0x51e0f8, _0x237057, _0x1341f4) { const _0x40258b = _0x4ecfe9; return _0x5586c2[_0x40258b(0x238, 'Q[vD')](_0x51e0f8, _0x237057, _0x1341f4); }, 'Lhaen': function (_0x42e21d, _0x55ce54) { const _0x269a10 = _0x4ecfe9; return _0x5586c2[_0x269a10(0x1d6, 'PjzU')](_0x42e21d, _0x55ce54); }, 'gZQTT': _0x5586c2[_0x4ecfe9(0x301, '8Xi*')], 'hGLDW': _0x5586c2['rqqGe'], 'FemdA': function (_0x190b31, _0x27a846, _0x33e9dd) { const _0x2fd304 = _0x4ecfe9; return _0x5586c2[_0x2fd304(0x382, '$%Ul')](_0x190b31, _0x27a846, _0x33e9dd); }, 'iNpEc': function (_0x439eb3, _0x247dc8) { const _0x1c56c1 = _0x4ecfe9; return _0x5586c2[_0x1c56c1(0x326, 'XTP]')](_0x439eb3, _0x247dc8); }, 'DfMtE': function (_0x2a76f2, _0x39a73d) { const _0x4c58a9 = _0x4ecfe9; return _0x5586c2[_0x4c58a9(0x28b, 'Q[vD')](_0x2a76f2, _0x39a73d); }, 'uPSgV': function (_0xc9490a, _0x1c51ae) { const _0x124536 = _0x4ecfe9; return _0x5586c2[_0x124536(0x470, 'Il#!')](_0xc9490a, _0x1c51ae); }, 'fFkty': function (_0x4e40fe, _0x5b3a35) { return _0x5586c2['TVrMS'](_0x4e40fe, _0x5b3a35); }, 'EpIuj': function (_0x18a7d3, _0x183d76) { const _0xa09633 = _0x4ecfe9; return _0x5586c2[_0xa09633(0x4db, ']xk7')](_0x18a7d3, _0x183d76); }, 'APsfv': function (_0x116930, _0x57cacc) { const _0x308d39 = _0x4ecfe9; return _0x5586c2[_0x308d39(0x45f, '8Xi*')](_0x116930, _0x57cacc); }, 'Qmkjl': function (_0x1333b1, _0x2c844a) { const _0x1c8145 = _0x4ecfe9; return _0x5586c2[_0x1c8145(0x19d, 'ukSU')](_0x1333b1, _0x2c844a); }, 'CGQLg': function (_0x2ba490, _0x4255c6) { const _0x11ea82 = _0x4ecfe9; return _0x5586c2[_0x11ea82(0x337, 'qMhY')](_0x2ba490, _0x4255c6); }, 'XwkSi': function (_0x33afbe, _0x411ada) { const _0x114504 = _0x4ecfe9; return _0x5586c2[_0x114504(0x2bb, 'Z(Ox')](_0x33afbe, _0x411ada); }, 'hEdMJ': function (_0x491779, _0x1cd8b6) { const _0x208ac8 = _0x4ecfe9; return _0x5586c2[_0x208ac8(0x2d8, 'Htfr')](_0x491779, _0x1cd8b6); }, 'NMcMp': function (_0xbb5671, _0x1066f6) { const _0x1345c5 = _0x4ecfe9; return _0x5586c2[_0x1345c5(0x4f3, '8Xi*')](_0xbb5671, _0x1066f6); }, 'bELgX': _0x5586c2[_0x4ecfe9(0x40d, 'w9AB')], 'NybtM': function (_0x27d424, _0x5f2761) { const _0x4084d8 = _0x4ecfe9; return _0x5586c2[_0x4084d8(0x264, 'Il#!')](_0x27d424, _0x5f2761); }, 'XWtcZ': function (_0x5a3f8e, _0xaf3b9e) { const _0x4edf36 = _0x4ecfe9; return _0x5586c2[_0x4edf36(0x379, 'H$G*')](_0x5a3f8e, _0xaf3b9e); } }, _0x4e0b3a = new _0x3a5dd7(_0x34612a, _0xd42b3a); let _0x3b2bd3 = ![], _0x1a1595 = null, _0x2f636a = null, _0xb2e45c = null, _0x3c7c2d = 0x3, _0x3aa829 = 0x3, _0x487245 = null, _0x3528ae = ![], _0x4a5502 = ![], _0x1ea617 = ![], _0x5ef3e6 = localStorage[_0x4ecfe9(0x2df, 'vByk')](_0x5586c2[_0x4ecfe9(0x3c8, 'F)#Z')]) || _0x5586c2[_0x4ecfe9(0x1c2, '^*Eq')], _0x4f2a76 = localStorage['getItem'](_0x5586c2['uAPXS']) || _0x5586c2[_0x4ecfe9(0x333, '4#r5')], _0x24d7c8 = localStorage[_0x4ecfe9(0x3ba, 'ukSU')](_0x5586c2[_0x4ecfe9(0x1a2, 'gQqX')]) || _0x5586c2['gXXCi'], _0x50b14f = localStorage['getItem'](_0x5586c2[_0x4ecfe9(0x387, 'L4Sy')]) || ![], _0x5298a2 = localStorage[_0x4ecfe9(0x1a0, 'Il#!')](_0x5586c2[_0x4ecfe9(0x3a2, 'k8kt')]) || ![], _0x16dc8a = ![]; function _0x227194() { const _0x3e576f = _0x4ecfe9, _0x2c28cf = _0x5586c2[_0x3e576f(0x438, 'gQqX')]['split']('|'); let _0x81001d = 0x0; while (!![]) { switch (_0x2c28cf[_0x81001d++]) { case '0': _0x3528ae = ![]; continue; case '1': _0x3b2bd3 = ![]; continue; case '2': _0x3c7c2d = 0x3; continue; case '3': _0x4a5502 = ![]; continue; case '4': _0x1a1595 = null; continue; case '5': _0xb2e45c = null; continue; case '6': _0x16dc8a = ![]; continue; case '7': _0x2f636a = null; continue; case '8': _0x5298a2 = ![]; continue; case '9': _0x1ea617 = ![]; continue; case '10': _0x487245 = null; continue; case '11': _0x3aa829 = 0x3; continue; case '12': _0x50b14f = ![]; continue; }break; } } const _0x328db1 = new Map(); class _0x57b63f { constructor(_0x5ae518, _0x182618, _0x333c80, _0x168da1, _0x1301b5) { const _0x3aecf6 = _0x4ecfe9, _0x4f5316 = _0x177d61['CLWuB'][_0x3aecf6(0x4dd, 'PjzU')]('|'); let _0x4aeaa2 = 0x0; while (!![]) { switch (_0x4f5316[_0x4aeaa2++]) { case '0': this['i3'] = _0x1301b5; continue; case '1': this['id'] = _0x182618; continue; case '2': this['i2'] = _0x168da1; continue; case '3': this['i1'] = _0x333c80; continue; case '4': this[_0x3aecf6(0x315, 'W[AP')] = _0x5ae518; continue; }break; } } } const _0x3bf1f7 = new Map(); class _0x4100d6 { constructor({ id: _0x142722, nick: _0x3f095a, clan: _0x2e9139, position: _0x2e8cbb, owner: _0x317396, stars: _0x55794a, join: _0x4a8926 }) { const _0x4605fb = _0x4ecfe9, _0x30ccc1 = _0x5586c2[_0x4605fb(0x426, 'W[AP')][_0x4605fb(0x37d, 'o(my')]('|'); let _0x5032ed = 0x0; while (!![]) { switch (_0x30ccc1[_0x5032ed++]) { case '0': this['id'] = _0x142722; continue; case '1': this[_0x4605fb(0x187, 'UEbN')] = _0x2e8cbb; continue; case '2': this['owner'] = _0x317396; continue; case '3': this[_0x4605fb(0x48e, 'gQqX')] = _0x2e9139; continue; case '4': this[_0x4605fb(0x449, 'yX!y')] = _0x3f095a; continue; case '5': this['join'] = _0x4a8926; continue; case '6': this[_0x4605fb(0x3db, 'OeWv')] = _0x55794a; continue; }break; } } } class _0x4fc3ab { constructor() { const _0x5cf542 = _0x4ecfe9; if (_0x4fc3ab[_0x5cf542(0x305, 'H$G*')]) return _0x4fc3ab['_instance']; this[_0x5cf542(0x46e, 'gW&!')](), _0x4fc3ab['_instance'] = this; } static [_0x4ecfe9(0x447, 'FfhT')]() { const _0x37faae = _0x4ecfe9; return !_0x4fc3ab[_0x37faae(0x1ac, 'w9AB')] && (_0x4fc3ab['_instance'] = new _0x4fc3ab()), _0x4fc3ab['_instance']; } [_0x4ecfe9(0x1bf, 'FfhT')]() { const _0x11f407 = _0x4ecfe9; this[_0x11f407(0x4cd, 'qFQZ')] = '', this[_0x11f407(0x312, '4#r5')] = '', this['id'] = '', this['currentPlanet'] = ''; } } const _0x2e0f39 = _0x4fc3ab[_0x4ecfe9(0x2e6, 'HhCS')](); class _0x56febd { constructor(_0xfe1ce8, _0x3afdf1) { const _0x79de1d = _0x4ecfe9; this[_0x79de1d(0x4b0, 'pR2y')] = _0xfe1ce8, this[_0x79de1d(0x1b1, '@13h')] = _0x3afdf1, this[_0x79de1d(0x1af, '#*z6')] = new Map(); } [_0x4ecfe9(0x2f9, 'pR2y')](_0x36505d) { const _0xa003b6 = _0x4ecfe9, _0xc3b9f7 = Date[_0xa003b6(0x1cf, 'qFQZ')](); !this[_0xa003b6(0x1f1, 'OeWv')]['has'](_0x36505d) && this[_0xa003b6(0x2b8, 'PjzU')][_0xa003b6(0x166, '(JNg')](_0x36505d, []); let _0x52244f = this['codeBlockHits'][_0xa003b6(0x48c, '5NN1')](_0x36505d)[_0xa003b6(0x1e8, '@13h')](_0x200d02 => _0xc3b9f7 - _0x200d02 <= this[_0xa003b6(0x241, 'OeWv')]); _0x52244f[_0xa003b6(0x304, '#*z6')](_0xc3b9f7), this[_0xa003b6(0x2b8, 'PjzU')][_0xa003b6(0x36c, 'L4Sy')](_0x36505d, _0x52244f); if (_0x177d61[_0xa003b6(0x268, 'k8kt')](_0x52244f[_0xa003b6(0x3d6, 'HhCS')], this['maxHits'])) return this['codeBlockHits'][_0xa003b6(0x2fe, 'k8kt')](_0x36505d, []), !![]; return ![]; } ['countHits'](_0x40ad59) { const _0x6092dc = _0x4ecfe9; return this[_0x6092dc(0x430, 'FfhT')][_0x6092dc(0x2a3, '(U](')](_0x40ad59) ? this[_0x6092dc(0x4f7, 'gW&!')][_0x6092dc(0x41e, '#*z6')](_0x40ad59)[_0x6092dc(0x3c4, 'XTP]')] : 0x0; } [_0x4ecfe9(0x2bd, 'XTP]')](_0x41994e) { const _0x4160fe = _0x4ecfe9; this[_0x4160fe(0x1de, 'vByk')]['set'](_0x41994e, []); } } let _0x426a63 = [], _0x405e25 = new _0x56febd(0xea60, 0xa); _0x4e0b3a[_0x4ecfe9(0x2b1, 'PjzU')] = function (_0x1db137) { const _0x14f78b = _0x4ecfe9; console[_0x14f78b(0x469, '8Xi*')](_0x177d61['KlcFQ'], _0x1db137); const _0x36ee84 = _0x1db137[_0x14f78b(0x1d4, '8[C4')](/\s+/i); switch (_0x36ee84[0x0]) { case _0x177d61[_0x14f78b(0x2db, '^*Eq')]: console[_0x14f78b(0x1ad, '4@#w')]('Исходящий\x20USER:\x20' + _0x36ee84[0x1] + '\x20' + _0x36ee84[0x2] + '\x20' + _0x36ee84[0x3]), _0x2e0f39['id'] = _0x36ee84[0x1], _0x2e0f39[_0x14f78b(0x32f, 'OeWv')] = _0x36ee84[0x2], _0x2e0f39[_0x14f78b(0x50a, 'PjzU')] = _0x36ee84[0x3]; break; default: console[_0x14f78b(0x1b3, '#*z6')](_0x14f78b(0x26f, 'PjzU') + _0x1db137); break; }return _0x4f50d6[_0x14f78b(0x4e5, 'qMhY')](this, _0x1db137); }, _0x4e0b3a['addEventListener'](_0x5586c2[_0x4ecfe9(0x251, 'gW&!')], _0x44ca9d => { const _0x5b589d = _0x4ecfe9; console[_0x5b589d(0x269, 'HhCS')](_0x177d61['AnBCg'], { 'code': _0x44ca9d[_0x5b589d(0x23f, 'H$G*')], 'reason': _0x44ca9d[_0x5b589d(0x31c, 'Z(Ox')] }); }), _0x4e0b3a[_0x4ecfe9(0x4a5, 'qFQZ')](_0x5586c2[_0x4ecfe9(0x30b, 'k8kt')], _0x569295 => { const _0x33b68f = _0x4ecfe9; console[_0x33b68f(0x29c, 'w9AB')](_0x177d61[_0x33b68f(0x3e2, 'H$G*')], { 'error': _0x569295['message'] }); }), _0x4e0b3a[_0x4ecfe9(0x1ae, '8[C4')](_0x5586c2[_0x4ecfe9(0x1c5, '9GGE')], () => { const _0x237699 = _0x4ecfe9; console[_0x237699(0x4f2, '^*Eq')](_0x5586c2[_0x237699(0x30c, '4@#w')], { 'message': _0x5586c2[_0x237699(0x4fe, 'ddmf')] }), _0x5586c2['aSnym'](_0x227194), _0x2e0f39[_0x237699(0x3f7, '5NN1')](); }), _0x4e0b3a[_0x4ecfe9(0x3ab, 'F)#Z')](_0x5586c2['aCXtQ'], _0xaff5ef => { const _0x4ab2b5 = _0x4ecfe9, _0x7ab83d = _0xaff5ef[_0x4ab2b5(0x1cd, 'KZKM')][_0x4ab2b5(0x2d5, 'gQqX')](), _0x7f55 = _0x7ab83d[_0x4ab2b5(0x255, '$%Ul')](/\s+/i), _0x48eb75 = _0x7ab83d[_0x4ab2b5(0x37e, 'DnmJ')](':') ? _0x7ab83d[_0x4ab2b5(0x485, 'yX!y')](_0x5586c2['FiVSi'](_0x7ab83d[_0x4ab2b5(0x439, 'H$G*')](':'), 0x1)) : null; switch (_0x7f55[0x0]) { case _0x5586c2[_0x4ab2b5(0x21a, 'uHsm')]: console['log'](_0x4ab2b5(0x263, 'o(my') + _0x7f55[0x1] + '\x20' + _0x7f55[0x2] + '\x20' + _0x7f55[0x3]), _0x2e0f39['id'] = _0x7f55[0x1], _0x2e0f39[_0x4ab2b5(0x369, '(JNg')] = _0x7f55[0x2], _0x2e0f39[_0x4ab2b5(0x343, 'FfhT')] = _0x7f55[0x3]; break; case _0x5586c2['tJKYU']: _0x5586c2[_0x4ab2b5(0x355, 'o(my')](_0x1888ac, _0x7ab83d, _0x7f55); break; case _0x5586c2[_0x4ab2b5(0x44f, 'Htfr')]: _0x5586c2[_0x4ab2b5(0x276, 'ukSU')](_0x47a618, _0x7ab83d, _0x7f55); break; case _0x5586c2[_0x4ab2b5(0x2a2, '@13h')]: case _0x5586c2[_0x4ab2b5(0x46f, 'FmO6')]: _0x5586c2['PIrnm'](_0x1c6bfe, _0x5586c2[_0x4ab2b5(0x479, 'qMhY')](parseInt, _0x7f55[0x1])); break; case _0x5586c2[_0x4ab2b5(0x37a, 'DnmJ')]: _0x5586c2['bbAcb'](_0x20075a, _0x7ab83d, _0x7f55[0x2], _0x7f55[0x3]); break; case _0x5586c2[_0x4ab2b5(0x205, 'vR46')]: _0x5586c2[_0x4ab2b5(0x247, '8[C4')](_0x539436, _0x7f55); break; case _0x5586c2['BBHVk']: _0x5586c2[_0x4ab2b5(0x495, 'vR46')](_0x978fae, _0x7ab83d, _0x48eb75); break; case _0x5586c2[_0x4ab2b5(0x272, ']xk7')]: _0x5586c2[_0x4ab2b5(0x491, 'vR46')](_0x39a36d, _0x7ab83d, _0x48eb75); break; case _0x5586c2['QeNNW']: _0x5586c2[_0x4ab2b5(0x200, '(JNg')](_0x3c3f98, _0x7ab83d); break; case _0x5586c2[_0x4ab2b5(0x2f2, '@13h')]: _0x5586c2['THeae'](_0x40c574, _0x48eb75); break; case _0x5586c2[_0x4ab2b5(0x3a3, 'KZKM')]: _0x5586c2['EVcHE'](_0x2bcf04); break; case _0x5586c2[_0x4ab2b5(0x399, 'Z(Ox')]: _0x3bf1f7[_0x4ab2b5(0x22b, 'qMhY')](), _0x328db1[_0x4ab2b5(0x2eb, 'OeWv')](), _0x405e25[_0x4ab2b5(0x33d, 'Mm!H')](_0x5586c2[_0x4ab2b5(0x3cb, 'gW&!')]); break; case _0x5586c2[_0x4ab2b5(0x2b6, 'hv62')]: _0x5586c2['bVQmJ'](_0x44aa42, _0x7f55); break; }switch (_0x7f55[0x1]) { case _0x5586c2[_0x4ab2b5(0x474, 'vR46')]: case _0x5586c2[_0x4ab2b5(0x3fc, 'hv62')]: case _0x5586c2[_0x4ab2b5(0x23a, ']xk7')]: _0x5586c2[_0x4ab2b5(0x2a8, 'k8kt')](_0x1c6bfe, _0x5586c2[_0x4ab2b5(0x391, 'k8kt')](parseInt, _0x7f55[0x1])); break; } }); const _0x281163 = { 'greenLamp': _0x50b14f, 'ballValue': _0x5ef3e6, 'pauseStart': _0x4f2a76, 'pauseEnd': _0x24d7c8, 'autoPause': _0x5298a2 }, _0x2e6944 = document[_0x4ecfe9(0x24f, 'H$G*')](_0x5586c2[_0x4ecfe9(0x256, 'pR2y')]); _0x2e6944[_0x4ecfe9(0x246, 'Bzn@')][_0x4ecfe9(0x221, '9GGE')] = _0x5586c2['abGSe'], _0x2e6944['style']['right'] = '0', _0x2e6944[_0x4ecfe9(0x207, '4#r5')]['top'] = _0x5586c2[_0x4ecfe9(0x19c, 'vR46')], _0x2e6944[_0x4ecfe9(0x1b6, 'DnmJ')][_0x4ecfe9(0x243, '5NN1')] = _0x5586c2['QtGeF'], _0x2e6944[_0x4ecfe9(0x270, '$%Ul')][_0x4ecfe9(0x1ee, '$%Ul')] = _0x5586c2[_0x4ecfe9(0x3be, 'F)#Z')], _0x2e6944[_0x4ecfe9(0x435, '8Xi*')][_0x4ecfe9(0x20b, 'OeWv')] = _0x5586c2['ARpKW'], _0x2e6944[_0x4ecfe9(0x16b, 'OeWv')][_0x4ecfe9(0x2d4, 'DnmJ')] = _0x5586c2[_0x4ecfe9(0x421, 'k8kt')], _0x2e6944[_0x4ecfe9(0x331, 'yX!y')]['borderRadius'] = _0x5586c2['vOros'], _0x2e6944[_0x4ecfe9(0x331, 'yX!y')]['display'] = _0x5586c2[_0x4ecfe9(0x3a7, 'F)#Z')], _0x2e6944[_0x4ecfe9(0x1ab, '4@#w')]['alignItems'] = _0x5586c2['dqTwi'], _0x2e6944[_0x4ecfe9(0x404, 'uHsm')]['justifyContent'] = _0x5586c2[_0x4ecfe9(0x44e, '5NN1')], _0x2e6944[_0x4ecfe9(0x49f, 'GJGH')]['cursor'] = _0x5586c2[_0x4ecfe9(0x4fc, 'Bzn@')], _0x2e6944[_0x4ecfe9(0x270, '$%Ul')]['zIndex'] = _0x5586c2[_0x4ecfe9(0x50b, 'GJGH')], _0x2e6944[_0x4ecfe9(0x27d, '$cA^')][_0x4ecfe9(0x36f, 'pR2y')] = _0x5586c2[_0x4ecfe9(0x25a, '9GGE')], _0x2e6944['style']['transition'] = _0x5586c2[_0x4ecfe9(0x29a, '5NN1')], _0x2e6944['style']['overflow'] = _0x5586c2[_0x4ecfe9(0x4ef, 'pR2y')]; const _0x27b8ca = document[_0x4ecfe9(0x3fd, 'Bzn@')](_0x5586c2[_0x4ecfe9(0x4bb, 'Htfr')]); _0x27b8ca[_0x4ecfe9(0x169, '5NN1')][_0x4ecfe9(0x4cb, 'UEbN')] = _0x5586c2[_0x4ecfe9(0x494, '$cA^')], _0x27b8ca[_0x4ecfe9(0x1ab, '4@#w')][_0x4ecfe9(0x25e, 'Htfr')] = _0x5586c2[_0x4ecfe9(0x386, '$cA^')], _0x27b8ca[_0x4ecfe9(0x351, 'Q[vD')][_0x4ecfe9(0x1e7, 'yX!y')] = _0x5586c2[_0x4ecfe9(0x285, 'yX!y')], _0x27b8ca[_0x4ecfe9(0x4e3, ']xk7')][_0x4ecfe9(0x321, 'yX!y')] = _0x5586c2[_0x4ecfe9(0x201, '$%Ul')], _0x27b8ca[_0x4ecfe9(0x292, '@13h')][_0x4ecfe9(0x414, '(JNg')] = _0x5586c2[_0x4ecfe9(0x194, 'o(my')], _0x27b8ca['innerHTML'] = _0x4ecfe9(0x4a9, 'o(my'), _0x2e6944[_0x4ecfe9(0x313, 'L4Sy')](_0x27b8ca), _0x2e6944[_0x4ecfe9(0x465, '5NN1')](_0x5586c2[_0x4ecfe9(0x2d9, 'Bzn@')], () => { const _0x1537d4 = _0x4ecfe9; _0x2e6944[_0x1537d4(0x49f, 'GJGH')][_0x1537d4(0x411, 'yX!y')] = _0x177d61[_0x1537d4(0x41f, 'UEbN')], _0x2e6944[_0x1537d4(0x270, '$%Ul')]['backgroundColor'] = _0x177d61['XhqkF']; }), _0x2e6944[_0x4ecfe9(0x252, 'XTP]')](_0x5586c2[_0x4ecfe9(0x2e4, '8[C4')], () => { const _0x424954 = _0x4ecfe9; _0x2e6944[_0x424954(0x1a1, '9GGE')][_0x424954(0x258, 'hv62')] = _0x5586c2[_0x424954(0x1fb, '8[C4')], _0x2e6944[_0x424954(0x4d2, 'Htfr')][_0x424954(0x46a, '9GGE')] = _0x5586c2[_0x424954(0x210, 'Mm!H')]; }), _0x2e6944['onclick'] = () => { const _0x295dc4 = _0x4ecfe9; _0x2206b1[_0x295dc4(0x4dc, 'Z(Ox')][_0x295dc4(0x4fb, 'ddmf')] = _0x177d61[_0x295dc4(0x3cd, 'L4Sy')]; }, document['body'][_0x4ecfe9(0x452, '5NN1')](_0x2e6944); const _0x2206b1 = document[_0x4ecfe9(0x467, 'vR46')](_0x5586c2['jHzcU']); _0x2206b1[_0x4ecfe9(0x4ab, 'pR2y')][_0x4ecfe9(0x277, 'DnmJ')] = _0x5586c2[_0x4ecfe9(0x19b, '4@#w')], _0x2206b1['style'][_0x4ecfe9(0x294, '8[C4')] = '0', _0x2206b1[_0x4ecfe9(0x370, 'gW&!')]['left'] = '0', _0x2206b1[_0x4ecfe9(0x207, '4#r5')][_0x4ecfe9(0x1ee, '$%Ul')] = _0x5586c2[_0x4ecfe9(0x349, 'Bzn@')], _0x2206b1[_0x4ecfe9(0x1aa, 'S0KG')][_0x4ecfe9(0x4d9, 'uHsm')] = _0x5586c2[_0x4ecfe9(0x1f6, 'F)#Z')], _0x2206b1[_0x4ecfe9(0x1a1, '9GGE')][_0x4ecfe9(0x17a, 'gW&!')] = _0x5586c2[_0x4ecfe9(0x451, '9GGE')], _0x2206b1[_0x4ecfe9(0x1a1, '9GGE')]['display'] = _0x5586c2[_0x4ecfe9(0x444, 'KZKM')], _0x2206b1['style'][_0x4ecfe9(0x4a8, 'qMhY')] = _0x5586c2['dqTwi'], _0x2206b1[_0x4ecfe9(0x351, 'Q[vD')][_0x4ecfe9(0x170, 'gQqX')] = _0x5586c2['dqTwi'], _0x2206b1[_0x4ecfe9(0x246, 'Bzn@')][_0x4ecfe9(0x283, 'F)#Z')] = _0x5586c2[_0x4ecfe9(0x1c3, 'k8kt')], _0x2206b1[_0x4ecfe9(0x425, 'gQqX')]['animation'] = _0x5586c2[_0x4ecfe9(0x17e, 'GJGH')]; const _0x1e0b42 = document[_0x4ecfe9(0x341, '$%Ul')](_0x5586c2[_0x4ecfe9(0x4d1, 'OeWv')]); _0x1e0b42[_0x4ecfe9(0x48d, 'qFQZ')]['backgroundColor'] = _0x5586c2[_0x4ecfe9(0x418, '$%Ul')], _0x1e0b42[_0x4ecfe9(0x487, 'o(my')]['padding'] = _0x5586c2['ZjCte'], _0x1e0b42[_0x4ecfe9(0x487, 'o(my')]['borderRadius'] = _0x5586c2[_0x4ecfe9(0x461, 'gW&!')], _0x1e0b42[_0x4ecfe9(0x39b, 'Mm!H')][_0x4ecfe9(0x507, 'S0KG')] = _0x5586c2[_0x4ecfe9(0x1b2, 'OeWv')], _0x1e0b42[_0x4ecfe9(0x1a1, '9GGE')][_0x4ecfe9(0x22a, 'hv62')] = _0x5586c2['SAKGh'], _0x1e0b42[_0x4ecfe9(0x1aa, 'S0KG')]['maxHeight'] = _0x5586c2[_0x4ecfe9(0x4f4, 'w9AB')], _0x1e0b42['style']['overflowY'] = _0x5586c2[_0x4ecfe9(0x173, '8[C4')], _0x1e0b42[_0x4ecfe9(0x425, 'gQqX')][_0x4ecfe9(0x2ef, 'HhCS')] = _0x5586c2[_0x4ecfe9(0x434, '5NN1')], _0x1e0b42[_0x4ecfe9(0x2f0, 'W[AP')][_0x4ecfe9(0x3e3, '8[C4')] = _0x5586c2[_0x4ecfe9(0x231, 'KZKM')], _0x1e0b42[_0x4ecfe9(0x270, '$%Ul')]['color'] = _0x5586c2['XbIGi'], _0x1e0b42[_0x4ecfe9(0x360, 'qMhY')][_0x4ecfe9(0x353, ']xk7')] = _0x5586c2['nPUeg'], _0x1e0b42['innerHTML'] = _0x4ecfe9(0x3ac, 'FfhT') + (_0x5586c2['gAGaR'](_0x281163[_0x4ecfe9(0x179, 'qMhY')], _0x5586c2[_0x4ecfe9(0x33f, 'W[AP')]) ? _0x5586c2[_0x4ecfe9(0x323, 'gW&!')] : '') + _0x4ecfe9(0x45d, 'qFQZ') + (_0x5586c2['VPhSS'](_0x281163['ballValue'], _0x5586c2[_0x4ecfe9(0x2b3, 'vR46')]) ? _0x5586c2[_0x4ecfe9(0x3eb, 'ddmf')] : '') + _0x4ecfe9(0x174, 'hv62') + (_0x281163['greenLamp'] ? _0x5586c2['rXrSX'] : '') + '\x20style=\x22margin-right:\x208px;\x22>\x20\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20Использовать\x20зелёный\x20свет\x0a\x20\x20\x20\x20\x20\x20\x20\x20</label>\x0a\x20\x20\x20\x20</div>\x0a\x20\x20\x0a\x20\x20\x20\x20<div\x20style=\x22display:\x20flex;\x20flex-direction:\x20column;\x20align-items:\x20center;\x20gap:\x2020px;\x20margin-bottom:\x2020px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22width:\x20100%;\x20max-width:\x20320px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<label\x20for=\x22pauseStart\x22\x20style=\x22display:\x20block;\x20margin-bottom:\x205px;\x20font-weight:\x20bold;\x20text-align:\x20center;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20Время\x20начала\x20паузы:\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</label>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<input\x20type=\x22time\x22\x20id=\x22pauseStart\x22\x20\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20value=\x22' + _0x281163[_0x4ecfe9(0x42b, 'k8kt')] + _0x4ecfe9(0x361, 'w9AB') + _0x281163[_0x4ecfe9(0x3f5, 'ukSU')] + _0x4ecfe9(0x490, 'Htfr') + (_0x281163[_0x4ecfe9(0x230, 'FmO6')] ? _0x5586c2[_0x4ecfe9(0x35d, 'S0KG')] : '') + _0x4ecfe9(0x20e, 'o(my'), _0x2206b1[_0x4ecfe9(0x189, 'Q[vD')](_0x1e0b42), document[_0x4ecfe9(0x1f3, 'DnmJ')][_0x4ecfe9(0x262, ']xk7')](_0x2206b1); const _0x58ecb3 = document[_0x4ecfe9(0x4a7, '8[C4')](_0x5586c2['ltMlX']); _0x58ecb3[_0x4ecfe9(0x40f, 'FfhT')] = _0x4ecfe9(0x279, 'pR2y'), document[_0x4ecfe9(0x330, 'DnmJ')]['appendChild'](_0x58ecb3), _0x1e0b42[_0x4ecfe9(0x3a0, 'OeWv')](_0x5586c2['fIaHS'])[_0x4ecfe9(0x49c, '(U](')](_0x5586c2[_0x4ecfe9(0x47a, 'qFQZ')], _0x51591f => { const _0x3417f0 = _0x4ecfe9; _0x51591f['target'][_0x3417f0(0x2a6, '^*Eq')][_0x3417f0(0x457, '$cA^')] = _0x177d61['pnuNu']; }), _0x1e0b42['querySelector'](_0x5586c2[_0x4ecfe9(0x193, 'HhCS')])[_0x4ecfe9(0x3c3, '4#r5')](_0x5586c2['FpdPE'], _0x190966 => { const _0x450c1a = _0x4ecfe9; _0x190966[_0x450c1a(0x1c7, '(U](')][_0x450c1a(0x425, 'gQqX')][_0x450c1a(0x25d, 'qMhY')] = _0x177d61[_0x450c1a(0x2c0, 'KZKM')]; }), _0x1e0b42[_0x4ecfe9(0x1fa, 'ukSU')](_0x5586c2['JQZZM'])['addEventListener'](_0x5586c2[_0x4ecfe9(0x2cc, '(JNg')], _0x26c8f9 => { const _0x4eb651 = _0x4ecfe9; _0x26c8f9[_0x4eb651(0x1a6, 'W[AP')]['style'][_0x4eb651(0x219, 'hv62')] = _0x5586c2['GLAAn']; }), _0x1e0b42['querySelector'](_0x5586c2[_0x4ecfe9(0x3bb, 'Mm!H')])[_0x4ecfe9(0x29f, 'hv62')](_0x5586c2[_0x4ecfe9(0x34c, 'Il#!')], _0x25a3e4 => { const _0x36e309 = _0x4ecfe9; _0x25a3e4['target'][_0x36e309(0x1aa, 'S0KG')][_0x36e309(0x3da, 'w9AB')] = _0x177d61['TlRiB']; }), _0x1e0b42[_0x4ecfe9(0x314, '5NN1')](_0x5586c2['fIaHS'])[_0x4ecfe9(0x493, '$%Ul')] = () => { const _0x5a7036 = _0x4ecfe9, _0x16ddf4 = _0x5586c2[_0x5a7036(0x310, 'vByk')][_0x5a7036(0x25c, 'Bzn@')]('|'); let _0xa2050e = 0x0; while (!![]) { switch (_0x16ddf4[_0xa2050e++]) { case '0': _0x2206b1['style'][_0x5a7036(0x437, 'Z(Ox')] = _0x5586c2[_0x5a7036(0x458, 'hv62')]; continue; case '1': localStorage['setItem'](_0x5586c2[_0x5a7036(0x398, 'ukSU')], _0x281163[_0x5a7036(0x455, 'ukSU')]); continue; case '2': _0x281163[_0x5a7036(0x4ea, '5NN1')] = document[_0x5a7036(0x36d, 'GJGH')](_0x5586c2['PAyTJ'])['value']; continue; case '3': console[_0x5a7036(0x459, 'KZKM')](_0x5586c2[_0x5a7036(0x30e, 'o(my')], { 'message': _0x5a7036(0x180, 'GJGH') + JSON[_0x5a7036(0x32b, 'pR2y')](_0x281163) }); continue; case '4': localStorage[_0x5a7036(0x29e, '9GGE')](_0x5586c2[_0x5a7036(0x1a8, 'L4Sy')], _0x281163[_0x5a7036(0x2c7, 'gQqX')]); continue; case '5': localStorage[_0x5a7036(0x483, 'vR46')](_0x5586c2['AWSEp'], _0x281163[_0x5a7036(0x2ae, ']xk7')]); continue; case '6': _0x281163[_0x5a7036(0x482, ']xk7')] = document['getElementById'](_0x5586c2[_0x5a7036(0x2dc, 'pR2y')])['value']; continue; case '7': localStorage[_0x5a7036(0x3d8, 'S0KG')](_0x5586c2[_0x5a7036(0x254, 'HhCS')], _0x281163[_0x5a7036(0x3c0, 'qMhY')]); continue; case '8': _0x281163[_0x5a7036(0x2fb, 'k8kt')] = document[_0x5a7036(0x3f0, 'pR2y')](_0x5586c2['AWSEp'])[_0x5a7036(0x19f, 'k8kt')]; continue; case '9': _0x281163[_0x5a7036(0x488, '8Xi*')] = document[_0x5a7036(0x4cc, 'w9AB')](_0x5586c2[_0x5a7036(0x40b, 'pR2y')])[_0x5a7036(0x1e3, 'o(my')]; continue; case '10': _0x281163[_0x5a7036(0x3d7, '(U](')] = document['getElementById'](_0x5586c2[_0x5a7036(0x271, 'FfhT')])[_0x5a7036(0x309, 'KZKM')]; continue; case '11': localStorage[_0x5a7036(0x372, 'PjzU')](_0x5586c2[_0x5a7036(0x2a0, 'yX!y')], _0x281163[_0x5a7036(0x275, 'k8kt')]); continue; }break; } }, _0x2206b1[_0x4ecfe9(0x389, 'qFQZ')] = _0x1954f6 => { const _0x5f484f = _0x4ecfe9; _0x5586c2[_0x5f484f(0x363, 'ddmf')](_0x1954f6[_0x5f484f(0x3f6, 'gQqX')], _0x2206b1) && (_0x2206b1[_0x5f484f(0x1a1, '9GGE')][_0x5f484f(0x367, 'Bzn@')] = _0x5586c2[_0x5f484f(0x3d1, '(U](')]); }, document[_0x4ecfe9(0x252, 'XTP]')](_0x5586c2[_0x4ecfe9(0x2f4, '(U](')], _0x4fb354 => { const _0x3bff54 = _0x4ecfe9; _0x5586c2[_0x3bff54(0x385, '(U](')](_0x4fb354[_0x3bff54(0x1d9, 'PjzU')], _0x5586c2[_0x3bff54(0x397, 'qMhY')]) && _0x5586c2[_0x3bff54(0x3a1, 'pR2y')](_0x2206b1[_0x3bff54(0x445, 'H$G*')]['display'], _0x5586c2[_0x3bff54(0x21d, 'Il#!')]) && (_0x2206b1[_0x3bff54(0x370, 'gW&!')][_0x3bff54(0x223, '(U](')] = _0x5586c2[_0x3bff54(0x4ee, 'ukSU')]); }); const _0x18ff31 = _0x1e0b42[_0x4ecfe9(0x1c0, 'k8kt')](_0x5586c2[_0x4ecfe9(0x359, '#*z6')]); _0x18ff31[_0x4ecfe9(0x3f1, 'Bzn@')](_0x5586c2[_0x4ecfe9(0x40c, 'HhCS')], () => { const _0x368009 = _0x4ecfe9; _0x4f2a76 = _0x18ff31[_0x368009(0x4a2, 'Z(Ox')], localStorage['setItem'](_0x5586c2[_0x368009(0x390, 'HhCS')], _0x4f2a76), console[_0x368009(0x220, 'hv62')](_0x5586c2[_0x368009(0x4c3, 'Il#!')], { 'message': _0x368009(0x41c, 'gW&!') + _0x4f2a76 }); }); const _0x17e6c8 = _0x1e0b42[_0x4ecfe9(0x3e5, '(JNg')](_0x5586c2[_0x4ecfe9(0x41b, 'qFQZ')]); _0x17e6c8[_0x4ecfe9(0x32d, '$%Ul')](_0x5586c2[_0x4ecfe9(0x40c, 'HhCS')], () => { const _0x23a8f9 = _0x4ecfe9; _0x24d7c8 = _0x17e6c8[_0x23a8f9(0x18d, 'w9AB')], localStorage[_0x23a8f9(0x346, '$cA^')](_0x5586c2[_0x23a8f9(0x2b2, 'F)#Z')], _0x24d7c8), console[_0x23a8f9(0x501, 'W[AP')](_0x5586c2[_0x23a8f9(0x3dd, 'Q[vD')], { 'message': _0x23a8f9(0x374, 'GJGH') + _0x24d7c8 }); }); const _0x2aca0a = _0x1e0b42['querySelector'](_0x5586c2['ZzPUi']); _0x2aca0a['addEventListener'](_0x5586c2['djNjz'], () => { const _0x45dfe6 = _0x4ecfe9; _0x50b14f = _0x2aca0a[_0x45dfe6(0x508, 'Q[vD')], localStorage[_0x45dfe6(0x43f, '@13h')](_0x5586c2[_0x45dfe6(0x497, 'Mm!H')], _0x50b14f), console[_0x45dfe6(0x1ad, '4@#w')](_0x5586c2['lIMYz'], { 'message': _0x45dfe6(0x3d0, '(JNg') + _0x50b14f }); }); const _0x36e4de = _0x1e0b42[_0x4ecfe9(0x377, 'gQqX')](_0x5586c2[_0x4ecfe9(0x4fa, 'F)#Z')]); _0x36e4de[_0x4ecfe9(0x227, 'PjzU')](_0x5586c2['djNjz'], () => { const _0x411b28 = _0x4ecfe9; _0x5298a2 = _0x36e4de[_0x411b28(0x2c6, '$%Ul')], localStorage[_0x411b28(0x483, 'vR46')](_0x177d61[_0x411b28(0x2cf, 'qMhY')], _0x5298a2), console[_0x411b28(0x4f2, '^*Eq')](_0x177d61[_0x411b28(0x33e, 'pR2y')], { 'message': _0x411b28(0x23b, 'W[AP') + _0x5298a2 }); }); const _0x13fd04 = _0x1e0b42[_0x4ecfe9(0x18a, 'w9AB')](_0x5586c2[_0x4ecfe9(0x4e2, '8[C4')]); _0x13fd04[_0x4ecfe9(0x29f, 'hv62')](_0x5586c2[_0x4ecfe9(0x4bd, '(U](')], () => { const _0x3ccc1d = _0x4ecfe9; _0x5ef3e6 = _0x13fd04[_0x3ccc1d(0x4a2, 'Z(Ox')], localStorage[_0x3ccc1d(0x428, 'gW&!')](_0x177d61[_0x3ccc1d(0x4ae, 'o(my')], _0x5ef3e6), console[_0x3ccc1d(0x303, 'Il#!')](_0x177d61['zmnOv'], { 'message': 'ballValue\x20is\x20now\x20' + _0x5ef3e6 }); }), _0x1e0b42[_0x4ecfe9(0x3a9, 'PjzU')](_0x5586c2['eTZJK'])[_0x4ecfe9(0x2fa, 'DnmJ')](_0x4189db => { const _0x386ebb = _0x4ecfe9; _0x4189db[_0x386ebb(0x38b, '$cA^')](_0x5586c2['QmAYo'], () => { const _0x173622 = _0x386ebb; _0x4189db[_0x173622(0x4d2, 'Htfr')][_0x173622(0x34a, '(U](')] = _0x177d61[_0x173622(0x486, 'F)#Z')]; }), _0x4189db[_0x386ebb(0x1f2, 'S0KG')](_0x5586c2['FpdPE'], () => { const _0x51cce6 = _0x386ebb; _0x4189db[_0x51cce6(0x1b6, 'DnmJ')][_0x51cce6(0x462, 'H$G*')] = '1'; }); }), _0x13fd04['addEventListener'](_0x5586c2[_0x4ecfe9(0x342, 'Il#!')], () => { const _0x436516 = _0x4ecfe9; _0x13fd04['style'][_0x436516(0x4b6, '8[C4')] = _0x177d61['qnJYp']; }), _0x13fd04['addEventListener'](_0x5586c2['KIIBE'], () => { const _0x261b97 = _0x4ecfe9; _0x13fd04[_0x261b97(0x1d2, 'L4Sy')][_0x261b97(0x49d, 'FmO6')] = _0x177d61[_0x261b97(0x222, 'KZKM')]; }), _0x1e0b42['querySelector'](_0x5586c2['JQZZM'])[_0x4ecfe9(0x44a, 'Q[vD')] = () => { const _0x58aa17 = _0x4ecfe9; _0x2206b1[_0x58aa17(0x46b, 'F)#Z')][_0x58aa17(0x1f4, 'Htfr')] = _0x5586c2['OYUPD']; }, document[_0x4ecfe9(0x20d, 'KZKM')](_0x5586c2['TTaPi'], function (_0x3de0e6) { const _0x1664b4 = _0x4ecfe9; _0x3de0e6[_0x1664b4(0x3fe, 'GJGH')] && _0x3de0e6[_0x1664b4(0x297, 'Mm!H')] && _0x5586c2[_0x1664b4(0x2af, 'pR2y')](_0x3de0e6[_0x1664b4(0x212, 'W[AP')], 'p') && (_0x16dc8a = !_0x16dc8a, controlButton['innerText'] = _0x16dc8a ? '▶️' : '⏸️', console[_0x1664b4(0x311, 'qFQZ')](_0x16dc8a ? _0x5586c2[_0x1664b4(0x50c, '(JNg')] : _0x5586c2[_0x1664b4(0x27c, 'qFQZ')]), console['log'](_0x5586c2[_0x1664b4(0x259, '#*z6')], { 'message': _0x16dc8a ? _0x5586c2[_0x1664b4(0x4c5, 'yX!y')] : _0x5586c2[_0x1664b4(0x1a9, 'OeWv')] })); }); async function _0x312195() { const _0x28dfa5 = _0x4ecfe9, _0x2e33cb = new Date(), _0x3e14eb = new Date(_0x2e33cb[_0x28dfa5(0x340, 'yX!y')](_0x5586c2['LveHW'], { 'timeZone': _0x5586c2[_0x28dfa5(0x1db, 'w9AB')] })), _0xb2c547 = _0x3e14eb[_0x28dfa5(0x177, 'HhCS')]()[_0x28dfa5(0x496, 'PjzU')]()[_0x28dfa5(0x4a4, '(U](')](0x2, '0') + ':' + _0x3e14eb['getMinutes']()[_0x28dfa5(0x182, '(JNg')]()[_0x28dfa5(0x4a4, '(U](')](0x2, '0'), _0x24f7b2 = localStorage['getItem'](_0x5586c2['uAPXS']) || _0x5586c2[_0x28dfa5(0x2f6, 'w9AB')], _0x27a0bd = localStorage[_0x28dfa5(0x1b7, '(U](')](_0x5586c2[_0x28dfa5(0x250, ']xk7')]) || _0x5586c2[_0x28dfa5(0x4de, '$%Ul')], _0x3d9282 = _0x5586c2[_0x28dfa5(0x28f, 'Q[vD')](localStorage['getItem'](_0x5586c2[_0x28dfa5(0x2ca, 'S0KG')]), _0x5586c2[_0x28dfa5(0x36e, 'Mm!H')]); console[_0x28dfa5(0x167, 'PjzU')]('[' + _0xb2c547 + _0x28dfa5(0x288, '8[C4') + _0x24f7b2 + _0x28dfa5(0x38d, '@13h') + _0x27a0bd + _0x28dfa5(0x4f0, '(U](') + _0x3d9282); if (!_0x3d9282) return; if (_0x5586c2[_0x28dfa5(0x4c0, '5NN1')](_0xb2c547, _0x24f7b2)) console['log'](_0x5586c2['oTuZz']), _0x5586c2[_0x28dfa5(0x176, '^*Eq')](_0x1c3370); else _0x5586c2['danMG'](_0xb2c547, _0x27a0bd) && (console[_0x28dfa5(0x2ce, 'DnmJ')](_0x5586c2[_0x28dfa5(0x4da, '(U](')]), await _0x5586c2[_0x28dfa5(0x21f, 'vR46')](_0x294aa2)); } function _0x1c3370() { const _0x26b8c1 = _0x4ecfe9; console['log'](_0x177d61['pJlgz']), _0x4e0b3a[_0x26b8c1(0x39c, 'FmO6')](_0x26b8c1(0x393, 'KZKM')); } async function _0x294aa2() { const _0x37824f = _0x4ecfe9; console[_0x37824f(0x31d, 'vByk')](_0x177d61['JSsQw']), await _0x177d61['tfJwI'](_0x4e606b); } _0x5586c2[_0x4ecfe9(0x20c, '9GGE')](setInterval, _0x312195, 0xea60); async function _0x3c3f98(_0x25f47d) { const _0x5d9fd1 = _0x4ecfe9; let _0x1c683b = _0x177d61[_0x5d9fd1(0x3b5, '(U](')](_0x2576c6, _0x25f47d), _0x465c3f = _0x177d61['Eriqt'](_0x4db01f, _0x25f47d); console[_0x5d9fd1(0x1ad, '4@#w')](_0x177d61[_0x5d9fd1(0x1fe, 'DnmJ')], { 'message': _0x1c683b }); if (_0x177d61['XnjED'](_0x465c3f[0x0][_0x5d9fd1(0x466, 'FfhT')](), _0x2e0f39['nick'][_0x5d9fd1(0x192, 'W[AP')]()) && _0x1c683b['toLowerCase']()[_0x5d9fd1(0x1e1, 'FfhT')](_0x177d61[_0x5d9fd1(0x440, '9GGE')])) { _0x426a63['push'](0x1), console[_0x5d9fd1(0x469, '8Xi*')](_0x177d61['zmnOv'], { 'message': '[' + _0x426a63['length'] + _0x5d9fd1(0x27a, 'F)#Z') }); if (_0x177d61[_0x5d9fd1(0x325, 'S0KG')](_0x426a63['length'], 0x5)) { const _0x4ac47f = _0x177d61['SLqgz'][_0x5d9fd1(0x206, 'gW&!')]('|'); let _0x18f5ca = 0x0; while (!![]) { switch (_0x4ac47f[_0x18f5ca++]) { case '0': _0x405e25['clearHits'](_0x177d61[_0x5d9fd1(0x228, 'FmO6')]); continue; case '1': _0x4e0b3a[_0x5d9fd1(0x2aa, 'GJGH')](_0x177d61[_0x5d9fd1(0x2a9, 'Z(Ox')]); continue; case '2': console[_0x5d9fd1(0x184, 'UEbN')](_0x177d61[_0x5d9fd1(0x28a, 'gW&!')], { 'message': '[' + _0x426a63['length'] + _0x5d9fd1(0x266, 'o(my') }); continue; case '3': await _0x177d61[_0x5d9fd1(0x1dc, '@13h')](_0x4e606b); continue; case '4': _0x426a63 = []; continue; }break; } } if (_0x405e25[_0x5d9fd1(0x408, 'PjzU')](_0x177d61['YPrvo'])) { const _0x3310ba = _0x177d61[_0x5d9fd1(0x4a1, 'qFQZ')][_0x5d9fd1(0x23d, '9GGE')]('|'); let _0x5a69c1 = 0x0; while (!![]) { switch (_0x3310ba[_0x5a69c1++]) { case '0': console['log'](_0x177d61[_0x5d9fd1(0x195, '^*Eq')], { 'message': _0x5d9fd1(0x204, 'pR2y') + _0x405e25[_0x5d9fd1(0x30f, 'F)#Z')](_0x177d61['YPrvo']) + _0x5d9fd1(0x344, '#*z6') }); continue; case '1': await _0x177d61[_0x5d9fd1(0x1f0, 'hv62')](_0x4e606b); continue; case '2': _0x4e0b3a[_0x5d9fd1(0x35b, 'FfhT')](_0x177d61[_0x5d9fd1(0x22c, 'FfhT')]); continue; case '3': _0x426a63 = []; continue; case '4': _0x405e25['clearHits'](_0x177d61[_0x5d9fd1(0x4c6, 'w9AB')]); continue; }break; } } } else _0x426a63 = []; } async function _0x4e606b() { const _0x33a8c3 = _0x4ecfe9, _0x4f9b85 = navigator[_0x33a8c3(0x191, '8[C4')], _0x1ecb2a = navigator[_0x33a8c3(0x22e, 'o(my')], _0x257cc5 = _0x5586c2[_0x33a8c3(0x20f, 'ddmf')](window['innerWidth'], window[_0x33a8c3(0x4f9, 'qMhY')]) ? _0x5586c2['aCkQy'] : _0x5586c2[_0x33a8c3(0x1c9, 'pR2y')], _0x420b50 = window[_0x33a8c3(0x3cc, '^*Eq')], _0xf13e31 = window[_0x33a8c3(0x2ec, 'Htfr')], _0x145ee5 = window[_0x33a8c3(0x17b, 'PjzU')], _0x314097 = _0x1ecb2a; try { const _0x598bf1 = { 'x-galaxy-client-ver': _0x5586c2[_0x33a8c3(0x492, '$%Ul')], 'x-galaxy-kbv': _0x5586c2[_0x33a8c3(0x478, 'gW&!')], 'x-galaxy-lng': 'ru', 'x-galaxy-model': _0x314097, 'x-galaxy-orientation': _0x257cc5, 'x-galaxy-os-ver': '1', 'x-galaxy-platform': _0x5586c2['wgGSI'], 'x-galaxy-scr-dpi': '' + _0x145ee5, 'x-galaxy-scr-h': '' + _0xf13e31, 'x-galaxy-scr-w': '' + _0x420b50, 'x-galaxy-user-agent': _0x4f9b85 }, _0x4f1cd0 = await _0x5586c2['FzuyW'](fetch, 'https://galaxy.mobstudio.ru/services/?a=game_planets&userID=' + _0x2e0f39['id'][_0x33a8c3(0x2d5, 'gQqX')]() + _0x33a8c3(0x441, 'Q[vD') + _0x2e0f39['pass']['trim']() + _0x33a8c3(0x18f, 'Q[vD') + _0x2e0f39['id']['trim']() + _0x33a8c3(0x319, '(JNg') + Math[_0x33a8c3(0x30a, 'XTP]')](), { 'method': _0x5586c2['HYkmE'], 'headers': _0x598bf1 }); if (_0x4f1cd0['ok']) { const _0x1e317a = await _0x4f1cd0[_0x33a8c3(0x413, 'DnmJ')](), _0x2297a9 = _0x5586c2[_0x33a8c3(0x4f5, 'uHsm')](_0x34fd8e, _0x1e317a, _0x2e0f39[_0x33a8c3(0x1a7, '#*z6')]); console[_0x33a8c3(0x3e6, 'gQqX')](_0x33a8c3(0x3fa, 'HhCS') + _0x2297a9['name'] + _0x33a8c3(0x464, 'vByk') + _0x2297a9['count'] + ']'), _0x4e0b3a['send']('JOIN\x20' + _0x2297a9[_0x33a8c3(0x26d, '@13h')] + '\x0d\x0a'), console[_0x33a8c3(0x347, 'Bzn@')](_0x33a8c3(0x405, '(U](') + _0x2297a9['name'] + ']'); } } catch (_0x557eca) { console['error']('Ошибка\x20при\x20выполнении\x20запроса:\x20' + _0x557eca[_0x33a8c3(0x17f, '9GGE')]); } } function _0x34fd8e(_0x3adacf, _0x14868a) { const _0x26f197 = _0x4ecfe9, _0x2b13e7 = new DOMParser(), _0x49bbda = _0x2b13e7[_0x26f197(0x1ea, 'ddmf')](_0x3adacf, _0x5586c2[_0x26f197(0x214, 'GJGH')]), _0x489b8e = _0x49bbda['querySelectorAll'](_0x5586c2[_0x26f197(0x306, 'FfhT')]); let _0x2bdaa5 = []; _0x489b8e[_0x26f197(0x1e2, 'Q[vD')](_0x578d18 => { const _0x509921 = _0x26f197, _0x294981 = _0x578d18[_0x509921(0x3d9, '8[C4')][_0x509921(0x2e3, 'qFQZ')](); console['log'](_0x177d61['SmWyu'], _0x294981); const _0x30c383 = /Cannon\*(\d+)\s\[(\d+)\]/, _0x9b398e = _0x294981['match'](_0x30c383); if (_0x9b398e) { const _0x2386e8 = _0x509921(0x4cf, 'gQqX') + _0x9b398e[0x1], _0x494795 = _0x177d61['Eriqt'](parseInt, _0x9b398e[0x2]); console['log'](_0x177d61[_0x509921(0x240, '#*z6')], _0x2386e8, _0x494795), _0x177d61[_0x509921(0x3ae, 'gQqX')](_0x2386e8, _0x14868a) && _0x2bdaa5['push']({ 'name': _0x2386e8, 'count': _0x494795 }); } }); if (_0x5586c2['eeeLP'](_0x2bdaa5[_0x26f197(0x503, 'L4Sy')], 0x0)) throw new Error(_0x5586c2[_0x26f197(0x35c, 'Q[vD')]); _0x2bdaa5[_0x26f197(0x450, 'H$G*')]((_0x51dcbd, _0xd84566) => _0xd84566[_0x26f197(0x181, 'Bzn@')] - _0x51dcbd[_0x26f197(0x25f, '8Xi*')]); const _0x2e6e03 = _0x2bdaa5[_0x26f197(0x327, 'hv62')](0x0, 0xa), _0x26cd5a = Math[_0x26f197(0x2c1, '$%Ul')](_0x5586c2['ByDeX'](Math[_0x26f197(0x410, 'gW&!')](), _0x2e6e03[_0x26f197(0x335, 'Mm!H')])), _0x4f4e60 = _0x2e6e03[_0x26cd5a]; return console[_0x26f197(0x347, 'Bzn@')](_0x5586c2[_0x26f197(0x2d0, 'F)#Z')], _0x4f4e60), _0x4f4e60; } async function _0x39a36d(_0x2052b8, _0xa424c6) { const _0x3764db = _0x4ecfe9; console[_0x3764db(0x184, 'UEbN')](_0x5586c2[_0x3764db(0x3e1, 'PjzU')], { 'message': _0xa424c6 }); if (_0x5586c2['BGxUX'](_0x5ed334, _0x2052b8, _0xa424c6)) { const _0xae7dd3 = _0x5586c2[_0x3764db(0x190, '(U](')](_0x4831d9, 0x7d0, 0xbb8), _0x44e919 = _0x5586c2[_0x3764db(0x236, ']xk7')](_0xae7dd3, 0x3e8)[_0x3764db(0x3ca, '$cA^')](0x1); console[_0x3764db(0x4f6, '5NN1')](_0x5586c2['lIMYz'], { 'message': _0x3764db(0x3bd, '^*Eq') + _0x44e919 + _0x3764db(0x48f, 'XTP]') }), await _0x5586c2[_0x3764db(0x260, 'XTP]')](_0x3b9813, _0xae7dd3), _0x5586c2[_0x3764db(0x1df, 'FfhT')](_0x513c2c); } } function _0x5ed334(_0x145564, _0xc1d65b) { const _0x1b7a16 = _0x4ecfe9; return _0x145564[_0x1b7a16(0x320, 'Il#!')](_0x2e0f39['id']) && _0xc1d65b[_0x1b7a16(0x32e, 'L4Sy')]()[_0x1b7a16(0x26c, 'HhCS')](_0x2e0f39[_0x1b7a16(0x1fc, 'Mm!H')][_0x1b7a16(0x32e, 'L4Sy')]() + '\x20стреляет\x20из\x20пушки'); } function _0x978fae(_0x510ed3, _0x205fec) { const _0x3eec82 = _0x4ecfe9; if (_0x16dc8a) return; if (/Выбери действие "Как играть", чтобы узнать правила/i[_0x3eec82(0x19e, 'W[AP')](_0x510ed3)) console['log'](_0x177d61[_0x3eec82(0x195, '^*Eq')], { 'message': _0x177d61['ADtyp'] }), _0x177d61['EQrhp'](_0x513c2c); else { if (/Твоя пушка заряжена/i[_0x3eec82(0x477, '4@#w')](_0x510ed3) || /Ты в игре. Выбери действие Огонь, чтобы поразить мишень/i[_0x3eec82(0x481, 'L4Sy')](_0x510ed3)) _0x1ea617 = !![], console[_0x3eec82(0x168, 'o(my')](_0x177d61[_0x3eec82(0x47b, 'F)#Z')], { 'message': _0x3eec82(0x27b, 'yX!y') }); else (/Заряжай ядро в пушку/i[_0x3eec82(0x473, 'k8kt')](_0x510ed3) || /Вступай в игру/i[_0x3eec82(0x424, 'F)#Z')](_0x510ed3)) && !_0x1ea617 && (_0x1ea617 = ![], console['log'](_0x177d61[_0x3eec82(0x31a, 'uHsm')], { 'message': _0x177d61[_0x3eec82(0x2c4, 'Bzn@')] }), _0x177d61[_0x3eec82(0x3de, '#*z6')](_0x513c2c)); } const _0x526c55 = _0x205fec['match'](/нет (.+?) ядер/); _0x526c55 && (_0x1ea617 = ![], console[_0x3eec82(0x3d2, 'H$G*')](_0x177d61[_0x3eec82(0x352, 'Mm!H')], { 'message': _0x3eec82(0x2ba, 'vR46') + _0x526c55[0x1] + _0x3eec82(0x39f, '(JNg') }), _0x4e0b3a[_0x3eec82(0x38e, 'Q[vD')](_0x3eec82(0x171, 'S0KG'))); } async function _0x1888ac(_0x36e5ce, _0x5966a5) { const _0x42ebc9 = _0x4ecfe9; if (_0x5586c2[_0x42ebc9(0x324, 'Htfr')](!_0x3b2bd3, !_0x1ea617)) return; if (_0x5586c2['KNLYs'](_0x3b2bd3, _0x1ea617)) { if (_0x5966a5[0x2][_0x42ebc9(0x1e1, 'FfhT')](_0x1a1595[_0x42ebc9(0x2bc, 'w9AB')]())) { if (_0x16dc8a) return; _0x5586c2[_0x42ebc9(0x499, ']xk7')](_0x1df4e9, _0x36e5ce); } await _0x5586c2[_0x42ebc9(0x203, 'qMhY')](_0x5bc903), _0x5586c2[_0x42ebc9(0x2e0, 'F)#Z')](_0x3c7c2d, _0x3aa829) && await _0x5586c2[_0x42ebc9(0x299, 'yX!y')](_0x5cf5a8), _0x5586c2[_0x42ebc9(0x480, 'KZKM')](_0x2f636a, _0xb2e45c) && await _0x5586c2[_0x42ebc9(0x2cd, 'ukSU')](_0x3a0d61); } } function _0x1df4e9(_0x747be2) { const _0x1f37b4 = _0x4ecfe9; try { const _0x5ab4e6 = _0x747be2[_0x1f37b4(0x383, 'H$G*')]()[_0x1f37b4(0x2e2, 'Q[vD')](/\s+/); if (_0x177d61[_0x1f37b4(0x244, 'pR2y')](_0x5ab4e6[_0x1f37b4(0x183, ']xk7')], 0x3)) return; const _0x54a7f7 = _0x5ab4e6[0x1], _0x55ce85 = _0x5ab4e6[0x2]['split'](','), _0x13c40f = _0x5ab4e6[_0x1f37b4(0x2d7, 'GJGH')](0x3)[_0x1f37b4(0x1a3, '$cA^')]('\x20'); if (!_0x13c40f[_0x1f37b4(0x463, 'XTP]')]('{') || !_0x13c40f[_0x1f37b4(0x199, 'w9AB')]('}')) return; const _0x25d967 = _0x13c40f[_0x1f37b4(0x3ad, 'H$G*')](0x0, _0x13c40f[_0x1f37b4(0x3c1, '@13h')]('}')), _0x3371dd = _0x13c40f[_0x1f37b4(0x298, 'gW&!')](_0x177d61['mRUiQ'](_0x13c40f[_0x1f37b4(0x509, '4@#w')]('{'), 0x1), _0x13c40f[_0x1f37b4(0x18c, 'FmO6')]('}')); _0x55ce85[_0x1f37b4(0x16a, 'Htfr')](() => _0x4a69b4(_0x54a7f7, _0x25d967, _0x3371dd)); } catch (_0x181766) { console[_0x1f37b4(0x290, 'F)#Z')](_0x181766[_0x1f37b4(0x31b, ']xk7')]); } } function _0x4a69b4(_0x200113, _0x277d58, _0x492b19) { const _0x28d955 = _0x4ecfe9, _0x2ce3c3 = _0x277d58[_0x28d955(0x339, '(JNg')]()[_0x28d955(0x505, 'Il#!')](/\s+/), _0x4a2a0f = _0x492b19[_0x28d955(0x2ff, '8Xi*')](), _0x12aee1 = _0x4a2a0f[_0x28d955(0x320, 'Il#!')]('(') ? _0x4a2a0f[_0x28d955(0x378, 'Bzn@')](_0x177d61['cxIRB'](_0x4a2a0f[_0x28d955(0x402, '8Xi*')]('('), 0x1), _0x4a2a0f[_0x28d955(0x282, 'FfhT')](')')) : null, _0x491793 = _0x12aee1 ? _0x12aee1[_0x28d955(0x1cb, 'qMhY')](',') : []; _0x2ce3c3['forEach'](_0x4fcdaf => { const _0x19734c = _0x28d955, _0x56914e = { 'jImkB': function (_0x3bc5b7, _0xcdfa90) { const _0x51f2df = _0x222e; return _0x177d61[_0x51f2df(0x45e, '$cA^')](_0x3bc5b7, _0xcdfa90); }, 'PpUjr': function (_0x1194d5, _0x124ae4) { return _0x177d61['Eriqt'](_0x1194d5, _0x124ae4); } }, _0x5e02ea = _0x4fcdaf[_0x19734c(0x2de, 'qFQZ')](';'); if (_0x177d61[_0x19734c(0x26b, 'Il#!')](_0x5e02ea[_0x19734c(0x175, '5NN1')], 0x5)) return; _0x491793['forEach'](_0x1f0d16 => { const _0x4f8d7c = _0x19734c; _0x56914e[_0x4f8d7c(0x2ed, 'w9AB')](_0x5e02ea[0x0], _0x1f0d16) && _0x56914e['PpUjr'](_0x52722c, _0x5e02ea); }); }); } function _0x52722c(_0x1921d7) { const _0x246f9d = _0x4ecfe9, _0x4d9ee6 = _0x1921d7[_0x246f9d(0x327, 'hv62')](0x4)[_0x246f9d(0x1a3, '$cA^')](';')['split'](_0x177d61[_0x246f9d(0x3b7, 'uHsm')])['slice'](0x1); if (_0x177d61[_0x246f9d(0x395, '$cA^')](_0x1921d7[0x0], _0x177d61['rPFpr'])) return; _0x4d9ee6[_0x246f9d(0x33a, '5NN1')](_0x287a2c => { const _0x1cc826 = _0x246f9d, _0x3b7d47 = _0x287a2c[_0x1cc826(0x21e, 'UEbN')](';'); if (_0x177d61['bKFpN'](_0x3b7d47[_0x1cc826(0x3c4, 'XTP]')], 0x4)) return; const [_0x3a4c71, _0x1359b8, _0x211378, _0x1320f5] = _0x3b7d47; if (!['f', 'b', 'h', _0x177d61[_0x1cc826(0x274, 'Mm!H')]][_0x1cc826(0x3ed, '4@#w')](_0x3a4c71)) { const _0x501eab = _0x177d61['CeYzn'](parseInt, _0x1359b8, 0xa), _0x2416ee = _0x177d61[_0x1cc826(0x42f, 'qMhY')](parseInt, _0x211378, 0xa); if (_0x177d61['DZrwr'](isNaN, _0x501eab) || _0x177d61[_0x1cc826(0x44b, ']xk7')](isNaN, _0x2416ee)) return; _0x177d61[_0x1cc826(0x43c, 'F)#Z')](_0x2416ee, 0x2c) || _0x177d61[_0x1cc826(0x4ba, 'DnmJ')](_0x2416ee, 0x0) ? _0x328db1[_0x1cc826(0x198, 'Bzn@')](_0x1921d7[0x0]) : _0x328db1['set'](_0x1921d7[0x0], new _0x57b63f(_0x1921d7[0x0], _0x3a4c71, _0x1359b8, _0x211378, _0x1320f5)); } }); } async function _0x47a618(_0x4396f3, _0x702585) { const _0x3a36cd = _0x4ecfe9; try { if (_0x702585[0x2]['includes'](_0x2e0f39['id']) && _0x702585[0x3][_0x3a36cd(0x417, '#*z6')]('95')) { const _0x514f0c = _0x702585[0x4][_0x3a36cd(0x206, 'gW&!')](';'), _0x236032 = _0x177d61[_0x3a36cd(0x34d, '$%Ul')](parseInt, _0x514f0c[0x2], 0xa), _0x274593 = Math[_0x3a36cd(0x295, '8Xi*')](_0x177d61['DwnWc'](_0x177d61['DwnWc'](_0x236032, 0x9), 0x12c)); _0x2f636a = _0x274593, console[_0x3a36cd(0x311, 'qFQZ')](_0x177d61['zmnOv'], { 'message': _0x3a36cd(0x16c, '(JNg') + _0x274593 + ']' }); } if (_0x702585[0x2]['includes'](_0x1a1595) || _0x702585[0x2][_0x3a36cd(0x199, 'w9AB')](_0x2e0f39['id'])) { if (_0x16dc8a) return; await _0x177d61[_0x3a36cd(0x3d4, 'Q[vD')](_0xcd02f3, _0x4396f3); } } catch (_0x423b90) { console[_0x3a36cd(0x293, '4#r5')](_0x177d61[_0x3a36cd(0x47b, 'F)#Z')], { 'message': 'Ошибка\x20в\x20addView:\x20' + _0x423b90[_0x3a36cd(0x3f8, '8Xi*')] }); } } async function _0xcd02f3(_0x43b633) { const _0x49a899 = _0x4ecfe9; try { const _0x330f7d = _0x43b633[_0x49a899(0x3f4, 'ddmf')](/\s+/); if (_0x177d61[_0x49a899(0x24d, 'L4Sy')](_0x330f7d[0x2], _0x2e0f39['id'])) { if (_0x177d61['CpqFc'](_0x330f7d[_0x49a899(0x3df, 'PjzU')], 0x0)) { const _0xc17258 = _0x330f7d[0x4][_0x49a899(0x1d7, 'DnmJ')](';')[0x1]; switch (_0xc17258) { case _0x177d61[_0x49a899(0x3fb, '@13h')]: console['log'](_0x177d61[_0x49a899(0x2d2, 'k8kt')], { 'message': _0x177d61['rmGQk'] }); break; case _0x177d61['tEmpb']: console['log'](_0x177d61['zmnOv'], { 'message': _0x177d61['zMtVy'] }); break; default: const _0x1e01ba = { 'cn/c1': 0x1, 'cn/c2': 0x2, 'cn/c3': 0x3, 'cn/c4': 0x4, 'cn/c5': 0x5, 'cn/gcn1': 0x1, 'cn/gcn2': 0x2, 'cn/gcn3': 0x3, 'cn/gcn4': 0x4, 'cn/gcn5': 0x5 }; _0x1e01ba[_0xc17258] && (_0x3c7c2d = _0x1e01ba[_0xc17258], console[_0x49a899(0x3d2, 'H$G*')](_0x177d61['zmnOv'], { 'message': _0x49a899(0x39a, 'o(my') + _0x3c7c2d + ']' })); break; } } } if (/light_r/i[_0x49a899(0x3b4, 'uHsm')](_0x43b633)) _0x3528ae = ![], console[_0x49a899(0x459, 'KZKM')](_0x177d61['zmnOv'], { 'message': _0x177d61['jXpLi'] }); else { if (/light_g/i['test'](_0x43b633)) { _0x3528ae = !![], console[_0x49a899(0x469, '8Xi*')](_0x177d61['zmnOv'], { 'message': _0x177d61[_0x49a899(0x39e, '4@#w')] }); if (_0x177d61[_0x49a899(0x4e0, 'DnmJ')](_0x4a5502, _0x3528ae)) { if (_0x50b14f) _0x4e0b3a[_0x49a899(0x4a0, 'hv62')](_0x49a899(0x188, 'PjzU') + _0x1a1595 + '\x0d\x0a'), console[_0x49a899(0x501, 'W[AP')](_0x177d61[_0x49a899(0x4b8, 'vByk')], { 'message': _0x177d61[_0x49a899(0x1e9, 'F)#Z')] }); else { const _0x5c5e4b = _0x177d61[_0x49a899(0x422, 'FfhT')](_0x4831d9, 0x7d0, 0x1388), _0x20ed0c = _0x177d61[_0x49a899(0x37b, '^*Eq')](_0x5c5e4b, 0x3e8)['toFixed'](0x1); console[_0x49a899(0x37c, 'OeWv')](_0x177d61[_0x49a899(0x28a, 'gW&!')], { 'message': 'Выстрелим\x20через\x20[' + _0x20ed0c + _0x49a899(0x4e4, 'Q[vD') }), await _0x177d61[_0x49a899(0x29b, 'Bzn@')](_0x3b9813, _0x5c5e4b), _0x177d61['FvOBE'](_0x4a5502, _0x3528ae) ? _0x4e0b3a[_0x49a899(0x16f, 'L4Sy')](_0x49a899(0x365, 'HhCS') + _0x1a1595 + '\x0d\x0a') : console[_0x49a899(0x4bc, '(JNg')](_0x177d61[_0x49a899(0x448, 'qMhY')], { 'message': _0x177d61[_0x49a899(0x1f7, 'Bzn@')] }); } } else console[_0x49a899(0x172, 'S0KG')](_0x177d61['zmnOv'], { 'message': _0x177d61[_0x49a899(0x224, 'DnmJ')] }); } } } catch (_0xabbeff) { console[_0x49a899(0x2f3, '@13h')](_0x177d61[_0x49a899(0x358, 'qFQZ')], { 'message': 'Ошибка\x20в\x20processAddView:\x20' + _0xabbeff[_0x49a899(0x4b2, 'gW&!')] }); } } async function _0x5bc903() { const _0x596dcc = _0x4ecfe9; try { _0x4a5502 = ![]; for (const _0x59c53d of _0x328db1[_0x596dcc(0x2ee, 'qFQZ')]()) { if (_0x5586c2[_0x596dcc(0x433, 'uHsm')](_0x59c53d['id'], _0x5586c2[_0x596dcc(0x232, 'DnmJ')])) { const _0x55e588 = _0x5586c2[_0x596dcc(0x403, 'L4Sy')](parseInt, _0x59c53d['i1'], 0xa), _0x49eb9b = _0x5586c2['HsyhE'](parseInt, _0x59c53d['i2'], 0xa), _0x16a888 = _0x5586c2[_0x596dcc(0x329, 'FfhT')](parseInt, _0x59c53d['i3'], 0xa); if (!_0x5586c2[_0x596dcc(0x368, 'w9AB')](isNaN, _0x55e588) && !_0x5586c2['RcWjM'](isNaN, _0x49eb9b) && !_0x5586c2[_0x596dcc(0x242, 'FfhT')](isNaN, _0x16a888)) { if (_0x5586c2[_0x596dcc(0x3c5, 'W[AP')](_0x55e588, -0x32) && _0x5586c2[_0x596dcc(0x3b8, 'FmO6')](_0x49eb9b, 0x0) && _0x5586c2['GZSXC'](_0x16a888, 0x21)) { const _0x31a90c = _0x5586c2[_0x596dcc(0x3b9, 'Bzn@')](_0x4831d9, 0x16b, 0x170); _0x487245 = 0x8, _0xb2e45c = _0x31a90c, _0x3aa829 = 0x3, _0x4a5502 = !![]; break; } else { if (_0x5586c2[_0x596dcc(0x4f1, 'FmO6')](_0x55e588, -0x19) && _0x5586c2['MDcOi'](_0x49eb9b, 0x0) && _0x5586c2[_0x596dcc(0x1ec, 'H$G*')](_0x16a888, 0x21)) { const _0x1f7b3f = _0x5586c2['LamRK'](_0x4831d9, 0x17a, 0x184); _0x487245 = 0x9, _0xb2e45c = _0x1f7b3f, _0x3aa829 = 0x3, _0x4a5502 = !![]; break; } else { if (_0x5586c2[_0x596dcc(0x208, 'ukSU')](_0x55e588, 0x0) && _0x5586c2[_0x596dcc(0x48b, 'vByk')](_0x49eb9b, 0x0) && _0x5586c2['ARFRo'](_0x16a888, 0x21)) { const _0xef832b = _0x5586c2['tWbut'](_0x4831d9, 0x186, 0x18f); _0x487245 = 0xa, _0xb2e45c = _0xef832b, _0x3aa829 = 0x3, _0x4a5502 = !![]; break; } } } if (_0x4a5502) break; } } } } catch (_0x14aee3) { console['log'](_0x5586c2[_0x596dcc(0x1fd, 'S0KG')], { 'message': _0x596dcc(0x1f5, '8Xi*') + _0x14aee3['message'] }); } return Promise['resolve'](); } async function _0x5cf5a8() { const _0x51bfdf = _0x4ecfe9; if (_0x5586c2['yYhSy'](_0x3c7c2d, _0x3aa829)) { if (_0x5586c2[_0x51bfdf(0x2be, '#*z6')](_0x3c7c2d, _0x3aa829)) { console['log'](_0x5586c2['lIMYz'], { 'message': _0x5586c2[_0x51bfdf(0x17c, 'DnmJ')] }); return; } if (_0x5586c2[_0x51bfdf(0x407, '@13h')](_0x3aa829, 0x1) || _0x5586c2[_0x51bfdf(0x265, 'yX!y')](_0x3aa829, 0x5)) { console[_0x51bfdf(0x432, '$cA^')](_0x5586c2[_0x51bfdf(0x2cb, 'ddmf')], { 'message': _0x5586c2['vMqDD'] }); return; } const _0x5976a6 = _0x5586c2[_0x51bfdf(0x302, '@13h')](_0x4831d9, 0xfa0, 0x1388), _0x38aac5 = _0x5586c2[_0x51bfdf(0x236, ']xk7')](_0x5976a6, 0x3e8)[_0x51bfdf(0x35a, 'vR46')](0x1); console['log'](_0x5586c2[_0x51bfdf(0x2bf, 'XTP]')], { 'message': _0x51bfdf(0x40a, 'Q[vD') + _0x38aac5 + _0x51bfdf(0x24a, 'F)#Z') }), await _0x5586c2[_0x51bfdf(0x278, 'ddmf')](_0x3b9813, _0x5976a6), _0x5586c2[_0x51bfdf(0x4ff, 'vByk')](_0x3c7c2d, _0x3aa829) ? _0x5586c2[_0x51bfdf(0x456, 'ddmf')](_0x260e8b) : _0x5586c2[_0x51bfdf(0x2fc, '@13h')](_0xd4bb6b); } } async function _0x3a0d61() { const _0x6be01d = _0x4ecfe9, _0x30acb0 = _0x177d61[_0x6be01d(0x29d, 'gW&!')](_0x2fd852, _0x487245, _0x2f636a), _0x192e10 = _0x177d61['FemdA'](_0x4831d9, 0x5dc, 0xbb8); if (!_0x30acb0 && _0x177d61[_0x6be01d(0x371, ']xk7')](_0x2f636a, _0xb2e45c)) { _0x2f636a = _0xb2e45c; const _0x5c3637 = _0x177d61[_0x6be01d(0x4c9, 'hv62')](_0x192e10, 0x3e8)[_0x6be01d(0x373, 'hv62')](0x1); console[_0x6be01d(0x44d, 'FfhT')](_0x177d61[_0x6be01d(0x4c7, 'HhCS')], { 'message': _0x6be01d(0x1d3, 'Bzn@') + _0x5c3637 + ']\x20секунд!' }), await _0x177d61[_0x6be01d(0x396, 'k8kt')](_0x3b9813, _0x192e10), _0x4e0b3a[_0x6be01d(0x245, 'XTP]')](_0x6be01d(0x27e, '9GGE') + _0xb2e45c + '\x0d\x0a'); } } function _0x539436(_0x455693) { const _0x4d9533 = _0x4ecfe9; _0x455693[0x1][_0x4d9533(0x33b, '4#r5')](_0x2e0f39['id']) && (_0x2f636a = _0x5586c2[_0x4d9533(0x278, 'ddmf')](parseInt, _0x455693[0x2]), console[_0x4d9533(0x1b3, '#*z6')](_0x5586c2['lIMYz'], { 'message': _0x4d9533(0x33c, 'GJGH') + _0x455693[0x2] })); } function _0x2fd852(_0x1b9f32, _0x152a15) { const _0x234c7f = _0x4ecfe9; switch (_0x1b9f32) { case 0x8: return _0x177d61[_0x234c7f(0x248, '8Xi*')](_0x152a15, 0x16b) && _0x177d61[_0x234c7f(0x2f1, '9GGE')](_0x152a15, 0x170); case 0x9: return _0x177d61[_0x234c7f(0x3cf, 'o(my')](_0x152a15, 0x17a) && _0x177d61[_0x234c7f(0x38c, 'Q[vD')](_0x152a15, 0x184); case 0xa: return _0x177d61[_0x234c7f(0x25b, 'KZKM')](_0x152a15, 0x186) && _0x177d61[_0x234c7f(0x1c4, 'Q[vD')](_0x152a15, 0x18f); default: return ![]; } } function _0xd4bb6b() { const _0x3ac508 = _0x4ecfe9, _0x11d4d5 = _0x177d61[_0x3ac508(0x3ff, 'vR46')](_0x3c7c2d, _0x3aa829); for (let _0x5a1cc6 = 0x0; _0x177d61['ueSTh'](_0x5a1cc6, _0x11d4d5); _0x5a1cc6++) { _0x4e0b3a['send'](_0x3ac508(0x3b2, 'Bzn@') + _0x1a1595 + '\x0d\x0a'); } _0x3c7c2d = _0x3aa829, console[_0x3ac508(0x30d, 'XTP]')](_0x177d61[_0x3ac508(0x429, 'Htfr')], { 'message': 'Опустили\x20пушку\x20на\x20[' + _0x3aa829 + _0x3ac508(0x471, '@13h') }); } function _0x260e8b() { const _0xdf7eb3 = _0x4ecfe9, _0x3e184a = _0x177d61[_0xdf7eb3(0x2e5, 'qFQZ')](_0x3aa829, _0x3c7c2d); for (let _0x225f46 = 0x0; _0x177d61[_0xdf7eb3(0x4f8, '^*Eq')](_0x225f46, _0x3e184a); _0x225f46++) { _0x4e0b3a['send'](_0xdf7eb3(0x406, 'H$G*') + _0x1a1595 + '\x0d\x0a'); } _0x3c7c2d = _0x3aa829, console[_0xdf7eb3(0x3d2, 'H$G*')](_0x177d61['zmnOv'], { 'message': _0xdf7eb3(0x498, 'W[AP') + _0x3aa829 + _0xdf7eb3(0x1e0, 'yX!y') }); } function _0x513c2c() { const _0x4573bb = _0x4ecfe9; if (!_0x5ef3e6) { console[_0x4573bb(0x4ce, 'GJGH')](_0x5586c2[_0x4573bb(0x1ca, '@13h')], { 'message': _0x5586c2[_0x4573bb(0x215, 'vR46')] }); return; } const _0x456c4c = _0x5ef3e6[_0x4573bb(0x412, '#*z6')](); switch (_0x456c4c) { case _0x5586c2[_0x4573bb(0x3ee, 'gQqX')]: console['log'](_0x5586c2[_0x4573bb(0x415, 'uHsm')], { 'message': _0x5586c2['PJyRE'] }), _0x4e0b3a[_0x4573bb(0x257, 'ddmf')](_0x4573bb(0x502, 'w9AB') + _0x1a1595 + '\x0d\x0a'); break; case _0x5586c2[_0x4573bb(0x4e9, 'Q[vD')]: console[_0x4573bb(0x2c3, 'Mm!H')](_0x5586c2[_0x4573bb(0x1bc, 'k8kt')], { 'message': _0x5586c2[_0x4573bb(0x3e9, 'Z(Ox')] }), _0x4e0b3a[_0x4573bb(0x4a6, 'k8kt')]('ACTION\x204493\x20' + _0x1a1595 + '\x0d\x0a'); break; default: console['log'](_0x5586c2[_0x4573bb(0x2a7, 'Z(Ox')], { 'message': 'Неизвестный\x20режим\x20ядра:\x20' + _0x456c4c }); break; } } function _0x3b9813(_0x2e0654) { return new Promise(_0x5c1be9 => setTimeout(_0x5c1be9, _0x2e0654)); } function _0x4831d9(_0x3dab14, _0xbc2134) { const _0x517dc3 = _0x4ecfe9; return _0x177d61[_0x517dc3(0x3e4, 'XTP]')](Math['floor'](_0x177d61[_0x517dc3(0x2f7, 'yX!y')](Math[_0x517dc3(0x3ef, 'uHsm')](), _0x177d61[_0x517dc3(0x4aa, '5NN1')](_0x177d61['NMcMp'](_0xbc2134, _0x3dab14), 0x1))), _0x3dab14); } function _0x40c574(_0x249ac1, _0xf1fb07 = ![]) { const _0x5a9a77 = _0x4ecfe9; try { const _0x32a6b2 = 0x5, _0x320476 = _0x249ac1[_0x5a9a77(0x348, 'FmO6')]()[_0x5a9a77(0x3f2, 'GJGH')](/\s+/); let _0x34fc51 = 0x0; while (_0x5586c2[_0x5a9a77(0x1e5, 'k8kt')](_0x34fc51, _0x320476[_0x5a9a77(0x3e7, 'ukSU')])) { let _0x5f591e = _0x320476[_0x34fc51], _0x1ae55a = _0x320476[_0x5586c2[_0x5a9a77(0x2f8, 'Bzn@')](_0x34fc51, 0x1)]; const _0x22951a = _0x320476[_0x5586c2[_0x5a9a77(0x4e8, 'Htfr')](_0x34fc51, 0x2)], _0x1eb28a = Math['abs'](_0x5586c2[_0x5a9a77(0x2c2, 'yX!y')](parseInt, _0x320476[_0x5586c2[_0x5a9a77(0x43e, '9GGE')](_0x34fc51, 0x3)], 0xa)), _0x4215ea = _0x320476[_0x5586c2['FbLYO'](_0x5586c2[_0x5a9a77(0x287, '8[C4')](_0x34fc51, 0x4), _0x5586c2['daRtI'](_0x1eb28a, _0x32a6b2))]; let _0x1e470f = ![], _0x227f3 = ![]; _0x1ae55a[_0x5a9a77(0x380, 'OeWv')]('+') && (_0x1ae55a = _0x1ae55a[_0x5a9a77(0x28c, '8[C4')](0x1)['trim'](), _0x1e470f = !![]); _0x1ae55a[_0x5a9a77(0x41a, 'ddmf')]('@') && (_0x1ae55a = _0x1ae55a[_0x5a9a77(0x1dd, 'KZKM')](0x1)[_0x5a9a77(0x37f, '$cA^')](), _0x227f3 = !![]); _0x34fc51 += _0x5586c2[_0x5a9a77(0x376, 'ddmf')](0x5, _0x5586c2[_0x5a9a77(0x472, 'PjzU')](_0x1eb28a, _0x32a6b2)); const _0x18056d = { 'id': _0x5586c2[_0x5a9a77(0x3ea, '4@#w')](parseInt, _0x22951a, 0xa), 'nick': _0x1ae55a, 'clan': _0x5f591e, 'position': _0x5586c2[_0x5a9a77(0x409, 'ukSU')](parseInt, _0x4215ea, 0xa), 'owner': _0x227f3, 'stars': _0x1e470f, 'join': _0xf1fb07 }; _0x3bf1f7[_0x5a9a77(0x2d3, ']xk7')](_0x18056d['id'], new _0x4100d6(_0x18056d)), console['log'](_0x5586c2[_0x5a9a77(0x484, '$%Ul')], _0x18056d); if (_0xf1fb07) break; } } catch (_0x6d070e) { console[_0x5a9a77(0x388, 'S0KG')](_0x5a9a77(0x2c9, 'gW&!') + _0x6d070e[_0x5a9a77(0x34b, 'W[AP')]); } } function _0x44aa42(_0x56c568) { const _0x226a56 = _0x4ecfe9; _0x2e0f39['currentPlanet'] = _0x56c568[0x1], console[_0x226a56(0x2f3, '@13h')](_0x177d61[_0x226a56(0x308, 'ddmf')], { 'message': _0x226a56(0x504, 'XTP]') + _0x2e0f39[_0x226a56(0x4e1, 'OeWv')] + '\x20[' + _0x56c568[0x1] + ']' }); if (_0x56c568[0x1][_0x226a56(0x460, 'KZKM')]()[_0x226a56(0x2fd, 'yX!y')](_0x177d61[_0x226a56(0x4d7, 'KZKM')])) { _0x3b2bd3 = !![]; const _0x19f910 = _0x56c568[0x1]['trim'](), _0x471baa = _0x177d61['NybtM'](_0xf25b3f, _0x19f910); _0x471baa ? (_0x1a1595 = _0x471baa['id'], console[_0x226a56(0x2c5, 'ukSU')](_0x177d61[_0x226a56(0x448, 'qMhY')], { 'message': _0x226a56(0x38a, '4@#w') + _0x471baa[_0x226a56(0x2e8, 'H$G*')] + _0x226a56(0x47e, 'vR46') + _0x471baa['id'] })) : console[_0x226a56(0x267, 'pR2y')](_0x177d61[_0x226a56(0x3a4, 'Il#!')], { 'message': _0x226a56(0x296, 'KZKM') + _0x19f910 + _0x226a56(0x4d4, 'OeWv') }); } else _0x3b2bd3 = ![]; } function _0x20075a(_0x19672f, _0x4c56e0, _0x5b91fa) { const _0x4de43e = _0x4ecfe9; _0x5586c2['dmdzP'](_0x2e0f39['id'], _0x5b91fa['toString']()) && console[_0x4de43e(0x2c5, 'ukSU')](_0x5586c2[_0x4de43e(0x2da, '8Xi*')], { 'message': 'На\x20планету\x20залетел\x20персонаж\x20=>\x20' + _0x4c56e0 }); const _0x227d00 = _0x5586c2[_0x4de43e(0x218, 'KZKM')](_0x15b94d, _0x5b91fa); if (!_0x227d00) { const _0x4be07b = _0x19672f[_0x4de43e(0x1c1, 'PjzU')]()[_0x4de43e(0x4b4, 'uHsm')](_0x5586c2[_0x4de43e(0x4c4, 'FfhT')](_0x19672f[_0x4de43e(0x41d, 'PjzU')]('\x20'), 0x1)); _0x5586c2['idpOA'](_0x40c574, _0x4be07b, !![]); } } function _0xf25b3f(_0x2266e6) { const _0x41dc61 = _0x4ecfe9; for (const _0x57d597 of _0x3bf1f7[_0x41dc61(0x2ea, 'FmO6')]()) { if (_0x57d597['nick'][_0x41dc61(0x48a, 'vByk')]()[_0x41dc61(0x42a, 'hv62')](_0x2266e6['toLowerCase']())) return _0x57d597; } return null; } function _0x15b94d(_0x48cbfa) { const _0xc430fa = _0x4ecfe9; return _0x3bf1f7[_0xc430fa(0x3a5, 'ukSU')](_0x48cbfa) || null; } function _0x4afc02(_0x118a79) { _0x3bf1f7['delete'](_0x118a79); } function _0x1c6bfe(_0xd8deaa) { const _0x43c8cb = _0x4ecfe9, _0x310e12 = _0x5586c2[_0x43c8cb(0x17d, '^*Eq')](_0x15b94d, _0xd8deaa); _0x310e12 && console[_0x43c8cb(0x269, 'HhCS')](_0x5586c2[_0x43c8cb(0x209, 'W[AP')], { 'message': _0x43c8cb(0x186, 'W[AP') + _0x310e12['nick'] }), _0x5586c2[_0x43c8cb(0x47c, 'OeWv')](_0x4afc02, _0xd8deaa); } function _0x2576c6(_0x382433) { const _0x39a213 = _0x4ecfe9, _0x18c656 = _0x382433[_0x39a213(0x234, '^*Eq')](':'); if (_0x5586c2['VPhSS'](_0x18c656, -0x1)) return ''; const _0x54a4ab = _0x382433[_0x39a213(0x41d, 'PjzU')](':', _0x5586c2['pdrGp'](_0x18c656, 0x1)); if (_0x5586c2[_0x39a213(0x3d3, '(U](')](_0x54a4ab, -0x1)) return ''; return _0x382433['substring'](_0x5586c2[_0x39a213(0x42e, 'pR2y')](_0x54a4ab, 0x1))['trim'](); } function _0x4db01f(_0x18ed40) { const _0x584b7b = _0x4ecfe9, _0xce564e = _0x18ed40[_0x584b7b(0x1e6, 'ukSU')](':'); if (_0x177d61['oLHEW'](_0xce564e, -0x1)) return []; const _0x379038 = _0x18ed40[_0x584b7b(0x4d6, 'ddmf')](':', _0x177d61['XWtcZ'](_0xce564e, 0x1)); if (_0x177d61[_0x584b7b(0x362, 'Z(Ox')](_0x379038, -0x1)) return []; const _0x53ffcc = _0x18ed40[_0x584b7b(0x27f, 'DnmJ')](_0x177d61[_0x584b7b(0x197, 'vR46')](_0x379038, 0x1))['trim'](), _0x57f760 = /[ , \n\r]+/, _0x5cc68f = _0x53ffcc[_0x584b7b(0x32c, '^*Eq')](_0x57f760)['filter'](Boolean); return _0x5cc68f; } function _0x2bcf04() { const _0x27b6a5 = _0x4ecfe9, _0xd147c9 = { 'PFiMC': _0x5586c2[_0x27b6a5(0x436, 'vByk')] }; for (let _0x1739d4 = 0x1; _0x5586c2[_0x27b6a5(0x24b, '@13h')](_0x1739d4, 0x5); _0x1739d4++) { _0x5586c2['PXYYK'](setTimeout, () => { const _0x27e255 = _0x27b6a5, _0x474b73 = document[_0x27e255(0x24c, 'Bzn@')](_0xd147c9[_0x27e255(0x1da, 'FfhT')]); if (_0x474b73) _0x474b73[_0x27e255(0x2e1, 'OeWv')](); }, _0x5586c2[_0x27b6a5(0x4b3, 'k8kt')](_0x1739d4, 0x3e8)); } } return _0x4e0b3a; }; } catch (_0x1ca615) { console[_0x40d868(0x4ce, 'GJGH')](_0x5586c2['jBUXO'], { 'error': _0x1ca615[_0x40d868(0x4eb, '8[C4')] }); } }())); function _0x503f() { const _0x25cbd2 = ['afr1WOXe', 'd8kWW6ddSYjcuSo8', 'WP7dJ8oxgZldHwXfqeO', 'F8okW6SRWPC4W4uKWQy0k8ky', 'ACk+W6SLWPm6WOy', 'WRdcLSoMDrm', 'fmoCWRv7W5m', 'nZfDemoxW4VdGt03ehRcLwm', 'y8k3DCopWOZdLMDsCXb4z1tdINldLdxcKh1jzSokcmo/W7VdTmoEWPio', 'WPVcIwe', 'mMJdIgXQ', 'W4JcMxegW74', 'WO/dU8oPW6Go', 'WOXsoCo3WPu', 'x0hdLSo7FbldTW', 'fZyBxta', 'ovvSw8onegi', 'W43cGIPBmW', '0yhtNng807/tHnol0Aze0lZrK9gO0kJqHToQ0kpdHG', 'WOhcLmkhmSoL', 'oxFdQepdQmkQ', 'fCo+g8oSWP0', 'rY7dNSozWQhcHSk/', 'cCo9b8o6WR0', 'BmkkWRPUW5D6W5K+WPrM', 'bb9Riq', '8ykOTYBtVnc90k/sN9cu0jSt0ilsGngJ0y7sL9o30Q/rODob0zxcMa', 'WOJcTCoyWOXF', 'i09XuSoq', 'gwVdKvfb', 'mZTnpmo7W5tdMJ8Yo3y', 'nmoiWQ1mW5i', 'WRWHuJO', 'jCkuWRHXW41UW50', 'nW3cJf7cLW', 'W5ZcM8ksxw/cPYP2wNSgWQ3dPa', 'odfE', 'W6JcUgybW6C', 'nvPlWOjh', 'i1r6sG', 'nmoHiSopWPO', 'W63cUuitW6ddSmontmofwa0', 'rCk7WQW', 'tGDcDSok', 'cY1kzSoryMCMv8k8', 'CSoCW4T9WRW', 'WPxcH2xcTMaDW4HEn1D/WQ5neCoy', 'kCkhW5BdJXm', 'WQVcG8oQ', 'W7JcU1myW73dUmoVumojBueCWRv2h2G', 'idfQaCoNW47dGdK', 'FtVcIbOt', 'AVgmT4VdHnkp0kdsODcJ0lhqUTgP0ztdPmofW48VjCkzWRGKqmo1W7VcUCk3daNcNSkLh2voCCk6W73cOtBcGNf/W4tdJCoNWQurtCkhWRtcRJ7cLHijbSkSW6lcH3NcNJq', 'WPJcQK7cMfa', 'WPddQmosW7qJ', 'WRpcG8obWRnSmCkEWPNcSxdcPW', 'Bh7dRNZdGG', 'p0TPxCoCk30', 'aHvOWPhdReddRgC', 'WOqxiq', 'W63cRvyZW7JdSCoGumoGxrPfW6uOxZm', 'idf1gSoIW4ldNb09k3y', 'W5PcW7ldImkYW5VcOsRcVdpdRgpdOa', 'umoEW5JdNSkkW7JcKx7dJConWQ3dKG', 'WPddOmo3', 'mCo2lSouWPpcHdKrBqWBEL/dH2e', 'WRhcKmkpgmoJ', 'WQFdS8oXBai', 'g8o3W7XwWO9EW67dU2m', 'DN7dJw7dJW', 'WPxcUmkNlSob', 'zW7dUmoVpG', 'AwVsLDkU06ltM9ku0R3sPvW', 'bHhcSSoata', 'WPRdI8orha', 'W6XwW57dNCkH', 'W6hcG8keeCoJWPFcOSoEW5/dRW', 'iNddOe5w', 'W7H9W7my', 'v2ZdQe3dTq', 'lmoZWPjUW64', 'bCkJWQ/cVCo+', 'WRJcICkyo8oW', 'WQJdJCoNtH8', 'fmkYW4NdRY0', 'WPuqW57dRCo8WP4', 'dSkkWQ3cHSkK', 'WQpcGCoPWQzl', 'r8kZWQFcRa', 'eHRcKNxcOLBcIbm', 'W4PvW6pdOmkYW5VcIq', 'xW0RW7DM', 'WQe9uYldVJKAW5G2', 'WPhcK8kmiCof', 'wSkRAfJcVq', 'WOZdRSoLW7CoF8kfdmooaW', 'WPRcQNxcIhm', 'WQ1ynSomWOSucdBdIwhdHa', 'WOP5kSotWRC', 'W6VcRey', 'j8k6WPFcImo0', 'dtyzzq', 'nLVrIToi0QprP9k00kaG', 'wbKrW6msW7C/WRrBW5ddGCk+ke1ayslcVCk4WRBcJbhdKCoTDMCcWOLCWQFcLSkhfw59WPmqWOhcJLNdRt9cWRbcsLiHdmoEoCk/ASoSpmkNs8onWR1pBmkfwmohW5VcRCovnbtcOSkfDmoNW414AmkXEwqzwSo2WPzgemovnmk3WOhcUGVcOXuhjqa7WRpcPSobbCowW7XfWQFcGeldJ20UemoEthVcQmoLW5/cM8o6tb1mub95WQZcQCoVWOmCySkIjKHeWPjkWQVdU8kmW77cIa3cHmoTsSkLW4mrWRm8W6b8W59ZjCoaW4CiWQFdTCkEf8obcmo1WQtcOImUAalcN8k2WRtdJmoOWOdcSmo2neCDnuzblcnlvComW7eKWQflW4eFASoFWPWwW6DokSkwpSogm8oJW4qDWOC3BSoDW7msWRvkirxdNSoPkSoHySosW79nW5DvBSkxjuPrkdxdIHjSwmkRWRldT3RcV0uSW7ZdSCoUpItcHbyOW5zeW6FdJ1pdRhLtuSoIWONdJ8o0d8oYW7T5ig7dTuCqibWHlCkXDdiCW63cL1L8rCk0i8kyW7hdKMxdV8oGWOiImM/dSCobWRJcLqKKW47cQmo2g8oMWPKiwL/cSqVcVwLymSoMauVcUSoqW68bhGRdNCk/c3WnW4PLzCoaWO1wWP7dImk5jmkYnW', 'W657W47dJCkS', 'utK7W5bY', 'DZOHW5LUBCoW', 'WP7cL0ZcVMG', 'W6nvW4ddHCkr', 'fH/cS8oaD2DKW5G', 'W7P0WQ0pda', '0lxsNTkW0jRsQTk30OXA0O/tUDgm0kJtJ8kk0kxrMLddUq', 'eZtcRKRcGW', 'lCkyWPDyW6y', 'tuddImo+zG', 'qYPRASogs0ajg8o+kfWzC8k4WRa', 'WOpcHCkfl8oUWOLhWOL0AeK', 'eSkSWQlcVCoE', 'kwZdVvRdOa', 'fCk7W63dUW', 'eSk2WRNcICo9', 'tuNdICo+Dq', 'AeC6qSkmiZlcPIbaW7rlW546WPe4WQdcNSkuW7PwqSkVWOOQ', 'uI9RFmoet1Wj', 'nCkQWORcOCoNDSoYyKbUjbxcVCkeW4uT', 'WP3dI8omda', 's8oGtZHKWQhdQYi2qmoYabm', 'jmoqWRb3W41jW58UjvSMB8kXWRm', 'i8o/mrtdUmkZbSo9WRVcGhJcNCoWW6X6W7m2W7hcNv0PpSkjW7i9WPCKA8oKnXelW7JcKeFcV8odW5PgWRq+smk6amoPW4ZdVEkzGo+7M8oBaCkTWPuNbxVdPmoNWOddICoAwNrgWQLRWQzh', 'W6tcJfy7W4q', 'WOxcI8ojsH8', 'ESohW6j/WOy', 'bN7dMSoO', 'x8ksCh/cRG', 'abZcLCog', 'WP/cKCoeqWGRgNi', 'csGDBJbbCmk7aa', 'Ax7dJxJdMHfQ', 'WORdJ8oWhb4', 'chZdSLP5gCkZvSoo', 'WR/dOColW64+W5DObgpdKclcH8on', 'sSo9wd11WRBdRse/qSoL', 'xuhdL8oU', 'WQnAfmoSWOO', 'WRtdVai', 'WOJdL0m/AW', 'ehfHWQbN', 'iwFdLq', 'rIrbrCok', 'WQNcUCoeWRbD', 'W43dHmoxW4tdMYu', 'W5/cH2igW4u', 'A8kIEa', 'WR3dVafhWR3cOCk6C8o7DHPYW6y', 'ysVdPSopeq', 'fqD9fSoz', 'WRaEwbldPW', 'kCk8m8kLWOG', 'mSkfWO/cKmkD', 'xstdKmo2WPm', 'iSk4W47dQXi', 'j8kRWO/cLSoYEW', 'bCkcWP7cNmoEWQ/cPG', 'f8kjnCkwWOSKu8ofWP7dLbZdLCokW7y', 'oSkNWO3cJW', 'nNFdOW', 'ltSwztfJoW', 'WRhdSmo2W4y2', 'WQ7dKSoFvsC', 'cu1IWQ9x', 'fajLDSod', 'W6BcUTky0ins07ZrTDkM0BtsKTo2WPG', 'WPRdGCoXhcxdV3zd', 'uCo6W7DEWPv+W4O', 'WQxcQCobWRTd', 'aSkoWOpcMmoxWRW', 'e2ZdUu5LhW', 'rGP2tCo3', 'iXFcLNtcOq', 'sfZdNmoNDq', 'eqdcJmoDCq', 'EYWJW7T/', 'u8oUWRpcQwqtrmoNhCkpW5RcOq', 'WRVdHf8PrG', 'WQRdS8ogxq', 'CSo5AtXu', 'eq/cNMRcOG', 'f8oA0PRqQnkE0y7sI9g4W5e', 'lCoeWQ9V', 'pry9tG4', 'q8orW45eWOO', 'cKXJWOPM', 'bmkRWRbiW4e', 'W67cQf4AW5JdTCoIuCoj', 'rCo3wsPXWQpdIW', '0zNrUDcf0zttTHhqRng80jxtTDkN0BxtV8ks', 'kcHWW4K2CSkOnLG', 'nbvQrCoW', 'WRZcQCorrZy', 'dM7qV9cD07lqKbrD', 'WPNcH8k/pmo7', 'oNOG', 'WOxdHmojW68M', 'h8k8bSkNWQG', 'm3RdQufi', 'W6dcPLu', 'z3tdMM7dUrPGW5TSW63cOgtcUG', 'nf4bWP0F', 'j8olWQ1MW5zNW4melv0M', 'WPxcOCkop8oV', 'xmo9W6blWOfqW5u', 'pmodW5ldRCkA', 'fCkLWQXUW7TLW5KJWPS+aq', 'F8o8W5bpWR8', 'WPrGd8oaWPu', 'xSo9W6TEWOK', 'rSopW6m', 'mCkVfCkAWQGphSkyW4NcKw7cJa', 'x8kZWRRcV8kMW5q', '0yJqUTc004JtKDcz0RC00lhrITo8073sKTke06ZsGTcX0kVtHDcm0kdtJmkJqa', 'FHldH8o/hW', 'W4ZcGIbA', 'WPFdVCoxW5yNW5yZiq', 'kCksWR5+W49OW5i', 'W6v2W6qjuc9V', 'dbNcG8oF', 'ouNdGfhdSa', 'l17dM2Hp', 'W6TMba', 'ms1Exmo1', 'pM3dHG', 'dH/cHW', 'rCkWDG', 'W7/cVuSAW6S', 'hfzPWOztWRr3', 'WRFdRSoCwHC', '0zlqTTkf0jprPnoM0ylcLDcr06ZsG9gi0RptSSkk04ltHTgt0ODhW45s', 'WQldGmoeasi', '0AxqJTcd0kdsIDg+0kBrUWxtSTkS0iVsHnkv04tqLCk+0zBrGDoV07/rNf0', 'qmkZWRRcVa', 'dZyrBdbezCkZhxO', 'WQVdGCoWW5vUWOGJoGhcQq', 'WPBdU8oE', 'ymoCqqHH', 'wpgiSkBcV9g30jBqGnop0idtKTkP04VsLCk+W6fhWP9ApSkqWPDSpcNdISklreZdOaTZegqDWQ/cJNuzWR3dIHeMFSkwWPBdIYZdNSoOWOpdH8o1W7NdSMNcNCobW6ZdK3rpxqNcRdVdTCklBmkpaf/cRYJdRXKAsCoTtCoVexShyvdcRYSKWP/cUchcSrS4hXddVSo+uNNcH23dPCoSWRtcQK0qvmo3n0CwrYnbWRC7qCkFjg7cP8knW6NcKSoYoSohWQSDmmoBvhZdNCk9F1hcUSkIW7OQpmoiW58qWOXUr8kyWPaXWPXxWQ08hYuegCkhySkJkuFcPuBdUSoniNimk8oOaZq7aCk1W41AWQhdHWdcUCkU', 'W6dcRfWrW7RdVa', 'ohirWRuO', 'l8knWPxcL8keW7pcSLi', 'WOlcLmo8WPVcNGZdSq', 'lmoeWQ9VW7joW4OylW', 'zNRdNwddNarGW41PW4hcIN/cPCo6nq', 'bHxcLSoDzMTAW5zKW4ddKg9PCIXK', 'WPxdNeGPzq', 'bhyqWOCC', 'h3tdLvNdOq', 'pSoYpSomWPxcKtm', 'cx3dSeldRmkQB8kAW7WWs8oXW4hcHcy', 'fCoHW6VdR8kL', 'owFdOv9qWRDJW5i', 'dH7cIwhcS3S', 'dCkeWOO', 'dWKwCJm', '0lxsNTk+0j/tMnop0O9A0O/sGDc00k/sUDoO0zTktCkCva', 'eCkeWP7cHCogWQFcSgG', 'iZpcTmo9sKaQWOKRWPlcJb0', 'k8kkWQT4W4PPW7uKWPK3aq', 'aCkzjmkHWP4sw8omWPxdGYRdG8oX', 'ktPf', 'WO3cI8kep8ocWPvGWOnGsf0', 'bSknlCkMWOi', '06RtLTgo060N0zdtPngJ0ApqGWBdODcc0yxtQDko05xqI9oj0zxsIDo9y8kv05xrRDgz0PNsGngP0BZdQa', 'BmkpWQH4W5zUW4m+W40', 'EcTyq8oN', 'xCoHtYTrWQpdIYaN', 'xSopW4HiWPldQCogoCorW4LH', 'lSkHWOdcL8k4', 'yCkEqutcQq', 'lhGPWQiN', 'g8kNgq', 'W6fNW6pdISkC', 'eSoRW7ldPmkLza', 'gCkciSk/WPiLw8ot', 'z3tdK2NdLdrGW4a', 'W616W4C/tq', 'W4TyW7VdI8kE', 'fYv2yCom', 'xSofW7Dt', 'WO3dHSohcZZdS3W', 'AGFdN8oFh2/cUG', 'imoJnmotWPe', 'hdepuJu', 'WP3cIw/cSW', 'tmoMW7jyWOG', 'lCkqWPhcS8keW7xcQvDp', 'xSobW7zaWOddUa', 'W4ldLmolW5hdIIpdHGhdUSoOASo2W6S', 'ySkKWP/cUCkk', 'WQxdLmo9vqi', 'WONdOmoaW60R', 'W79SW7Katq', 'l8kfl8kGWPmGumodWPu', 'W6b3W6C', 'sCo2tHXMWQhdGdOFrmoKgGlcUcldVa', 'W4ldJSoDW4BdRshdNtldVCobBCoNW6W', 'quldKCknm0G5', 'wsRdKSoyWRZcL8kH', 'WRZdMCoxwtS', 'W43dJSoE', 'WQNdNmohdtNdMNfdwKO', 'igFdH1HhWRjOW5rAWRK', 'WO7dHMKhzG', 'rsT7zSoes0m', 's8oZrdD/WQRcHa', 'FCoJW7HSWPG', 'eCkIxde', 'WOlcLCkkWPFdRhJdTW', 'WOldP8oVms0', 'cgpdML1X', 'p294WOT3', 'jJTkemoH', 'WP/dM8ohgI7dHx1iv10tWQ3dPW', 'fGlcICoz', 'geqSWRG0', 'WPRdT8olkty', 'lmk8WRbPW50', 'hSoVoCofWQq', 'ECoDW5ldRSoyWRpdThz9kmkOoCkN', 'vI99smovwG', 'cCkcWONcImoxWQa', 'WP7cR8ojzW0', 'waldP8ojWQ8', 'pCovWQ9QW5a', 'qSoYWQ/dVCoIFthcLcm', 'WQpcJCo5WR0', 'nYVdTvJdQsD1W6e', 'oSkHWPK', 'WQBcNmo9WRbI', 'oSkBWQ5UW4fEW4iTWOiV', 'qmkIWQ3cTmk3', '0zFsSTkR0RZtQDc9i9ox0k3rMnkV0R7tLDcXb9oC0QZtVTkvgngY05psJ9k00QfRfW', 'w8oIrJbK', 'W5NcMNCK', 'bcdcJmoKFq', 'WO7dGNWcDW', '0yRqNncf0ydsQnoO0PVrONZrOTcT053qOnoo0AFtLLlrJDcE0A3sHDgUnmof0AprV9oL0R/sRTop05xsHDcc04TO05FrOTgd0Q3sGDoM0Afh0ARrMDkb06prJDgDW5q', 'crxcMq', 'bbHqomow', 'jSkhbCkPWOy', 'qJldQCoEWPW', 'WRtcMCoVWQ9VjSkfWRtcTW', 'WRPyhSogWR4DfrBdG1RdImokW6q', 'hHzHm8oe', 'WO9O0i7rR9k90BpqTDko0j9r', 'ptbAgCoGW4pdIY0', 'lmkvWQLyW4vUW54', 'x8k+FuhcVq', 'dMn6WRzQ', 'WQpdUCoxcZ4', 'eIjBCmomFNu', 'WRmKwdBdPaihW5m8aW', 'uIldHSoKWRdcKq', 'WPJcRSkAj8oh', 'smo1W6fiWOH3W57dU3BdVbKuWQTEoW', '0lRrL9kq04FrLTgb06VdQDo80l3qRToN0iFsIq', 'ogTruCo/', 'tmobW6TTWP8', 'BZ0MW4fV', 'W5LwWOO+eYS', 'i8kpW7hdTYC', 'WQFdTCobuZdcRsRdVcVdR8kIW4ldVq', 'WPVdSmoDW4q4W5CPpuddIJlcNmoFWPyxWQ8', 'WP/dNxqs', 'hLbOWRnEWRzM', '06ltH9kO0RxrKDcCW5hrN8kCbmoBW7lcUCkKqCk+WOqzW6VcUW', 'WPJcGmkmhmoC', 'eCouW4/dLCkf', 'BCkwWOe3WPyAWPq', 'WQBdGSoQW4ih', 'cJLAz8onyNyRqmkRW6zyW4y', 'ACoawHjh', 'W5vkWP0H', 'WPBdNCo0W5G0', 'WOFdN34KDq', 'd8ohWQPwW6O', 'huhdGevp', 'FrCkW5Dc', 'WOdcI8ogWP5I', 'p8oTWO5YW4i', '06htJ8kq0jNrHncC0ydqQ9oc0yhrJ9cLg9g40QhtO9o007VrL0RdO04', 'W55FW6ddSCkx', 'D2VdKMldJW', 'jCkyD0JdSW', 'eqf9E8oB', 'rSoPW4L+WP8', 'erxcJmorzNPVW5S', 'WQZdV8omurRcTq', 'h8o2imoTWR8', 'WQBcImoPWPLTmCkcWQ7cNgRcSueBo31l', 'cCkSzu3cTmo2g8o/W7BdGsRdMSk5WQj3WQf/WQRcKubLpSocW7y8W4bJAmomCv5fWQZcNrtdTSkzWP9CWRqSxmoQwmoY077tSDkB06RtM9cE0OVtHncw0i7qSno+07/cGnoB04drGDcA0khsUDcj04Ph0zWV0z3tJ9cm0BJqOTcN0kZtIDguWRZtJTgm07htNDoaW7VsPnc/wTgC0BZrTDgT0PxsT9cP06BsHTgJaSk3yCkHFSkiW5FdQ3xdJmkdimkQhxlcTf8SW7Kxc18pxSogbam/WOC2lI5cW7VdOwFcH8oYq8ocfSk6W5q0qmoDmbOAW5BcIhNdIM/dGmoJw2JdJsmgCmoij13cPgVcKCoOnSo8uCkBnXZdLfhdVCkFCdBdQYzVm2TXW4mThmo3W5eNWQldJYpcKmkYWQLcWP4hWQGBWQRcILGQWPRcHeFdOWhdGwFdUudcS8o4z8kbpmkHWPTRWP4Flmk8W741EZhcH8o6W67dKrKfW5BdMCo+gCoHDXpdVSkRpmoLW7JcPrSzosyiW6HEW7NcSCoZW5hdN2GmWOVcN8ouWRVdQSkpW6BcTmoVWOemyq/dIZtdH8kmW4mYW5y2W5TAthHGzeldTmoFW5GDWOvqWOpcRJiPWQpcQ8o/lCkFW7lcUSktW5/cLI/dKfT0hCoXhmo1W5iwxLzLWP0ZWO7dMCohW5KnWQhdHSo6DYNcK1RdH2LnWRddJttcJI7dRSkPW7SDDCkAorvmW6pdOCkeFSoVvszcu0pcISooWRJcMCoqfSoDW7SgWQC4amk2pmkHdgr4qCkPW6i0zHSCv1RdKqNdPaBcGCoHsmoQumkqWR5MW6yTWOddRgtcGSkZsGRdKtKsrsddTCoUW7VcSmopWQTiyXtcS8krquZdRb9xW5n4WOfDA2BcPhZdGZ1IWQ7dS8k1WPtcMgJcOdBcJbhcSmo0jGuquJPng1SsWPHGoqNcS3OWW7/dPComaZVdTCoMBCkkuJzqWR0+oW8EdSo8W5ddRf3dGSkXWQ3dHJBcRCoAWRhdM3zDWOSOuqNcJYK/W67dGHJXHAkdbDo50QptHTgv06/sGTkw0zFqP8o0hNhdQCkvoK7cKsiGxehdU8kRhcBdMSo2DZJcMmk+omoDWOpcISk0kSo5W4rbC8oDBHHEW4lcHHRcSConkXefAhZdN8ozdaywW4rFWPNdVNusW7RdP8kPaSknqNldJ1/dHZn4W5G5W5pdUCoFkW3cR8oXs8oiWRCsW5VcHCoOWP/dSmoBwXHoAe/dG0NdKISYWRSlWP/dIYZdJmkBW5ddOtnOWPqMW48hiSoIW6bMgmkCW5RcV8ozW6hcUxe3i8oDW6tcJmkqWRqQWQ5GWO/cQ0tcJxnueIlcPqjApSk9u8oZWO58xZO9WQFcU3hcIcJdJmo5xI9pWPy+Ea0vW4NcOCoMB8kBth1DW6hdM8kFWPD9wd3dGsy4W6pdPKvnW7q5W4qMDmk/E8kdW7ndWOT1W5xdHshcNmotW7uEW6LKW6xdMSolW4/dQd7cOIznEwvjarJdQCogWPC/WRqquCoyfSk1FCkbWROPEJ10a8kpkJ/dRmoMimkjWO54WQnJgdvhqMPeWRzjt8o8W6mnW5uthSouW4mbW5qXWQ8wmSoHW74kW6VdJxDxW408umoQWQ3cHttcRmkph2pdHmolW7ddLSk/WRtcOGa9nSoBgUkCISo/0QdsGngt0zVqUDob0jVdNIjrW41dWQy9WOBdKCoNW7tcJ1rCWO0zWQCuW6qEW4ldPmo1W7FdSCo7sWjaWRy', 'qCoLW7jCWQi', 'W7L0WOKIoG', 'iwrY', 'qCofW70', 'W4/cVCkNWRvsfCohimoFhSoYW5lcNG', 'hfBdJLVdPW', 'W4bIW5BdKCkf', 'adj9WOJdTa', 'wuL6WRzbWRjAW7OF', 'WQBcTmoLWOTl', 'bmk/W6ddTdbuwmo6jCkeW5FcMSomW63cVa', 'oNRdTefv', 'pr7cN8oQwhBdPSk1WO9ZlCozda', 'aSkdWOJcJ8ozWQVcUW', 'zbpdOCo1ba', 'eSkBWOhcHCog', 'W7jeW47dNmkl', 'cSkXW6q', 'i8o4pSowWOdcNZKk', 'WQdcQmo+WQzO', 'rID8x8oCt1C', 'WPxdTvWVva', 'WPpdV8o1W6O', 'WQdcQ2tcL38', 'aXtcHmoXC2TKW4TqW4ZdJ0LTAcb5', 'WRJcUSkfpCoK', 'oYCJW4nIxCo+pHHLWPL9aW', 'c8k/W7VdId5cq8oN', 'lCojWQzIW5y', 'aaP4hmo9', 'yNtdNx7dIa', 'wCkZCedcVSo8vmkW', 'nJDxeq', 'WOdcN8kdjmoBWPPXWPv9', 'WQdcJCoQWR5W', 'WRVdIL8FwW', 'gJLlEG', 'p3SJWOGPW5JcNq', 'bCoRW7/dS8kYAq', 'gWlcHuJcKq', 'oxBcQW', 'pSkTWRLOW5a', 'gvC0WRa', 'bGJcRv/cSG', 's8ovW7biWRxdRCobcCovWPPTyCkSW4r3hva', 'b8kTWPZcJCoHz8k8zgL0iGZcVCkoWOaPomkrW7CjcSknWRFcSSoh', 'imoNiCowWOa', 'BCoHW7ThW6fQWP8', 'm1rSwW', 'W7BdMmoxW4/dIW', 'WQ3dTmoruWdcTYtdSW', 'mb1Ybmou', 'W7JcU1myW73dSSoHvSob', 'WRlcUSo4vZG', 'gb5LWPK', 'bCo6W6FdRCk0', 'tmorysHr', 'WRBdNSoXW6WK', 'WRVdISoe', 'WP/dHnk30yhsVnk605psI8kt', 'EsBdJ8oXWPa', 'b8o7W7VdS8kOuMBcHhymW6pcL8kF', 'ESkKWQFcVSkQ', 'weK8W4ZcOb3cV1LIeCoYWOlcHW', 'm0LTx8oboKhcTNqDW60qW5y', 'ebdcKf/cRa', 'qftdK0tdGq', 'cH9VWRJdR0hdP2bneConWRFcT8osWR7dJG', 'nSoCWQXZW6e', 'l8kkWQ3cMSkP', 'AYqUW5XZ', 'WPZcT8okrs8', 's8oXW71F', 'eCk3W6FdQZ8', 'W43dQmo0W7RdLq', 'g8ogaCovWR0', 'WOBcVmo+WRPT', 'bCo+W7ldQmkL', 'lmoeWQbOW4nDW4KyjferzCkZWQHk', 'hfv+WRT2WR5TW7eyWOtcImoXzG', 'WP/dOmoLW6OF', 'pZnUWPZdVa', 'AsJdJ2xdL8kvCSkW', 'aWVcL2pcQxFcPr8sW7XA', 'E8kAvN3cI8ohy8kpWQhcGa', 'xWZdGCoHjW', 'WPuCuXBdJG', 'Dmo/0zhqHnoVWRpqMDoJ0Q/tOncx0ONdSnkn0jJsK9cJ07BsTDcj0jZqPDocWQBrS9oo0BRqH9o70jRrGKxtJDkp0ihsLnkh0OnD', 'WPRcKmox', 'WQtdV8odabG', 'jmkhWOy', 'WQVdQSoYeay', 'ssFdO8oNkq', 'iCkgWOlcS8kEW6lcPvi', 'wIRdH8o1', 'a8oVW67dQ8oI', '0BRqSDkL0ORqSDgb0ypsITcPWOxtVDcd0lBqT9cm0l7qPDgn0ypdQCoK', 'AYa7W5LI', 'mZX1mmox', 'kZ7cGflcIW', 'omkAWO7cQ8keW7lcUvfp', 'W7XXWPa+kq', 'WP7dJ8oxgZldK3za', 'mZ9gFCoX', 'WO3dNwmcD1NdSmoP', 'sCoBW5P3WQK', 'W7ZdN8kqbLODehVcJXPZcLyHW6RdVSorW5HWa8kkE8k+WOFcIxjuAamSh8odugXHvub4dLRcGbNdO8oChgOwW4OTcmkXzCkADt/cV35EjdZcJmkcqYD6WOddImkgs8k1eHZcLmondtddGadcTx/cGcn0a8oTmvRdMCkort4DqSkrWPemW73cVmovdmo9B8kdahqJmsldJWqDW6hdMNDWnCo7WQnHW5lcNZBdR8kQf8kGF1xcNdbRW6LBrSorpaLOWQpcU8o5W69sW4fYBSkvFSkwrSoXW5OTW4NdJbZdRmoiW5aAW7BdOsHlW5m9W7ZdIwxcLSooWRhdS8oVWOiMW5xcLtdcSCoaWOCTW5SGWOO8WPPVmLZcTCopWQ3cKSolCCoyhmo+W4FcTcOZuISZWO0gBSoSWRnzWPBcLrmRWRtdMsb/fflcQCkiBwCzpdVdReJcVh9AWQmSEd3dSvVdSCk1bSo/rWRdTCk9AZJdVXiWWQ10ySo3W5ddGh5wW7jgWP1vW6RdGCorkJVcRSkUWQRcSmk5W6aFsKpcMLZcSYldNSo3j8knFSoTWPJcNvRdSSk+W6bQW6xcNq', 'WP/dHnk20ytsSCoz0Q/tVDoY0QRrVngs05ttNDkH06mF0P7qSTgJ0lFqV9oZ0iFdQ9oM0iNtP9o20BFrOZa', '07drUTcp0j7cQTg00ldtVTgR0ybL04/qHngR0zJtUno10AJsPSkN0PBrOng+0lJsJa', 'nCkaWRBcH8oH', 'WOtcKN/cSwi', 'aCosamoWWQlcS3y', 'WO7dH3iyD0ldTSoPuq', 'WRNdVmoZW6uBsq', 'aNJdSu5c', 'ptbDemoTW6JdIa', 'WRJcRCkyemoJWOe', 'W6RdNSo9WQq7zmomW6lcOhVdOKCzn3KrgGpdTrxcGSk2AZZcNCoqsSkLoa', 'WRy5zsBdOW', '0lFsRncD0AhrLTo806fU0AZrRToF0ztrN8o20itsUngfWO/qS9gcW73tHTgV0AhrV9cI0zeF0zNtRTkZ0kRsMDk20OnykDgw05lsINptMnk70Q7tHncJ0RxrMDgp0k/sJncG0z3cRG', 'AColBJPC', 'DCkY0lxqMDcU07BsM9co0ANqNCk30zhrL9kv0BdtHuRcJW', 'vcKkFq', 'FNBdKetdJq', 'm8kdWRLtW7i', 'w8oNscPKWRBdHYa0', 'qsjGxmov', 'e3S6hCkiggafdSoGh08', 'j8kQWQPBW7m', 'WQFcLSkeg8o0', 'WRVdM0y4AG', 'rZ/dK8o8WRa', 'oSkdAq', 'xmo9wG', 'WP3dRCoJ', '05JtKTk20PdqRngQ057tQTks0lBtUDg5xTcuonce0jlqLDoR0jNcJSk0', 'W5PpWOObgtW', 'D27dNhJdJWrMW5zG', 'WOqgzstdGW', 'W4dcKua5W7C', 'mSouW6ZdTSkJ', 'hmkdjG', 'qN7dK2/dUG', 'imoYoCo2WOdcKZS', 'b8k6W6FdMIfdwCo7b8kjW6FcGCofW6ZcQ1O', 'WQaJrGJdOq', 'arpcHMJcOhy', 'rGJdO8o8WOm', 'sI98', 'WPtdK8oxwb8', 'WOFcLgNcQwGBW55Bpa', 'jwe+WOe0', 'v2hdQmosAG', 'WRZdGmoihXS', 'B3ZdPmoIEa', 'kx3dQLi', 'cg7dGN9n', 'ESkrW7C7WPyCW74ya14QCW', 'lIddRCkGwJZcLG', 'bqNcGMpcQv/cHXOl', 'WQtcKmojrrS', 'y8kNzMBcTG', 'erxcJSoq', 'WRdcJ8kblCoT', 'W6XQW57dQmkR', 'WRxcJ0FcTuO', 'DCoup2xcPXG9', 'b8knW6ldHsy', 'iCo2c8ovWOy', 'ar/cHmorr2jLW5X3W63dLuL7', 'vSkUWQq', '0POq05xsNno307hdHng706ZqNmkP', 'EvhdOCoUsa', 'bmkdeSkNWPuOumoh', 'cbDUWPZdQ2ZdOgbY', 'W67dKSonW7NdOa', 'bZjgWQtdOW', 'WOdcNmoQWPbr', 'FJGTW5P1', 'WOGTzJ3dNq', 'W5DmWPK', 'aCopW4JdK8kf', 'fYny', 'EZWNW5zSA8o/', 'ddSuzWHSFCkJfq', '0RBsKDo506ZsMDg90OTX05NsVDge0Q3cV9cAW6ZrI9ku0PtrN9kq', 'DhRdJhJdNGqVWOSYWPBdQxxcU8oNkgxcRCk9', 'WP3dTSo1W4qm', 'vmoDW55IWPC', 'hgxdS3jn', 'pIDxy8oN', 'WPhdNxC', 'd8oIWPrhW6e', 'WRhcNCkgemoF', '05FtK9cW06xqU0/tQncF0jNqGXZtVncuxTky0OlsRncA04trLCkyWPlrNTo+07trR9gA06xtT3KuW5pcJmow04JrNTcHmdeKqmoc0BhrH9o0W7lqNTcZ0lVsNDkN04rn', 'WPtdG8omjYe', 'er7cKW', 'WP/dK3mazeldSmoYwepdJ2mjW6fd', 'gIGrzG', 'W41FW4tdNCk0W5FcIIe', 'kxtdRvxdOa', 'aLbRWRDu', 'j8oJW5/dMmk+', 'WPddHSoDW50r', 'hKmJWOaP', 'WOtcLmohFXe', 'W6RdLCoGW5BdOG', 'j8k+WOlcJCoL', 'WR5sdSoQWOGufW', 'WQBcICksdSow', 'WQFdTSomvrK', 'oCkkWRD0W5a', 'imk8WOFcIq', 'BSoItGLv', 'emk5WOdcS8oY', 'l8knWPxcLSkfW7xcTebecCk+', '0ixrPnck0OuN0lhtMncc0zBqVmonoTgU077rUTgR0l7sHTkahCoA05RsLnoS0jZqVnk3WOK', 'pLjRvq', 'ECo1W75yWP4', 'WPFcI8kBpSoUWOG', 'WQFdTSoavWa', 'e1D1WQzaWP96W70CWPJcLq', 'gSkLlmk4WQu', 'iSkVWOlcKCo0ya', 'kSkhWPNcJmkdW6FcPe5D', 'wCouW71lWOa', 'nCorjSolWO0', 'tH7dQmofWQy', 'wctdJq', 'DHPUF8oz', 'W7BcR8kva0RdShFdJsJdOSkQW5NdVW', 'e8kuimkDWP8', 'WOO/wGldOW', 'bSo7W6BdImkf', 'WOlcJCorrreEfhRcKZ5TbfGV', 'WPVdNwiUyLpdTW', 'WONdNmohdtNdMNLjqG', 'BdJdJmo9WOi', 'WRSMuJ3dVY8wW4u', 'WP3dI8ow', 'WOJdOmoCW6SCsCkdlSoDbmoB', 'W7H3W5mywGLNyq', 'WPddG8osW54/', 'uc7dUSovWP4', 'yq3dJa', 'W5hdLmokW4S', 'd1jMtCobpMRcUxq', 'hbboh8oW', 'gxFdQLJdOmkNFmkaWRmTcSoOW5tcHwGRW5BdLaOdmwzLWR7dRKeEW5BcNmklW5lcP3udW6RdULjJW6dcOMrFWOxcLCkNCTkY0BVsOncV', 'qSo5W710WPS', 'WQtcHmoOWR9WmCki', 'grPLWPNdTKK', 'WOhdOmo4cYa', 'W6brW401uG', 'bXrS', 'rCkwxg3cOG', 'WQhcI8kdgSoYWRhcH8olW4e', 'WPz9f8oKWRC', 'omkHWOK', 'jSknFvC', 'uSkMWQtcVCk8W5H3q8ogotq', 'W73cVfCeW7FdH8oRsmojvX1EW7i', 'rmobW6Lc', '0yxsQnoq05BtTno20PaM0QBtSDot0O7qMnom0QBsPDcT0k9e0yRqUDkM0llsT9kN04H60l7rJDko0AVtKTo00lltODgOW7m', 'i05DzSod', 'DCkpyKVdPt5bt21ezG', 'A3RdK0vgWRfGWOG', 'awtdVMz7', 'dX7cLhxcPNtcGW', 'su3dHmo4FX0', 'WRvyhq', 'cmkfWOVcGW', 'b8kEruxdJG', 'zaZdImo6hM7cSSk6', 'WRuPqq', 'vCk2WQBdGSoHrtm', 'qvpdLMRdRq', 'k25vWPDw', 'WPhdRCowW4Sj', 'mq1fWQ3dJa', 'fCkYW6RdVdi', 'FmkkquFcKG', 'dJTUgCoc', 'axVcJW', 'WOxcI8octXq6eNJcJW', 'jwuRWOqL', 'EtaMW7bXA8o1pIbLWOrUfCkHvf4', 'r8k5WPJcT8kLW5LgAmoojJu', 'WRtdU8owrq', 'WPxdL3ep', 'WQe8sd3dRW', 'B37dH2/dLafH', 'fCkQBxtdOG', 'dCoKW6S', 'W5DgWPaTcc0', '05xtLnof0yRtHTom05xtVTo9WR/rSncR05ltJ9kN0PdqHSkj0yBrQTgt0ydcMq', 'cmohWO9AW6S', 'qrRcKNlcQepcHWiiW7u', 'oxRdM0y', 'W6RcPKaZW6/dT8oM', 'p8kcBuJdOZ9PuW', '0BJqRDk+0BxtJno00yFdIDoJ0B3qNDk/06ltMngjBTkp04RrOTg50AtqVIZtRnk50AlrGSomW58', 'W5HpWPSRdG3cRdJcOG', 'WOZcKSoEAqW', 'zmoXW69YWOa', 'WQyNFt7dQsOFW5mcbdFcKvPm', 'EYyNW5rZA8oEjGLHWPj0ba', 'xsVdK8ofoG', 'oJDAhG', 'W7ZcGDo50PpsMg3sGncA05FtI9ge0QBsPncq07FrJmo30P1f06tqRncb0PdsQDkk06u30QFsH9kL0ldrKDoZiG', 'vYRdM8oXWO0', 'WOtcG3lcLhmkW4O', 'gSoHW7K', 'WPxcMmkEjG', 'lmoQW6tdQCkl', 'tt5UtmozwLC', 'r8ofW7DuWOtdQ8or', 'sXldJ8oglG', 'wZeBW49P', 'j2VdN37dIbnCW4XMW5FcVq', 'WOxdMCoXFZ3cJW', 'sHepW7PrsW', 'oCkoWQjXW4e', 'W4foWPafcG', 'aXxcJMVcPMFcJXGv', 'EmogW5K', 'yCkSAfZcNq', 'WPNdUSkwW6yTW5W', 'WQFcGCktomow', 'lSkJWOdcQ8oN', 'W7xdRCoVW43dHG', 'W41FW5hdGmk+W5VcGa', 'jZTxeq', 'jCkEWRriW7q', 'WOJdJmolW5iw', 'W4JdQmkiW719W45ZntW', 'WR3dRSo9W6Cy', 'pCorWRPVW4e', 'uSoms8oZW4DHhSkaW5dcGh7cJmkJWRiRCdRdV0rLqhLeaM8hW4RdJmoVW6JcSCkox8k7cKfaWPddVb9Tn8kxWRpcSmopWPJcM8o2W6RdMsRdQ8o5asfeomkKW4nxlSkpFCk7uahdP0vFWP4zW4bIWQ5GW6FdU8ktW5LPumoVW4BcLguCnadcV8k0A8odlt0mdmoBiSkTx8kShCkAW7/dOCoZsmkqfYL6mCk6WPi3p8kwiJBdQ3VcNJRdKgVcV29XaSo0WPTbn8o/sCozj8kwW4pdLYbmWRZcSZNdLmoMwuTKlKtdGmo6WRJdUH/dHIJcUSobWQGMpHvWW7lcPSoVdfZcVbrJANNdNMugW47cNmkcWQfahda/CSoGW7RcG8onW7VdICk4vfVcN8okFmkeqt/dVSkBWPpdTmoaW6nNlCkqv8oeW5JcMLNcHH5UcSkuh8oeB1xcMSo0t3NcGCoTW7bVnSoRWPFdN8oTfSkUemoWW7Prt8k6WQTTcCoUW7G9W7xcMCoFWRhdOYbYW7HIWOLXWR7dPSoBCCoGASoJktXPz8oKhgNdI8oNkCoYW79ktMm3gmoauSoHWP3dQCkdW53dT8oGWQv+ESoLvL/dUtJcN2SXf8kDt8oov8oOowHXbfBcMCoqA8kCffZdNCkQW47cOXtcIYtcOuDQW6ddOxLWpmo9uSk1d297WQTKW5lcICo7nSoMwmkbaSoqWRFdMSoPdmoIj8k0amkoW5HXWQBdLmkfjmozASkJW7NdPmkCWQddMYnaEnoK0AtsOnoL0PzF0y/sT9o7047sPnko0AxtK9g9W7dsUDo406NsQTcdamkEWPJcOh8+twRdOMjVECkqg1ddTX3dGvJdMmkuW5uUhNFdTKZcVSosW6ZdVwRdPZpcPSoSnZnnu2pcJf3dUwxcVmkFwcldUGTnWP0+WPZcUrSBW5hdI8odFW1gW4jibCo2W59OEevPWQ3cPqGtW5LdsCoPW48rW7jLo8kYWQWil2NcTW', 'CLRdLSoTAa', 'F8ooW4bJWQ4', 'FdZcHbOtW645W4bwWPxcVbBdSW', 'cCkRWRxcLSkKW4JdObmEwSoQwG', 'W49cWPWMgq', 'eSoNW63dSCk9yhO', 'gSkaeSkQWRi', 'pwNdGvG', 'WONdUmoljXS', 'f1zUWRbxWRjXW6aEWOi', 'qmkZWQa', 'px3dShpdQCkHzCkmWRi3Amo+W63cHa', 'W6naWPWykG', 'WPtcKmoiDri8h3hcGq', 'D2/dH2FdNG', 'cZxcL0pcPa', 'erxcLmo9CwTN', 'eSkXW4xdTI9duW', 'kNNdSuxdOmkbzSknWOGQr8oIWOtcIxvUW5ZcLv1S', 'DhtdL2xdJXn9', 'umo/W6fsWQ4', 'hY8DEsDEDmk6fwRcMSkoWOW', 'bCo7W7ZdSSkLC2RcHNq', 'o1z4B8og', 'WOxdUNOLqq', 'gN0MWOG/', 'WQJdTCoc', 'wSkVFv3cRa', 'WPtdNhmhDLtdUSo0', 'WOpcLg/cSa', 'WRFdRSoeraBcSHldTJtdJW', 'W6JcOeq', 'vduVW6Dm', 'jeLHuW', 'gJ8aF3fLzCk7ha', 'AIHoASo7', 'WRJcLfFcK2W', 'CSkbWOFcNCkI', 'WP/dPSolW648', 'o8kGWO3cImo4Cmo3', '0PhqQnk50zJqNDgDkDc506/rTnoY0RlrGnkD07RsTDgz04NqJehdUW', 'WPBcGMlcMhekW4LFfvPpWRveemopWRS', 'd8kkWPjOW44', 'fgBcIG', 'oCkFWRv5', 'o2JdTfRdVa', 'pCkPWRhcH8k4', 'WRtdO8oylJS', 'WPhcIMpcPq', 'WO3cO8oeWPi7eSoHW5a', 'WORdHx8ftG', 'WP/cRu7cH3C', 'WPVdVSoXdWe', 'bSopWQzoW7y', 'dG1VtCoN', 'AKVdGmoNCq', '0lBtODcM0iZsNTkR0ANdVDkK06pqKnkh06JdTNRcIa', 'W4HxWOCMgq', 'WPlcJ8kzlW', 'jZjqeCoWW67dGh5SDIdcKJdcLJldPHC', 'W4DjW7ykCa', 'BDgh0OBqNTgIW78', 'WRxdR8oaraVcKIddSYxdHmk/W5NdVa', 'WR7cMCoXyZe', 'WONdJmoUlru', 'WQVcMCoKWO1Q', 'DW/dHCozhq', 'hcLl', 'aJv3W41GWPRdSq', 'WQVcLCk8f8oP', 'dgZdSG', 'eWxcHCogFf1VW5n5W4BdIfj6rYLN', '0zprITkn0AVqKToS0lBsGncr06ldQ9c80R7tSTkB0RRtJDcS0O/rImou', 'WQpcGmksmCoWWPZcGmolW77dTJrQWOZdSmo/WQK', 'xN4zvCk1WPVdHMX8k2FcMhZcLM7cTX8YxZtdKuW1WPe+rmkEW53dNSobW47dNLBcNYFcKM1yW5/cHmkvhLDVw8kpWOehbmknWOtcHCoZeslcMrfgfhqAW4S3W4lcIHDjW6xrH9g60jNqSToC0BlqJDgn05W0WQLmm8oMlColomoGW6vhW6ebELxdGHxcLhjIW6WBoaVdV8o+W73cPN14wmobxCoWvspcThfLWOFdL8o/a8klsa0fW4TeWO/cH1tdUqtcOfVcVuNcOGuXvIfpE8kErcpdGeJcQMtcH8o8mGmxW5RdLIfcWQfrWO3cQGRdKhhcSSktzxb8tSonESkaDCoMW7/dUCk6WQeFxSkns2ldLCoTW7NdJCo7lGO1W7WbW4pdQa0gx8kzW7pdGcNcNSkXW7tdN8kneCklFmoQW6jnW7RdUfJdKxFrQ9kS0QXb0AZqU9g70y8fWRj2W59Fz8kPWRXlWQZcNCk6WRRdK1JdRb19zLSGzSkiW4hcOdxcMZ5vW4yQWOddHMVdR2Kom8oFet9kahvXfSoZWQvdWPOLW6/cUMpdLrRcNKpcTfSSW4pdSHqQh8orWQ7dQCoViamLW4nBhbRdSXbjE8oDpSoQjWKOC1NcQ8kusCk2WOCiWONcUmkOiq9oWRXbW583DKpcV8oMbe95WR5DbfVdUJxcI10XDtL8W65pECoCy8oICW45W7iputdcKZ3dQSolW4BdL1/cTgFcOmoqW61YWRhcPCkSiN/cHYhdVH/dNSoLnSktffJcUftdUSowF3GRWOJcNCkxWOCyWOdcOmk/W7pcIepcNSkoFSkMD8kbnSo3vfybWQKaW6JdGSk2F8oYW5SUdL/dK8otW7qlWPFdGf0gW4BcICkKjSoxlxTPAGRcKmkVcSkOWOq2W4dcSMbrW49EymoVC1RcVCoOa8oRW5bcBmkIW6JcPryWgCoiWOlcTWpcP8o2WQu5WOtdI8khv8oLB0BcVZRdNub0WOdcUCkxAgNdICoGW7PJWRpcTSkCz0TR', 'i05QtCoblw3cThy', 'nJqstHO', 'grXPWPZcSrtcPsqTsmksW7pdVmklW7i', 'jmkVWPVcL8o0vSoYCG', 'W5HmWPa5eYNcOa', 'n8onW4RdImkEtYpdMIDFWQtdMa', 'B8oCkW', 'd2ZdO10', 'zZXMxSoe', 'smojW6Pd', 'n2pdQu9H', 'WQ7cMCkdeCoe', 'lmoRW4NdRCkg', 'hcLlxmoavh4', 'W7fYWQqqmq', 'aSo1W7Dn', '0yhqPDch0QlrPDkV04FdQDgv07/sIDcO0kxdMTg/07FqOnce07BcVxu', 'WOpcTSkgp8or', 'WRH6gmovWOu', 'l8oqWRDSW7roW5mElW', 'xsxdJSo1WQ3cRmk0', 'c8kPWRJcTmo9', 'n8kiAMhdOd5IvevmEr0WW6KVW6W', 'bX5LWPRdRuW', 'zCotW7b9WQO', 'WQxcGM/cL2G', '0jlsLnku063tQDoZ0ihqL8kp0jrW05dtGTkH067tTngN065D0R3rNDct0ORrHnkqwG', 'WPpcLSk9fCoE', 'zSkLv37cLq', 'WOpcIudcTh8kW4m', 'CNpdK37dJq', 'p3SPWOGJW4dcKSkThSou', 'qmkBWQZcMCk3', 'pCk7nmkWWO4', 'qSkMFN7cNW', 'kNRdL05mWPjSW5HCW7ZcOG7cOmkIW4xcHmoy', 'BrDAF8o0', 'pfrV', 'tX5+ACoN', 'emkCWR5WW4i', 'W6LGW6mjwbrGACk/', 'jmknWO/cUmkFW64', 'qZT7qmoGt1SomG', 'WONdSConW4G6W5CQ', 'xmo3uI1tWQVdGdO2q8oJ', 'eSkniSk4WOaZuCovWP7dHb3dG8oVW715', 'WRFdRSoerae', 'gsKNAdjIySkZ', 'jSkZWPzeW54', 'W5xdH8oZW5tdPG', 'dHxcJSotCwy', '0l7tR9cL0ittPDkU0jBsKSk70P/rPTkk06JsITgI0PW207lsUTg80AxqPSoA0RtqJ9k+0B/rOTo+0jnE0zlsVmkD0iVsLTkm0OVrIDkV0yDC077rHToT0Q3sGTkB06ZtM9gL0OZdNngM0iBrGDkd07lsNDor04nAFfFcPh7cR0Le0kRrKDkWfTg80kZrNTcJ04JrMDkM04hrIDoW0QVtJmo1', 'dJNcRCoTFW', 'afzAt8oa', 'tSo9rc1wWQxdGYC/va', 'kdXAWRhdVG', 'ph3dL1LBWO1OW5LjWR/cVXldSG', 'aJuF', 'fYLrCSoawq', 'dfJdG0n4', 'u2BdLSoNrW', 'W7HpW6izxa', 'FCoCW7TAWRS', 'WR3dVqrhWR/cPmk6uCowFr5AW7m', 'W6v2W6maxqrSDq', 'oWaXsJm', 'cwJdVK1IbG', 'WPhcMSoeyXy4fNVcMaHdeNiG', 'f8oQW7RdHmkNzg3cNf8gW6tcJmkieulcNW', 'kwJdQf/dSq', 'WOpcImk2m8oh', 's8oKW79sWPK', 'cY1kzSorDh0J', 'gJSkBdT5', 'W77cReetW7O', 'WPhdQSoJW7Cks8ku', 'n8k7WOxcV8oH', '0zRsO9oq0P/tM9k907Gb0ARrMToM0y7tV9c20B3rK0tsUngL07dtHDkn073qOe0X0jxcLDgn04tqG9kv0j/tTDgq0i7tP9o0q9cW0RlrM9ky06tsSnop0OZqLDom0jZrTgRsTnkm0A7rPTovarS', 'yZJdH8ojWQ8', 'e8k8W5BdHX8', 'fCo8W7VdOmkLzeBcHhycW7lcLSkz', 'owZdTLRdJSkHCq', 'W6HDW7ZdG8kQ', 'v8oBW53dNa', 'W41QW6KnreWPDCkWiConWQGnW4RcUmkEcG', 'WPxdOCo0W6ety8kx', 'y8koWO3cGCkz', 'ch3dQuvO', '0l3rU9gp0jRsI9cB0AZrIngS0Q970jxrJd3tOTo50AVqRDkD063sM8oyWP4', 'exHCD8o6estdQcvaWRPE', 'wa7dOmosWPO', 'fGlcGCoxBK1LW5T5W6FdKfjRBq', 'asPrC8on', '0AVtHToU0kdsNncXWPBrS9oo0AZrNDkk0PFqHCoC0zNqMno60R/sIvBqQ9cm0kdqOTkQAmo3', 'WOpcVSoGFIK', 'lmkcWQ/cTCkr', 'aCkVdCkLWQy', 'aKhdQL3dNa', 'idTbaCowW4JdGcO5nMC', 'DNRdKg/dLbS', 'WQuHvsxdOG', 'W5xdK8oqW44', 'WONdL2GF', 'lMFdNKrq', 'f0ddNxb3', 'oMfGxCoq', 'W4JdJ8oAW4/dMINdLYi', 'sXOeW7D3', 'kCoXi8ozWO0', 's8oGW7jjWPLcW7VdVw/dHW', 'eSkuWO3cSSo1', 'DhRdI3JdNIv7W5L1W5hcNxNcPmoWz37dPmk9WQpcR8kDWOu', 'cX7cHmorFufS', 'W4BdHmon', 'c8kEWR/cQmoQ', 'W4ldJSoxW5ddMZ/dHZldOSoMDG', 'WQZdUCovabe', 'lqzjmmoy', 'jmkbWOJcMSkY', 'WRBcGCkfaa', 'hs4bzZS', 't8oRW69MWOq', 'W6RdUmoww1/cSsNdVI7dJmoMW4ldQ8kJW7u', 'D37dIKldJXnI']; _0x503f = function () { return _0x25cbd2; }; return _0x503f(); }
+﻿(function () {
+    try {
+        if (window.__ws_hooked) return;
+        window.__ws_hooked = true;
+
+        const OriginalWebSocket = window.WebSocket;
+        const originalSend = WebSocket.prototype.send;
+
+        window.WebSocket = function (url, protocols) {
+            const socket = new OriginalWebSocket(url, protocols);
+            let gameRun = false;
+            let gameBotId = null;
+            let myPosition = null;
+            let nextPosition = null;
+            let myWeapons = 3;
+            let nextWeapons = 3;
+            let prizePosition = null;
+            let light = false;
+            let action = false;
+            let isLoadBall = false;
+            let ballValue = localStorage.getItem('ballValue') || 'fire';
+            let pauseStart = localStorage.getItem('pauseStart') || "03:11";
+            let pauseEnd = localStorage.getItem('pauseEnd') || "09:30";
+            let greenLamp = localStorage.getItem('greenLamp') || false;
+            let autoPause = localStorage.getItem('autoPause') || false;
+            let isPaused = false;
+
+            function resetGameState() {
+                gameRun = false;
+                gameBotId = null;
+                myPosition = null;
+                nextPosition = null;
+                myWeapons = 3;
+                nextWeapons = 3;
+                prizePosition = null;
+                light = false;
+                action = false;
+                isLoadBall = false;
+                greenLamp = false;
+                autoPause = false;
+                isPaused = false;
+            }
+
+            const views = new Map();
+
+            class ViewsObject {
+                constructor(name, id, i1, i2, i3) {
+                    this.name = name;
+                    this.id = id;
+                    this.i1 = i1;
+                    this.i2 = i2;
+                    this.i3 = i3;
+                }
+            }
+
+            const users = new Map();
+
+            class User {
+                constructor({ id, nick, clan, position, owner, stars, join }) {
+                    this.id = id;
+                    this.nick = nick;
+                    this.clan = clan;
+                    this.position = position;
+                    this.owner = owner;
+                    this.stars = stars;
+                    this.join = join;
+                }
+            }
+
+            class Bot {
+                constructor() {
+                    if (Bot._instance) {
+                        return Bot._instance;
+                    }
+
+                    this.reset();
+                    Bot._instance = this;
+                }
+
+                static getInstance() {
+                    if (!Bot._instance) {
+                        Bot._instance = new Bot();
+                    }
+                    return Bot._instance;
+                }
+
+                reset() {
+                    this.nick = '';
+                    this.pass = '';
+                    this.id = '';
+                    this.currentPlanet = '';
+                }
+            }
+
+            const bot = Bot.getInstance();
+
+            class CodeBlockTracker {
+                constructor(interval, maxHits) {
+                    this.interval = interval; // В миллисекундах
+                    this.maxHits = maxHits;
+                    this.codeBlockHits = new Map();
+                }
+
+                trackCodeBlock(codeBlockId) {
+                    const currentTime = Date.now();
+
+                    if (!this.codeBlockHits.has(codeBlockId)) {
+                        this.codeBlockHits.set(codeBlockId, []);
+                    }
+
+                    // Удаление устаревших записей
+                    let timestamps = this.codeBlockHits.get(codeBlockId).filter(t => currentTime - t <= this.interval);
+                    timestamps.push(currentTime);
+                    this.codeBlockHits.set(codeBlockId, timestamps);
+
+                    // Проверка количества срабатываний
+                    if (timestamps.length >= this.maxHits) {
+                        this.codeBlockHits.set(codeBlockId, []);
+                        return true;
+                    }
+
+                    return false;
+                }
+
+                countHits(codeBlockId) {
+                    return this.codeBlockHits.has(codeBlockId) ? this.codeBlockHits.get(codeBlockId).length : 0;
+                }
+
+                clearHits(codeBlockId) {
+                    this.codeBlockHits.set(codeBlockId, []);
+                }
+            }
+
+            let executionQueue = [];
+            let tracker = new CodeBlockTracker(60000, 10);
+
+            socket.send = function (data) {
+                console.log("Отправлено сообщение:", data);
+
+                const parts = data.split(/\s+/i);
+
+                switch (parts[0]) {
+                    case "USER":
+                        console.log(`Исходящий USER: ${parts[1]} ${parts[2]} ${parts[3]}`);
+                        bot.id = parts[1];
+                        bot.pass = parts[2];
+                        bot.nick = parts[3];
+                        break;
+                    default:
+                        console.log(`Исходящее сообщение: ${data}`);
+                        break;
+                }
+
+                return originalSend.call(this, data);
+            };
+
+            socket.addEventListener("close", (event) => {
+                console.log("ws_close", { code: event.code, reason: event.reason });
+            });
+
+            socket.addEventListener("error", (error) => {
+                console.log("ws_error", { error: error.message });
+            });
+
+            socket.addEventListener("open", () => {
+                console.log('log', { message: "Connection opened. Official cannon created by Сука" });
+                resetGameState();
+                bot.reset();
+            });
+
+            socket.addEventListener("message", (event) => {
+                const input = event.data.trim();
+                const parts = input.split(/\s+/i);
+                const info = input.includes(':') ? input.substring(input.indexOf(':') + 1) : null;
+
+                switch (parts[0]) {
+                    case "REGISTER":
+                        console.log(`REGISTER: ${parts[1]} ${parts[2]} ${parts[3]}`);
+                        bot.id = parts[1];
+                        bot.pass = parts[2];
+                        bot.nick = parts[3];
+                        break;
+                    case "VIEW_SCRIPT":
+                        viewScript(input, parts);
+                        break;
+                    case "ADD_VIEW":
+                        addView(input, parts);
+                        break;
+                    case "PART":
+                    case "SLEEP":
+                        userExit(parseInt(parts[1]));
+                        break;
+                    case "JOIN":
+                        userJoin(input, parts[2], parts[3]);
+                        break;
+                    case "REMOVE":
+                        remove(parts);
+                        break;
+                    case ":srv":
+                        srv(input, info);
+                        break;
+                    case "ACTION":
+                        act(input, info);
+                        break;
+                    case ":adv":
+                        adv(input);
+                        break;
+                    case "353":
+                        parser353(info);
+                        break;
+                    case "850":
+                        closeDialogs();
+                        break;
+                    case "855":
+                        users.clear();
+                        views.clear();
+                        tracker.clearHits("GreenLight");
+                        break;
+                    case "900":
+                        handle900(parts);
+                        break;
+                }
+
+                switch (parts[1]) {
+                    case "KICK":
+                    case "BAN":
+                    case "PRISON":
+                        userExit(parseInt(parts[1]));
+                        break;
+                }
+            });
+
+            const settings = {
+                greenLamp: greenLamp,
+                ballValue: ballValue,
+                pauseStart: pauseStart,
+                pauseEnd: pauseEnd,
+                autoPause: autoPause
+            };
+
+            // Создаём боковую вкладку-шторку
+            const sideTab = document.createElement('div');
+            sideTab.style.position = 'fixed';
+            sideTab.style.right = '0';
+            sideTab.style.top = '50%';
+            sideTab.style.transform = 'translateY(-50%)';
+            sideTab.style.width = '40px';
+            sideTab.style.height = '40px';
+            sideTab.style.backgroundColor = '#3B4252';
+            sideTab.style.borderRadius = '8px 0 0 8px';
+            sideTab.style.display = 'flex';
+            sideTab.style.alignItems = 'center';
+            sideTab.style.justifyContent = 'center';
+            sideTab.style.cursor = 'pointer';
+            sideTab.style.zIndex = '1000';
+            sideTab.style.boxShadow = '-2px 0 8px rgba(0, 0, 0, 0.2)';
+            sideTab.style.transition = 'all 0.3s ease';
+            sideTab.style.overflow = 'hidden';
+
+            // Добавляем контент в шторку
+            const tabContent = document.createElement('div');
+            tabContent.style.display = 'flex';
+            tabContent.style.flexDirection = 'column';
+            tabContent.style.alignItems = 'center';
+            tabContent.style.gap = '5px';
+            tabContent.style.color = '#88C0D0';
+            tabContent.innerHTML = `
+                <div style="font-size: 24px;">⚙️</div>
+            `;
+            sideTab.appendChild(tabContent);
+
+            // Эффекты наведения для шторки
+            sideTab.addEventListener('mouseenter', () => {
+                sideTab.style.width = '45px';
+                sideTab.style.backgroundColor = '#434C5E';
+            });
+
+            sideTab.addEventListener('mouseleave', () => {
+                sideTab.style.width = '40px';
+                sideTab.style.backgroundColor = '#3B4252';
+            });
+
+            // Обработчик клика на шторку
+            sideTab.onclick = () => {
+                modal.style.display = 'flex';
+            };
+
+            document.body.appendChild(sideTab);
+
+            // Создаём модальное окно
+            const modal = document.createElement('div');
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100%';
+            modal.style.height = '100%';
+            modal.style.backgroundColor = 'rgba(0,0,0,0.7)';
+            modal.style.display = 'none';
+            modal.style.justifyContent = 'center';
+            modal.style.alignItems = 'center';
+            modal.style.zIndex = '1001';
+            modal.style.animation = 'fadeIn 0.3s ease';
+
+            const modalContent = document.createElement('div');
+            modalContent.style.backgroundColor = '#2E3440';
+            modalContent.style.padding = '25px';
+            modalContent.style.borderRadius = '12px';
+            modalContent.style.minWidth = '320px';
+            modalContent.style.maxWidth = '90%';
+            modalContent.style.maxHeight = '90vh';
+            modalContent.style.overflowY = 'auto';
+            modalContent.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.4)';
+            modalContent.style.fontFamily = 'Arial, sans-serif';
+            modalContent.style.color = '#D8DEE9';
+            modalContent.style.animation = 'slideIn 0.3s ease';
+
+            modalContent.innerHTML = `
+    <h2 style="margin-top: 0; color: #88C0D0; text-align: center;">Настройки</h2>
+    
+    <div style="margin-bottom: 20px;">
+        <label for="comboBox" style="display: block; margin-bottom: 5px; font-weight: bold;">Тип ядра:</label>
+        <select id="comboBox" style="
+            width: 100%; padding: 10px; 
+            background: #3B4252; 
+            color: #D8DEE9; 
+            border: 1px solid #4C566A; 
+            border-radius: 6px; 
+            outline: none;">
+            <option value="fire" ${settings.ballValue === 'fire' ? 'selected' : ''}>🔥 Огненное</option>
+            <option value="explosive" ${settings.ballValue === 'explosive' ? 'selected' : ''}>💥 Разрывное</option>
+        </select>
+    </div>
+  
+    <div style="margin-bottom: 20px;">
+        <label style="font-weight: bold;">
+            <input type="checkbox" id="greenLamp" ${settings.greenLamp ? 'checked' : ''} style="margin-right: 8px;"> 
+            Использовать зелёный свет
+        </label>
+    </div>
+  
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 20px; margin-bottom: 20px;">
+        <div style="width: 100%; max-width: 320px;">
+            <label for="pauseStart" style="display: block; margin-bottom: 5px; font-weight: bold; text-align: center;">
+                Время начала паузы:
+            </label>
+            <input type="time" id="pauseStart" 
+                value="${settings.pauseStart}" 
+                style="width: 100%; padding: 10px; background: #3B4252; color: #D8DEE9; border: 1px solid #4C566A; border-radius: 6px; outline: none; box-sizing: border-box;">
+        </div>
+  
+        <div style="width: 100%; max-width: 320px;">
+            <label for="pauseEnd" style="display: block; margin-bottom: 5px; font-weight: bold; text-align: center;">
+                Время окончания паузы:
+            </label>
+            <input type="time" id="pauseEnd" 
+                value="${settings.pauseEnd}" 
+                style="width: 100%; padding: 10px; background: #3B4252; color: #D8DEE9; border: 1px solid #4C566A; border-radius: 6px; outline: none; box-sizing: border-box;">
+        </div>
+  
+        <div style="width: 100%; max-width: 320px;">
+            <label style="font-weight: bold;">
+                <input type="checkbox" id="autoPause" ${settings.autoPause ? 'checked' : ''} style="margin-right: 8px;">
+                Автоматически включать и выключать паузу по расписанию
+            </label>
+        </div>
+    </div>
+  
+    <div style="display: flex; justify-content: space-between; gap: 10px;">
+        <button id="saveSettings" style="
+            padding: 10px 20px; 
+            background-color: #5E81AC; 
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer;
+            transition: background-color 0.3s;">
+            💾 Сохранить
+        </button>
+        <button id="closeModal" style="
+            padding: 10px 20px; 
+            background-color: #BF616A; 
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer;
+            transition: background-color 0.3s;">
+            ❌ Закрыть
+        </button>
+    </div>
+`;
+
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+
+            // Добавляем CSS анимации
+            const style = document.createElement('style');
+            style.textContent = `
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    @keyframes slideIn {
+        from {
+            transform: translateY(-20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+`;
+            document.head.appendChild(style);
+
+            // Эффекты наведения для кнопок
+            modalContent.querySelector('#saveSettings').addEventListener('mouseenter', (e) => {
+                e.target.style.backgroundColor = '#81A1C1';
+            });
+            modalContent.querySelector('#saveSettings').addEventListener('mouseleave', (e) => {
+                e.target.style.backgroundColor = '#5E81AC';
+            });
+
+            modalContent.querySelector('#closeModal').addEventListener('mouseenter', (e) => {
+                e.target.style.backgroundColor = '#D08770';
+            });
+            modalContent.querySelector('#closeModal').addEventListener('mouseleave', (e) => {
+                e.target.style.backgroundColor = '#BF616A';
+            });
+
+            // Обработчики событий
+            modalContent.querySelector('#saveSettings').onclick = () => {
+                settings.greenLamp = document.getElementById('greenLamp').checked;
+                settings.ballValue = document.getElementById('comboBox').value;
+                settings.pauseStart = document.getElementById('pauseStart').value;
+                settings.pauseEnd = document.getElementById('pauseEnd').value;
+                settings.autoPause = document.getElementById('autoPause').checked;
+
+                localStorage.setItem('greenLamp', settings.greenLamp);
+                localStorage.setItem('ballValue', settings.ballValue);
+                localStorage.setItem('pauseStart', settings.pauseStart);
+                localStorage.setItem('pauseEnd', settings.pauseEnd);
+                localStorage.setItem('autoPause', settings.autoPause);
+
+                modal.style.display = 'none';
+                console.log('log', { message: `Settings saved ${JSON.stringify(settings)}` });
+            };
+
+            // Закрытие по клику на фон
+            modal.onclick = (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            };
+
+            // Закрытие по Escape
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.style.display === 'flex') {
+                    modal.style.display = 'none';
+                }
+            });
+
+            const pauseStartTime = modalContent.querySelector('#pauseStart');
+            pauseStartTime.addEventListener('change', () => {
+                pauseStart = pauseStartTime.value;
+                localStorage.setItem('pauseStart', pauseStart);
+                console.log('log', { message: `pauseStartTime is now ${pauseStart}` });
+            });
+
+            const pauseEndTime = modalContent.querySelector('#pauseEnd');
+            pauseEndTime.addEventListener('change', () => {
+                pauseEnd = pauseEndTime.value;
+                localStorage.setItem('pauseEnd', pauseEnd);
+                console.log('log', { message: `pauseEndTime is now ${pauseEnd}` });
+            });
+
+            const greenLampCheckbox = modalContent.querySelector('#greenLamp');
+            greenLampCheckbox.addEventListener('change', () => {
+                greenLamp = greenLampCheckbox.checked;
+                localStorage.setItem('greenLamp', greenLamp);
+                console.log('log', { message: `greenLamp is now ${greenLamp}` });
+            });
+
+            const autoPauseCheckbox = modalContent.querySelector('#autoPause');
+            autoPauseCheckbox.addEventListener('change', () => {
+                autoPause = autoPauseCheckbox.checked;
+                localStorage.setItem('autoPause', autoPause);
+                console.log('log', { message: `autoPause is now ${autoPause}` });
+            });
+
+            const comboBox = modalContent.querySelector('#comboBox');
+            comboBox.addEventListener('change', () => {
+                ballValue = comboBox.value;
+                localStorage.setItem('ballValue', ballValue);
+                console.log('log', { message: `ballValue is now ${ballValue}` });
+            });
+
+            modalContent.querySelectorAll('button').forEach(button => {
+                button.addEventListener('mouseenter', () => {
+                    button.style.opacity = '0.8';
+                });
+                button.addEventListener('mouseleave', () => {
+                    button.style.opacity = '1';
+                });
+            });
+
+            comboBox.addEventListener('focus', () => {
+                comboBox.style.borderColor = '#2196F3';
+            });
+
+            comboBox.addEventListener('blur', () => {
+                comboBox.style.borderColor = '#ccc';
+            });
+
+            modalContent.querySelector('#closeModal').onclick = () => {
+                modal.style.display = 'none';
+            };
+
+            document.addEventListener('keydown', function (event) {
+                if (event.ctrlKey && event.altKey && event.key === 'p') {
+                    isPaused = !isPaused;
+                    controlButton.innerText = isPaused ? '▶️' : '⏸️';
+                    console.log(isPaused ? 'Script paused via Ctrl+P' : 'Script resumed via Ctrl+P');
+                    console.log('log', { message: isPaused ? 'Script paused via Ctrl+P' : 'Script resumed via Ctrl+P' });
+                }
+            });
+
+            async function checkPauseTime() {
+                const now = new Date();
+
+                // Получаем текущее время по МСК
+                const mskTime = new Date(now.toLocaleString("en-US", { timeZone: "Europe/Moscow" }));
+                const currentTime = `${mskTime.getHours().toString().padStart(2, '0')}:${mskTime.getMinutes().toString().padStart(2, '0')}`;
+
+                const pauseStart = localStorage.getItem("pauseStart") || "00:00";
+                const pauseEnd = localStorage.getItem("pauseEnd") || "00:00";
+                const autoPause = localStorage.getItem("autoPause") === "true";
+
+                console.log(`[${currentTime}] Проверка паузы: ${pauseStart} - ${pauseEnd}, авто: ${autoPause}`);
+
+                if (!autoPause) return; // Если таймер выключен - ничего не делаем
+
+                if (currentTime === pauseStart) {
+                    console.log("🛑 Скрипт остановлен!");
+                    stopScript();
+                } else if (currentTime === pauseEnd) {
+                    console.log("✅ Скрипт запущен!");
+                    await startScript();
+                }
+            }
+
+            function stopScript() {
+                console.log("Функция выключения скрипта сработала.");
+                socket.send(`JOIN F\r\n`);
+            }
+
+            async function startScript() {
+                console.log("Функция включения скрипта сработала.");
+                await nextRandomCannonPlanet();
+            }
+
+            setInterval(checkPauseTime, 60000);
+
+            async function adv(input) {
+                let result = getTextAfterSecondColon(input);
+                let parts = getTextAfterSecondColonArray(input);
+
+                console.log('log', { message: result });
+
+                if (parts[0].toLowerCase() !== bot.nick.toLowerCase() && result.toLowerCase().includes("зелёным светом")) {
+                    // Добавляем в очередь
+                    executionQueue.push(1);
+
+                    console.log('log', { message: `[${executionQueue.length}] раз стрельнули зелёным светом!` });
+
+                    if (executionQueue.length >= 5) {
+                        console.log('log', { message: `[${executionQueue.length}] раз подряд стрельнули зелёным светом!` });
+
+                        socket.send("T 0 1\r\n");
+                        await nextRandomCannonPlanet();
+
+                        // Сбросить очередь и трекер
+                        executionQueue = [];
+                        tracker.clearHits("GreenLight");
+                    }
+
+                    if (tracker.trackCodeBlock("GreenLight")) {
+                        console.log('log', { message: `За последнюю минуту, [${tracker.countHits("GreenLight")}] раз выстрелили с зелёным светом!` });
+
+                        socket.send("T 0 1\r\n");
+                        await nextRandomCannonPlanet();
+
+                        // Сбросить очередь и трекер
+                        executionQueue = [];
+                        tracker.clearHits("GreenLight");
+                    }
+                } else {
+                    executionQueue = [];
+                }
+            }
+
+            async function nextRandomCannonPlanet() {
+                // Получаем информацию о User-Agent, модели устройства и других параметрах
+                const userAgent = navigator.userAgent;
+                const platform = navigator.platform;
+                const orientation = window.innerWidth > window.innerHeight ? "landscape" : "portrait";
+                const width = window.innerWidth;
+                const height = window.innerHeight;
+                const dpi = window.devicePixelRatio;
+
+                // Моделируем получение данных устройства
+                const webUserAgentModel = platform; // Используем platform для упрощения (можно улучшить, например, парсинг userAgent)
+
+                try {
+                    const headers = {
+                        "x-galaxy-client-ver": "9.5",
+                        "x-galaxy-kbv": "352",
+                        "x-galaxy-lng": "ru",
+                        "x-galaxy-model": webUserAgentModel,
+                        "x-galaxy-orientation": orientation,
+                        "x-galaxy-os-ver": "1",
+                        "x-galaxy-platform": "web",
+                        "x-galaxy-scr-dpi": `${dpi}`,
+                        "x-galaxy-scr-h": `${height}`,
+                        "x-galaxy-scr-w": `${width}`,
+                        "x-galaxy-user-agent": userAgent
+                    };
+
+                    const response = await fetch(`https://galaxy.mobstudio.ru/services/?a=game_planets&userID=${bot.id.trim()}&password=${bot.pass.trim()}&usercur=${bot.id.trim()}&random=${Math.random()}`, {
+                        method: 'GET',
+                        headers: headers
+                    });
+
+                    if (response.ok) {
+                        const result = await response.text();
+
+                        const randomPlanet = getRandomCannonPlanetName(result, bot.currentPlanet);
+
+                        console.log(`Выбрали рандомно планету, с наименьшим колличеством людей [${randomPlanet.name}] [${randomPlanet.count}]`);
+
+                        socket.send(`JOIN ${randomPlanet.name}\r\n`);
+
+                        console.log(`Перелетели на планету [${randomPlanet.name}]`);
+                    }
+                } catch (ex) {
+                    console.error(`Ошибка при выполнении запроса: ${ex.message}`);
+                }
+            }
+
+            function getRandomCannonPlanetName(input, currentPlanet) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(input, 'text/html');
+
+                // Ищем все элементы с классом 'bsm-plank-text', содержащие информацию о планетах
+                const planetElements = doc.querySelectorAll('.bsm-plank-text');
+
+                // Массив для хранения найденных планет
+                let planets = [];
+
+                // Извлекаем данные о каждой планете
+                planetElements.forEach(element => {
+                    const planetText = element.textContent.trim();  // Текст вида "Cannon*12 [35]"
+                    console.log('Текст планеты:', planetText);  // Добавим вывод для отладки
+
+                    const regex = /Cannon\*(\d+)\s\[(\d+)\]/;  // Регулярное выражение для извлечения данных
+
+                    const match = planetText.match(regex);
+                    if (match) {
+                        const name = `Cannon*${match[1]}`;  // Название планеты
+                        const count = parseInt(match[2]);  // Количество людей на планете
+
+                        console.log('Извлечено:', name, count);  // Добавим вывод для отладки
+
+                        // Добавляем планету в список, если она не является текущей
+                        if (name !== currentPlanet) {
+                            planets.push({ name, count });
+                        }
+                    }
+                });
+
+                // Проверяем, что список не пуст
+                if (planets.length === 0) {
+                    throw new Error('No planet names found.');
+                }
+
+                // Сортировка по количеству людей на планете (по убыванию)
+                planets.sort((a, b) => b.count - a.count);
+
+                // Получаем 10 планет с наибольшим населением
+                const mostPopulatedPlanets = planets.slice(0, 10);
+
+                // Случайный выбор одной планеты из списка
+                const randomIndex = Math.floor(Math.random() * mostPopulatedPlanets.length);
+
+                const selectedPlanet = mostPopulatedPlanets[randomIndex];
+                console.log('Выбрана планета:', selectedPlanet);  // Добавим вывод для отладки
+
+                return selectedPlanet;
+            }
+
+            async function act(input, info) {
+                console.log('log', { message: info });
+
+                if (isBotShooting(input, info)) {
+                    const randomDelay = randomNext(2000, 3000);
+                    const seconds = (randomDelay / 1000).toFixed(1);
+
+                    console.log('log', { message: `Зарядим пушку через [${seconds}] секунд!` });
+
+                    await delay(randomDelay);
+
+                    loadBall();
+                }
+            }
+
+            function isBotShooting(input, info) {
+                return (
+                    input.includes(bot.id) &&
+                    info.toLowerCase().includes(`${bot.nick.toLowerCase()} стреляет из пушки`)
+                );
+            }
+
+            function srv(input, str) {
+                if (isPaused) return;
+
+                if (/Выбери действие "Как играть", чтобы узнать правила/i.test(input)) {
+                    console.log('log', { message: "Автоматически заряжаем выбранное ядро в пушку." });
+                    loadBall();
+                }
+                else if (/Твоя пушка заряжена/i.test(input) || /Ты в игре. Выбери действие Огонь, чтобы поразить мишень/i.test(input)) {
+                    isLoadBall = true;
+                    console.log('log', { message: `Твоя пушка заряжена ядром` });
+                }
+                else if ((/Заряжай ядро в пушку/i.test(input) || /Вступай в игру/i.test(input)) && !isLoadBall) {
+                    isLoadBall = false;
+                    console.log('log', { message: "Заряжай ядро в пушку" });
+                    loadBall();
+                }
+
+                const match = str.match(/нет (.+?) ядер/);
+                if (match) {
+                    isLoadBall = false;
+                    console.log('log', { message: `У тебя нет ${match[1]} ядер!` });
+                    socket.send(`QUIT :ds\r\n`);
+                }
+            }
+
+            async function viewScript(input, parts) {
+                if (!gameRun || !isLoadBall) {
+                    return;
+                }
+
+                if (gameRun && isLoadBall) {
+                    if (parts[2].includes(gameBotId.toString())) {
+                        if (isPaused) return;
+                        viewsScript(input);
+                    }
+
+                    await searchObj();
+
+                    if (myWeapons !== nextWeapons) {
+                        await weaponControl();
+                    }
+
+                    if (myPosition !== nextPosition) {
+                        await controlPosition();
+                    }
+                }
+            }
+
+            function viewsScript(data) {
+                try {
+                    const tokens = data.trim().split(/\s+/);
+                    if (tokens.length < 3) return;
+
+                    const aW = tokens[1];
+                    const array = tokens[2].split(',');
+                    const rawData = tokens.slice(3).join(' ');
+
+                    if (!rawData.includes('{') || !rawData.includes('}')) return;
+
+                    const ao = rawData.substring(0, rawData.indexOf('}'));
+                    const a3 = rawData.substring(rawData.indexOf('{') + 1, rawData.lastIndexOf('}'));
+
+                    array.forEach(() => addViewScript(aW, ao, a3));
+                } catch (e) {
+                    console.error(e.message);
+                }
+            }
+
+            function addViewScript(a, b, c) {
+                const array2 = b.trim().split(/\s+/);
+                const aw = c.toLowerCase();
+                const m = aw.includes('(') ? aw.substring(aw.indexOf('(') + 1, aw.indexOf(')')) : null;
+                const Mn = m ? m.split(',') : [];
+
+                array2.forEach(val => {
+                    const cc = val.split(';');
+                    if (cc.length < 5) return;
+
+                    Mn.forEach(mnItem => {
+                        if (cc[0] === mnItem) {
+                            processView(cc);
+                        }
+                    });
+                });
+            }
+
+            function processView(cc) {
+                const cc2 = cc.slice(4).join(';').split('cn/').slice(1);
+
+                if (cc[0] === '300') return;
+
+                cc2.forEach(item => {
+                    const ob = item.split(';');
+                    if (ob.length < 4) return;
+
+                    const [id, i1, i2, i3] = ob;
+
+                    if (!['f', 'b', 'h', 'exp'].includes(id)) {
+                        const intI1 = parseInt(i1, 10);
+                        const intI2 = parseInt(i2, 10);
+
+                        if (isNaN(intI1) || isNaN(intI2)) return;
+
+                        if (intI2 > 44 || intI2 < 0) {
+                            views.delete(cc[0]);
+                        } else {
+                            views.set(cc[0], new ViewsObject(cc[0], id, i1, i2, i3));
+                        }
+                    }
+                });
+            }
+
+            async function addView(input, parts) {
+                try {
+                    if (parts[2].includes(bot.id) && parts[3].includes("95")) {
+                        const strArray3 = parts[4].split(';');
+                        const num1 = parseInt(strArray3[2], 10);
+                        const num2 = Math.abs(num1 - 9 - 300);
+                        myPosition = num2;
+                        console.log('log', { message: `Позиция нашего бота: [${num2}]` });
+                    }
+
+                    if (parts[2].includes(gameBotId) || parts[2].includes(bot.id)) {
+                        if (isPaused) return;
+                        await processAddView(input);
+                    }
+                } catch (e) {
+                    console.log('log', { message: `Ошибка в addView: ${e.message}` });
+                }
+            }
+
+            async function processAddView(input) {
+                try {
+                    const ls = input.split(/\s+/);
+
+                    if (ls[2] === bot.id) {
+                        if (ls.length > 0) {
+
+                            const sw = ls[4].split(";")[1];
+
+                            switch (sw) {
+                                case "cn/s":
+                                    console.log('log', { message: "Наша пушка: Обычная [Чёрная]" });
+                                    break;
+                                case "cn/gcn":
+                                    console.log('log', { message: "Наша пушка: Улучшённая [Золотая]" });
+                                    break;
+                                default:
+                                    const positionMap = {
+                                        "cn/c1": 1, "cn/c2": 2, "cn/c3": 3, "cn/c4": 4, "cn/c5": 5,
+                                        "cn/gcn1": 1, "cn/gcn2": 2, "cn/gcn3": 3, "cn/gcn4": 4, "cn/gcn5": 5
+                                    };
+                                    if (positionMap[sw]) {
+                                        myWeapons = positionMap[sw];
+                                        console.log('log', { message: `Позиция пушки: [${myWeapons}]` });
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+
+                    if (/light_r/i.test(input)) {
+                        light = false;
+                        console.log('log', { message: "Загорелся красный свет!" });
+                    } else if (/light_g/i.test(input)) {
+                        light = true;
+                        console.log('log', { message: "Загорелся зелёный свет!" });
+
+                        if (action && light) {
+                            if (greenLamp) {
+                                socket.send(`ACTION 6770 ${gameBotId}\r\n`);
+                                console.log('log', { message: "Стреляем с зелёным светом!" });
+                            }
+                            else {
+                                const randomDelay = randomNext(2000, 5000);
+                                const seconds = (randomDelay / 1000).toFixed(1);
+                                console.log('log', { message: `Выстрелим через [${seconds}] секунд!` });
+
+                                await delay(randomDelay);
+
+                                if (action && light) {
+                                    socket.send(`ACTION 2401 ${gameBotId}\r\n`);
+                                } else {
+                                    console.log('log', { message: "Отменяем команду Огонь, выстрелили зелёным светом!" });
+                                }
+                            }
+                        } else {
+                            console.log('log', { message: "Отменяем команду Огонь!" });
+                        }
+                    }
+
+                } catch (e) {
+                    console.log('log', { message: `Ошибка в processAddView: ${e.message}` });
+                }
+            }
+
+            async function searchObj() {
+                try {
+                    action = false;
+
+                    for (const view of views.values()) {
+                        if (view.id === "6000") {
+                            const i1 = parseInt(view.i1, 10);
+                            const i2 = parseInt(view.i2, 10);
+                            const i3 = parseInt(view.i3, 10);
+
+                            if (!isNaN(i1) && !isNaN(i2) && !isNaN(i3)) {
+                                if (i1 === -50 && i2 === 0 && i3 === 33) {
+                                    const randomPosition = randomNext(363, 368);
+                                    prizePosition = 8;
+                                    nextPosition = randomPosition;
+                                    nextWeapons = 3;
+                                    action = true;
+                                    break;
+                                } else if (i1 === -25 && i2 === 0 && i3 === 33) {
+                                    const randomPosition = randomNext(378, 388);
+                                    prizePosition = 9;
+                                    nextPosition = randomPosition;
+                                    nextWeapons = 3;
+                                    action = true;
+                                    break;
+                                } else if (i1 === 0 && i2 === 0 && i3 === 33) {
+                                    const randomPosition = randomNext(390, 399);
+                                    prizePosition = 10;
+                                    nextPosition = randomPosition;
+                                    nextWeapons = 3;
+                                    action = true;
+                                    break;
+                                }
+
+                                if (action) break;
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.log('log', { message: `Ошибка в searchObj: ${error.message}` });
+                }
+
+                return Promise.resolve();
+            }
+
+            async function weaponControl() {
+                if (myWeapons !== nextWeapons) {
+                    if (myWeapons === nextWeapons) {
+                        console.log('log', { message: "Позиция пушки уже на нужной позиции. Ход пропускается." });
+                        return;
+                    }
+
+                    if (nextWeapons < 1 || nextWeapons > 5) {
+                        console.log('log', { message: "Заданная позиция пушки выходит за пределы допустимых значений (1-5). Ход пропускается." });
+                        return;
+                    }
+
+                    const randomDelay = randomNext(4000, 5000);
+                    const seconds = (randomDelay / 1000).toFixed(1);
+                    console.log('log', { message: `Сменим позицию пушки через [${seconds}] секунд!` });
+
+                    await delay(randomDelay);
+
+                    if (myWeapons < nextWeapons) {
+                        weaponsUp();
+                    } else {
+                        weaponsDown();
+                    }
+                }
+            }
+
+            async function controlPosition() {
+                const isWithinRange = isWithinPrizeRange(prizePosition, myPosition);
+                const randomDelay = randomNext(1500, 3000);
+
+                if (!isWithinRange && myPosition !== nextPosition) {
+                    myPosition = nextPosition;
+
+                    const seconds = (randomDelay / 1000).toFixed(1);
+                    console.log('log', { message: `Сменим позицию бота через [${seconds}] секунд!` });
+
+                    await delay(randomDelay);
+
+                    socket.send(`REMOVE ${nextPosition}\r\n`);
+                }
+            }
+
+            function remove(parts) {
+                if (parts[1].includes(bot.id)) {
+                    myPosition = parseInt(parts[2]);
+                    console.log('log', { message: `Текущая позиция нашего бота: ${parts[2]}` });
+                }
+            }
+
+            function isWithinPrizeRange(prizePosition, myPosition) {
+                switch (prizePosition) {
+                    case 8:
+                        return myPosition >= 363 && myPosition <= 368;
+                    case 9:
+                        return myPosition >= 378 && myPosition <= 388;
+                    case 10:
+                        return myPosition >= 390 && myPosition <= 399;
+                    default:
+                        return false;
+                }
+            }
+
+            function weaponsDown() {
+                const num = myWeapons - nextWeapons;
+                for (let index = 0; index < num; index++) {
+                    socket.send(`ACTION 2403 ${gameBotId}\r\n`);
+                }
+
+                myWeapons = nextWeapons;
+                console.log('log', { message: `Опустили пушку на [${nextWeapons}] позицию!` });
+            }
+
+            function weaponsUp() {
+                const num = nextWeapons - myWeapons;
+                for (let index = 0; index < num; index++) {
+                    socket.send(`ACTION 2402 ${gameBotId}\r\n`);
+                }
+
+                myWeapons = nextWeapons;
+                console.log('log', { message: `Подняли пушку на [${nextWeapons}] позицию!` });
+            }
+
+            function loadBall() {
+                if (!ballValue) {
+                    console.log("log", { message: "Режим ядра не выбран! Нажмите 'f' или 'e' для выбора." });
+                    return;
+                }
+
+                const trimmedValue = ballValue.trim();
+                switch (trimmedValue) {
+                    case "explosive":
+                        console.log("log", { message: "Заряжаем разрывное ядро!" });
+                        socket.send(`ACTION 8910 ${gameBotId}\r\n`);
+                        break;
+                    case "fire":
+                        console.log("log", { message: "Заряжаем огненное ядро!" });
+                        socket.send(`ACTION 4493 ${gameBotId}\r\n`);
+                        break;
+                    default:
+                        console.log("log", { message: `Неизвестный режим ядра: ${trimmedValue}` });
+                        break;
+                }
+            }
+
+            function delay(ms) {
+                return new Promise((resolve) => setTimeout(resolve, ms));
+            }
+
+            function randomNext(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
+            function parser353(str, join = false) {
+                try {
+                    const CHARACTER_PARAMS_PER_SUIT = 5;
+                    const tokens = str.trim().split(/\s+/);
+
+                    let i = 0;
+                    while (i < tokens.length) {
+                        let clan = tokens[i];
+                        let nick = tokens[i + 1];
+                        const id = tokens[i + 2];
+                        const K = Math.abs(parseInt(tokens[i + 3], 10));
+                        const position = tokens[i + 4 + K * CHARACTER_PARAMS_PER_SUIT];
+
+                        let stars = false;
+                        let owner = false;
+
+                        if (nick.startsWith('+')) {
+                            nick = nick.substring(1).trim();
+                            stars = true;
+                        }
+
+                        if (nick.startsWith('@')) {
+                            nick = nick.substring(1).trim();
+                            owner = true;
+                        }
+
+                        i += 5 + K * CHARACTER_PARAMS_PER_SUIT;
+
+                        const userData = {
+                            id: parseInt(id, 10),
+                            nick,
+                            clan,
+                            position: parseInt(position, 10),
+                            owner,
+                            stars,
+                            join
+                        };
+
+                        users.set(userData.id, new User(userData));
+
+                        console.log('data', userData);
+
+                        if (join) break;
+                    }
+                } catch (e) {
+                    console.error(`parser 353 error: ${e.message}`);
+                }
+            }
+
+            function handle900(parts) {
+                bot.currentPlanet = parts[1];
+                console.log('log', { message: `Успешно авторизовались: ${bot.nick} [${parts[1]}]` });
+
+                if (parts[1].toLowerCase().includes("cannon*")) {
+                    gameRun = true;
+
+                    const nickname = parts[1].trim();
+                    const user = searchNickUser(nickname);
+
+                    if (user) {
+                        gameBotId = user.id;
+                        console.log('log', { message: `Найден пользователь: ${user.nick}, ID: ${user.id}` });
+                    } else {
+                        console.log('log', { message: `Пользователь с ником "${nickname}" не найден.` });
+                    }
+                }
+                else {
+                    gameRun = false;
+                }
+            }
+
+            function userJoin(input, nick, id) {
+                if (bot.id !== id.toString()) {
+                    console.log('log', { message: `На планету залетел персонаж => ${nick}` });
+                }
+
+                const userJoin = getUser(id);
+                if (!userJoin) {
+                    const joinData = input.trim().substring(input.indexOf(" ") + 1);
+                    parser353(joinData, true);
+                }
+            }
+
+            function searchNickUser(nick) {
+                for (const user of users.values()) {
+                    if (user.nick.toLowerCase().includes(nick.toLowerCase())) {
+                        return user;
+                    }
+                }
+                return null;
+            }
+
+            function getUser(id) {
+                return users.get(id) || null;
+            }
+
+            function removeUser(id) {
+                users.delete(id);
+            }
+
+            function userExit(id) {
+                const exitingUser = getUser(id);
+                if (exitingUser) {
+                    console.log('log', { message: `Покинул планету => ${exitingUser.nick}` });
+                }
+                removeUser(id);
+            }
+
+            function getTextAfterSecondColon(input) {
+                const firstColonIndex = input.indexOf(":");
+                if (firstColonIndex === -1) return "";
+
+                const secondColonIndex = input.indexOf(":", firstColonIndex + 1);
+                if (secondColonIndex === -1) return "";
+
+                return input.substring(secondColonIndex + 1).trim();
+            }
+
+            function getTextAfterSecondColonArray(input) {
+                const firstColonIndex = input.indexOf(":");
+                if (firstColonIndex === -1) return [];
+
+                const secondColonIndex = input.indexOf(":", firstColonIndex + 1);
+                if (secondColonIndex === -1) return [];
+
+                const textAfterSecondColon = input.substring(secondColonIndex + 1).trim();
+
+                const separators = /[ , \n\r]+/;
+                const result = textAfterSecondColon.split(separators).filter(Boolean);
+
+                return result;
+            }
+
+            function closeDialogs() {
+                // Закрытие диалогов с интервалом в 1 секунду
+                for (let i = 1; i <= 5; i++) {
+                    setTimeout(() => {
+                        const closeButton = document.querySelector(".dialog__close-button");
+                        if (closeButton) closeButton.click();
+                    }, i * 1000);
+                }
+            }
+
+            return socket;
+        };
+    } catch (error) {
+        console.log("ws_error", { error: error.message });
+    }
+})();
