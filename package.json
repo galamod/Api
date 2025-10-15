@@ -1,0 +1,10 @@
+{
+  "name": "api-obfuscation",
+  "private": true,
+  "devDependencies": {
+    "javascript-obfuscator": "^4.1.0"
+  },
+  "scripts": {
+    "obfuscate": "javascript-obfuscator ./wwwroot/proxy/script.js --output ./wwwroot/proxy/script.obf.js --config ./obfuscator.config.json"
+  }
+}
