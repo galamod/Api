@@ -12,11 +12,13 @@ namespace Api.Controllers
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<ProxyController> _logger;
+        private readonly IWebHostEnvironment _env;
         private const string TargetBaseUrl = "https://galaxy.mobstudio.ru/";
-        public ProxyController(IHttpClientFactory httpClientFactory, ILogger<ProxyController> logger)
+        public ProxyController(IHttpClientFactory httpClientFactory, ILogger<ProxyController> logger, IWebHostEnvironment env)
         {
             _httpClientFactory = httpClientFactory;
             _logger = logger;
+            _env = env;
         }
 
         private void AddGalaxyHeaders(HttpRequestMessage request)
@@ -348,30 +350,32 @@ namespace Api.Controllers
 })();";
                             var interceptorNode = HtmlNode.CreateNode($"<script>{jsInterceptor}</script>");
                             head.PrependChild(interceptorNode);
-                        }
 
-                        var body = doc.DocumentNode.SelectSingleNode("//body");
+                            // --- НОВЫЙ БЛОК ВНЕДРЕНИЯ СКРИПТА ---
+                            var (scriptPath, scriptHash) = GetScriptPathAndHash();
+                            if (scriptHash != null)
+                            {
+                                var scriptUrl = $"/api/proxy/script.js?v={scriptHash}";
 
-                        var scriptLoader = @"
-<script>
-(function() {
-    const s = document.createElement('script');
-    s.src = '/api/proxy/script.js?v=' + Date.now();
-    s.async = true;
-    s.onload = () => setTimeout(() => s.remove(), 3000);
-    document.head.appendChild(s);
-})();
-</script>
-";
-                        var proxyScript = HtmlNode.CreateNode(scriptLoader);
+                                // 1. Preload
+                                var preloadLink = doc.CreateElement("link");
+                                preloadLink.SetAttributeValue("rel", "preload");
+                                preloadLink.SetAttributeValue("href", scriptUrl);
+                                preloadLink.SetAttributeValue("as", "script");
+                                head.AppendChild(preloadLink);
 
-                        if (body != null)
-                        {
-                            var mainScript = doc.DocumentNode.SelectSingleNode("//script[@src]");
-                            if (mainScript != null)
-                                mainScript.ParentNode.InsertBefore(proxyScript, mainScript);
+                                // 2. Script tag
+                                var scriptTag = doc.CreateElement("script");
+                                scriptTag.SetAttributeValue("src", scriptUrl);
+                                scriptTag.SetAttributeValue("defer", "defer");
+                                head.AppendChild(scriptTag);
+
+                                _logger.LogInformation("✅ Injected script '{Path}' with hash {Hash}", scriptPath, scriptHash);
+                            }
                             else
-                                body.AppendChild(proxyScript);
+                            {
+                                _logger.LogWarning("⚠️ Custom script file not found. Looked for: {Path}", scriptPath);
+                            }
                         }
 
                         var modifiedHtml = doc.DocumentNode.OuterHtml;
@@ -402,41 +406,62 @@ namespace Api.Controllers
 
         [HttpGet]
         [Route("script.js")]
-        public IActionResult GetEncodedScript()
+        public async Task<IActionResult> GetScript()
         {
-            // Ваш основной скрипт (с русскими символами)
-            var jsCode = "alert('Привет, мир!');";
-            // ВАЖНО: Используем UTF8 БЕЗ BOM
-            var bytes = new UTF8Encoding(false).GetBytes(jsCode);
-            var base64 = Convert.ToBase64String(bytes);
+            var (filePath, _) = GetScriptPathAndHash();
 
-            // Разбиваем на части
-            var chunkSize = 100;
-            var chunks = new List<string>();
-            for (int i = 0; i < base64.Length; i += chunkSize)
+            if (filePath == null || !System.IO.File.Exists(filePath))
             {
-                chunks.Add(base64.Substring(i, Math.Min(chunkSize, base64.Length - i)));
+                _logger.LogWarning("Custom script not found at path: {Path}", filePath ?? "path not resolved");
+                return NotFound("Script not found.");
             }
 
-            // Оборачиваем в дешифратор
-            var chunksJson = System.Text.Json.JsonSerializer.Serialize(chunks);
-            var wrapped = $@"
-(function() {{
-    const _parts = {chunksJson};
-    const _encoded = _parts.join('');
-    const _decoded = decodeURIComponent(escape(atob(_encoded)));
-    eval(_decoded);
-}})();
-";
+            var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+            var etag = $"\"{Convert.ToHexString(SHA256.HashData(fileBytes))}\"";
 
-            Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
-            Response.Headers.Append("Pragma", "no-cache");
-            Response.Headers.Append("Expires", "0");
-            Response.Headers.Append("Content-Type", "application/javascript; charset=utf-8");
+            // Проверяем заголовок If-None-Match для кэширования на стороне клиента
+            if (Request.Headers.IfNoneMatch.Any(h => h == etag))
+            {
+                _logger.LogInformation("✅ Script returned 304 Not Modified (ETag match)");
+                return StatusCode(304);
+            }
 
-            _logger.LogInformation("✅ Encoded script returned. Base64 size: {Size} bytes", base64.Length);
+            Response.Headers.ETag = etag;
+            // Кэшируем на 1 год, так как версионирование по хешу
+            Response.Headers.CacheControl = "public, max-age=31536000, immutable";
 
-            return Content(wrapped, "application/javascript; charset=utf-8");
+            var fileName = Path.GetFileName(filePath);
+            _logger.LogInformation("✅ Serving script '{File}'. Size: {Size} bytes, ETag: {ETag}", fileName, fileBytes.Length, etag);
+
+            return Content(Encoding.UTF8.GetString(fileBytes), "application/javascript; charset=utf-8");
+        }
+
+        private (string? path, string? hash) GetScriptPathAndHash()
+        {
+            var webRoot = _env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+            var obfPath = Path.Combine(webRoot, "proxy", "script.obf.js");
+            var plainPath = Path.Combine(webRoot, "proxy", "script.js");
+
+            string? filePath = null;
+            if (System.IO.File.Exists(obfPath))
+            {
+                filePath = obfPath;
+            }
+            else if (System.IO.File.Exists(plainPath))
+            {
+                filePath = plainPath;
+            }
+
+            if (filePath == null)
+            {
+                return (null, null);
+            }
+
+            using var stream = System.IO.File.OpenRead(filePath);
+            var hashBytes = SHA256.HashData(stream);
+            var hashString = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+
+            return (filePath, hashString);
         }
 
         private void RewriteRelativeUrls(HtmlDocument doc)
