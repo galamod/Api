@@ -519,7 +519,6 @@
             document.addEventListener('keydown', function (event) {
                 if (event.ctrlKey && event.altKey && event.key === 'p') {
                     isPaused = !isPaused;
-                    controlButton.innerText = isPaused ? '▶️' : '⏸️';
                     console.log(isPaused ? 'Script paused via Ctrl+P' : 'Script resumed via Ctrl+P');
                     console.log('log', { message: isPaused ? 'Script paused via Ctrl+P' : 'Script resumed via Ctrl+P' });
                 }
