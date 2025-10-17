@@ -1839,23 +1839,17 @@ namespace Api.Controllers
 
         private string InjectScriptRandomly(string originalJs, string scriptToInject)
         {
-            // Ищем безопасные места для внедрения:
-            // - Точка с запятой (;) в конце выражения.
-            // - Закрывающая фигурная скобка (}) в конце блока, за которой не следует другой символ, кроме пробела или новой строки.
-            // Это позволяет работать даже с минифицированным кодом.
+            // Ищем безопасные места для внедрения: конец строки после точки с запятой,
+            // или между закрывающими и открывающими фигурными скобками (конец функции/блока).
             var injectionPoints = new List<int>();
-            // Regex: Ищет ; или }, за которыми следует пробел, конец строки или конец файла.
-            // Позитивный просмотр вперед (?=...) гарантирует, что мы не потребляем символы следующего оператора.
-            var regex = new Regex(@";(?=\s|$)|\}(?=\s|$|;|\))", RegexOptions.Multiline);
+            var regex = new Regex(@";\s*[\r\n]|\}\s*[\r\n]+\s*(var|let|const|function|if|\(|\{|\[)");
 
-            // Создаем "безопасную" версию JS, заменяя строки и комментарии пробелами,
-            // чтобы случайно не вставить код внутрь них.
-            var safeSearchArea = Regex.Replace(originalJs, @"(""(?:\\.|[^""])*""|'(?:\\.|[^'])*'|`(?:\\.|[^`])*`|\/\/.*|\/\*(?:.|\n)*?\*\/)", m => new string(' ', m.Length));
+            // Не ищем точки для внедрения в строковых литералах или комментариях
+            var safeSearchArea = Regex.Replace(originalJs, @"("".*?""|'.*?'|`.`|//.*|/\*.*?\*/)", m => new string(' ', m.Length));
 
             var matches = regex.Matches(safeSearchArea);
             foreach (Match match in matches)
             {
-                // Добавляем позицию сразу после найденного символа (';' или '}')
                 injectionPoints.Add(match.Index + 1);
             }
 
@@ -1863,12 +1857,11 @@ namespace Api.Controllers
             {
                 var random = new Random();
                 var index = injectionPoints[random.Next(injectionPoints.Count)];
-                // Вставляем наш скрипт с переносами строк для читаемости при отладке.
                 return originalJs.Insert(index, "\n" + scriptToInject + "\n");
             }
             else
             {
-                // Если безопасных точек не найдено (очень маловероятно), добавляем в конец.
+                // Если не найдено безопасных точек, добавляем в конец, как и раньше.
                 return originalJs + scriptToInject;
             }
         }
