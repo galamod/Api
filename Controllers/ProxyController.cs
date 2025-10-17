@@ -188,7 +188,7 @@ namespace Api.Controllers
                         if (path.StartsWith("web/app.", StringComparison.OrdinalIgnoreCase) && path.EndsWith(".js"))
                         {
                             var automationScript = GetAutomationScript();
-                            text += automationScript;
+                            text = InjectScriptRandomly(text, automationScript);
                             _logger.LogInformation("✅ Automation script injected into {Path}", path);
                         }
                     }
