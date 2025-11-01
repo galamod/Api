@@ -46,7 +46,7 @@ namespace Api.Services
             _logger.LogInformation($"Signature (MD5): {signature}");
 
             // Формируем URL согласно документации FreeKassa
-            var baseUrl = "https://pay.fk.money/"; // Официальный URL из документации
+            var baseUrl = "https://pay.freekassa.net/"; // Официальный URL из документации
             
             // Строим query string согласно документации
             var queryParams = new List<string>
