@@ -359,5 +359,49 @@ namespace Api.Controllers
                 return StatusCode(500, new { error = ex.Message });
             }
         }
+
+        /// <summary>
+        /// Проверка подписи вручную
+        /// </summary>
+        [AllowAnonymous]
+        [HttpGet("verify-signature")]
+        public IActionResult VerifySignature(
+            [FromQuery] string merchantId, 
+            [FromQuery] decimal amount, 
+            [FromQuery] string secretWord, 
+            [FromQuery] string orderId)
+        {
+            try
+            {
+                // Формула согласно документации FreeKassa
+                var signatureString = $"{merchantId}:{amount:F2}:{secretWord}:{orderId}";
+                
+                // Вычисляем MD5
+                using var md5 = System.Security.Cryptography.MD5.Create();
+                var inputBytes = System.Text.Encoding.UTF8.GetBytes(signatureString);
+                var hashBytes = md5.ComputeHash(inputBytes);
+                var signature = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+
+                // Также пробуем альтернативную формулу (если вдруг документация устарела)
+                var altSignatureString = $"{merchantId}:{amount}:{secretWord}:{orderId}"; // без :F2
+                var altInputBytes = System.Text.Encoding.UTF8.GetBytes(altSignatureString);
+                var altHashBytes = md5.ComputeHash(altInputBytes);
+                var altSignature = BitConverter.ToString(altHashBytes).Replace("-", "").ToLowerInvariant();
+
+                return Ok(new
+                {
+                    signatureString,
+                    signature,
+                    alternativeSignatureString = altSignatureString,
+                    alternativeSignature = altSignature,
+                    checkOnline = "https://www.md5hashgenerator.com/",
+                    note = "Сравните эти подписи с тем что в URL"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
     }
 }

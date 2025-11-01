@@ -31,11 +31,19 @@ namespace Api.Services
                 throw new InvalidOperationException("FreeKassa credentials are not configured");
             }
 
-            // Генерируем подпись: MD5(shopId:amount:secret_word_1:order_id)
+            // Генерируем подпись согласно документации FreeKassa
+            // Формула: MD5(m:oa:secret_word_1:o)
+            // где m - ID магазина, oa - сумма, secret_word_1 - секретное слово, o - номер заказа
             var signatureString = $"{merchantId}:{amount:F2}:{secretWord1}:{orderId}";
             var signature = ComputeMD5(signatureString);
 
-            _logger.LogInformation($"Generating payment URL for order {orderId}. Signature string: {signatureString}");
+            _logger.LogInformation($"=== FreeKassa Payment URL Generation ===");
+            _logger.LogInformation($"Order ID: {orderId}");
+            _logger.LogInformation($"Merchant ID: {merchantId}");
+            _logger.LogInformation($"Amount: {amount:F2}");
+            _logger.LogInformation($"Secret Word 1 (first 4 chars): {(secretWord1?.Length >= 4 ? secretWord1.Substring(0, 4) : secretWord1)}***");
+            _logger.LogInformation($"Signature string: {signatureString}");
+            _logger.LogInformation($"Signature (MD5): {signature}");
 
             // Формируем URL согласно документации FreeKassa
             var baseUrl = "https://pay.fk.money/"; // Официальный URL из документации
@@ -69,6 +77,7 @@ namespace Api.Services
             var paymentUrl = $"{baseUrl}?{queryString}";
 
             _logger.LogInformation($"Generated payment URL: {paymentUrl}");
+            _logger.LogInformation($"===================================");
 
             return paymentUrl;
         }
