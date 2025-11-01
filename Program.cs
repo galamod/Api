@@ -3,21 +3,21 @@ using Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Добавьте эту строку для регистрации IHttpClientFactory
 builder.Services.AddHttpClient("GalaxyClient", client =>
 {
     client.Timeout = TimeSpan.FromSeconds(30);
 })
 .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
 {
-    AutomaticDecompression = System.Net.DecompressionMethods.All, // Поддержка gzip/deflate/br
+    AutomaticDecompression = DecompressionMethods.All,
     UseCookies = true,
-    CookieContainer = new System.Net.CookieContainer()
+    CookieContainer = new CookieContainer()
 });
 
 string[] allowedOrigins =
@@ -30,6 +30,10 @@ string[] allowedOrigins =
 
 builder.Services.AddSingleton<IConnectionManager, ConnectionManager>();
 
+// Регистрация сервисов FreeKassa и License
+builder.Services.AddScoped<IFreeKassaService, FreeKassaService>();
+builder.Services.AddScoped<ILicenseService, LicenseService>();
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -39,7 +43,7 @@ builder.Services.AddCors(options =>
             .AllowAnyOrigin()
             .AllowAnyHeader()
             .AllowAnyMethod()
-/*            .AllowCredentials()*/;
+            .AllowCredentials();
     });
 });
 
