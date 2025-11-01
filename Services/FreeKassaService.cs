@@ -37,27 +37,35 @@ namespace Api.Services
 
             _logger.LogInformation($"Generating payment URL for order {orderId}. Signature string: {signatureString}");
 
-            // Формируем URL
-            var baseUrl = "https://pay.freekassa.net/";
-            var parameters = new Dictionary<string, string>
+            // Формируем URL согласно документации FreeKassa
+            var baseUrl = "https://pay.fk.money/"; // Официальный URL из документации
+            
+            // Строим query string согласно документации
+            var queryParams = new List<string>
             {
-                ["m"] = merchantId,
-                ["oa"] = amount.ToString("F2"),
-                ["o"] = orderId,
-                ["s"] = signature,
-                ["em"] = email,
-                ["lang"] = "ru"
+                $"m={merchantId}",        // ID магазина
+                $"oa={amount:F2}",        // Сумма заказа
+                $"o={orderId}",           // ID заказа
+                $"s={signature}",         // Подпись
+                "currency=RUB"            // Валюта (обязательный параметр!)
             };
 
-            // Добавляем description если есть
-            if (!string.IsNullOrEmpty(description))
+            // Email опционален
+            if (!string.IsNullOrEmpty(email) && email.Contains("@"))
             {
-                parameters["us_order_desc"] = description;
+                queryParams.Add($"em={HttpUtility.UrlEncode(email)}");
             }
 
-            var queryString = string.Join("&", parameters.Select(kvp => 
-                $"{kvp.Key}={HttpUtility.UrlEncode(kvp.Value)}"));
+            // Язык интерфейса
+            queryParams.Add("lang=ru");
 
+            // Описание заказа (опционально)
+            if (!string.IsNullOrEmpty(description))
+            {
+                queryParams.Add($"us_order_desc={HttpUtility.UrlEncode(description)}");
+            }
+
+            var queryString = string.Join("&", queryParams);
             var paymentUrl = $"{baseUrl}?{queryString}";
 
             _logger.LogInformation($"Generated payment URL: {paymentUrl}");

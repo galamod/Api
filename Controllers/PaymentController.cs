@@ -56,7 +56,10 @@ namespace Api.Controllers
                     return NotFound("User not found");
                 }
 
-                var userEmail = user.Username + "@example.com"; // Используем username как основу для email
+                // Формируем email - используем username как email или создаём валидный email
+                var userEmail = user.Username.Contains("@") 
+                    ? user.Username 
+                    : $"{user.Username}@user.local"; // Более валидный формат
 
                 // Генерируем уникальный ID заказа
                 var orderId = $"ORDER_{Guid.NewGuid():N}";
@@ -295,6 +298,65 @@ namespace Api.Controllers
             {
                 _logger.LogError(ex, "Error getting all payments");
                 return StatusCode(500, new { message = "Ошибка при получении списка платежей" });
+            }
+        }
+
+        /// <summary>
+        /// Проверка конфигурации FreeKassa (для отладки)
+        /// </summary>
+        [AllowAnonymous]
+        [HttpGet("test-config")]
+        public IActionResult TestConfig()
+        {
+            var merchantId = _configuration["FreeKassa:MerchantId"];
+            var hasSecret1 = !string.IsNullOrEmpty(_configuration["FreeKassa:SecretWord1"]);
+            var hasSecret2 = !string.IsNullOrEmpty(_configuration["FreeKassa:SecretWord2"]);
+
+            return Ok(new
+            {
+                merchantId = merchantId,
+                hasSecretWord1 = hasSecret1,
+                hasSecretWord2 = hasSecret2,
+                configurationValid = !string.IsNullOrEmpty(merchantId) && hasSecret1 && hasSecret2
+            });
+        }
+
+        /// <summary>
+        /// Тестовая генерация URL для проверки (БЕЗ сохранения в БД)
+        /// </summary>
+        [AllowAnonymous]
+        [HttpGet("test-url")]
+        public IActionResult TestUrl([FromQuery] decimal amount = 100)
+        {
+            try
+            {
+                var testOrderId = $"TEST_{Guid.NewGuid():N}";
+                var testEmail = "test@example.com";
+                var testDescription = "Test Payment";
+
+                var paymentUrl = _freeKassaService.GeneratePaymentUrl(
+                    testOrderId,
+                    amount,
+                    testEmail,
+                    testDescription
+                );
+
+                var merchantId = _configuration["FreeKassa:MerchantId"];
+                var secretWord1 = _configuration["FreeKassa:SecretWord1"];
+                var signatureString = $"{merchantId}:{amount:F2}:{secretWord1}:{testOrderId}";
+
+                return Ok(new
+                {
+                    paymentUrl,
+                    testOrderId,
+                    amount,
+                    signatureString,
+                    note = "Это тестовый URL. Платёж НЕ сохранён в БД."
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
             }
         }
     }
