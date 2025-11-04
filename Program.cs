@@ -44,6 +44,7 @@ builder.Services.AddScoped<IFreeKassaPaymentService, FreeKassaPaymentService>();
 
 // Регистрация сервиса License
 builder.Services.AddScoped<ILicenseService, LicenseService>();
+builder.Services.AddHostedService<PaymentCheckBackgroundService>();
 
 builder.Services.AddCors(options =>
 {
