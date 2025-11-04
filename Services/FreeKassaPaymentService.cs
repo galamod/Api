@@ -1,4 +1,4 @@
-using System.Globalization;
+п»їusing System.Globalization;
 using System.Web;
 using System.Security.Cryptography;
 using System.Text;
@@ -7,7 +7,7 @@ using Api.FreeKassa;
 namespace Api.Services
 {
     /// <summary>
-    /// Расширенный сервис для работы с FreeKassa с поддержкой всех параметров
+    /// Р Р°СЃС€РёСЂРµРЅРЅС‹Р№ СЃРµСЂРІРёСЃ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ FreeKassa СЃ РїРѕРґРґРµСЂР¶РєРѕР№ РІСЃРµС… РїР°СЂР°РјРµС‚СЂРѕРІ
     /// </summary>
     public interface IFreeKassaPaymentService
     {
@@ -31,15 +31,7 @@ namespace Api.Services
             _logger = logger;
         }
 
-        private string MaskSecret(string? secret)
-        {
-            if (string.IsNullOrEmpty(secret) || secret.Length < 4)
-                return "***";
-            
-            return $"{secret.Substring(0, 2)}...{secret.Substring(secret.Length - 2)}";
-        }
-
-        // Альтернативный MD5 в нижнем регистре
+        // РђР»СЊС‚РµСЂРЅР°С‚РёРІРЅС‹Р№ MD5 РІ РЅРёР¶РЅРµРј СЂРµРіРёСЃС‚СЂРµ
         private string ComputeMD5Lower(string input)
         {
             using var md5 = MD5.Create();
@@ -55,15 +47,15 @@ namespace Api.Services
 
         public string GeneratePaymentUrl(string orderId, decimal amount, string? email = null, string? description = null)
         {
-            // Используем актуальный URL FreeKassa
+            // РСЃРїРѕР»СЊР·СѓРµРј Р°РєС‚СѓР°Р»СЊРЅС‹Р№ URL FreeKassa
             const string baseUrl = "https://pay.freekassa.net/";
             
             var currency = _configuration["FreeKassa:Currency"] ?? "RUB";
             
-            // Форматируем сумму с двумя знаками после запятой
+            // Р¤РѕСЂРјР°С‚РёСЂСѓРµРј СЃСѓРјРјСѓ СЃ РґРІСѓРјСЏ Р·РЅР°РєР°РјРё РїРѕСЃР»Рµ Р·Р°РїСЏС‚РѕР№
             var amountStr = amount.ToString("F2", CultureInfo.InvariantCulture);
 
-            // Получаем секрет напрямую из конфигурации
+            // РџРѕР»СѓС‡Р°РµРј СЃРµРєСЂРµС‚ РЅР°РїСЂСЏРјСѓСЋ РёР· РєРѕРЅС„РёРіСѓСЂР°С†РёРё
             var secret1Raw = _configuration["FreeKassa:SecretWord1"] ?? _options.Secret1;
 
             _logger.LogInformation("=== FreeKassa Payment URL Generation ===");
@@ -71,26 +63,16 @@ namespace Api.Services
             _logger.LogInformation("Amount: {Amount}", amountStr);
             _logger.LogInformation("Currency: {Currency}", currency);
             _logger.LogInformation("Order ID: {OrderId}", orderId);
-            _logger.LogInformation("Secret1 (masked): {Secret}", MaskSecret(secret1Raw));
-            _logger.LogInformation("Secret1 length: {Length}", secret1Raw?.Length ?? 0);
 
-            // Основная формула согласно документации: MD5(shopId:amount:secret:order_id)
-            var signatureString = $"{_options.MerchantId}:{amountStr}:{secret1Raw}:{orderId}";
-            
-            // Генерируем в обоих регистрах
-            var signatureUpper = MD5Helper.Create(signatureString); // Верхний регистр (X2)
-            var signatureLower = ComputeMD5Lower(signatureString);  // Нижний регистр (x2)
+            // вњ… РџР РђР’РР›Р¬РќРђРЇ Р¤РћР РњРЈР›Рђ: MD5(m:oa:secret:currency:o) РІ lowercase
+            var signatureString = $"{_options.MerchantId}:{amountStr}:{secret1Raw}:{currency}:{orderId}";
+            var signature = ComputeMD5Lower(signatureString);
 
+            _logger.LogInformation("Signature formula: m:oa:secret:currency:o");
             _logger.LogInformation("Signature string: {Str}", signatureString);
-            _logger.LogInformation("MD5 (UPPERCASE): {Sig}", signatureUpper);
-            _logger.LogInformation("MD5 (lowercase): {Sig}", signatureLower);
+            _logger.LogInformation("MD5 (lowercase): {Sig}", signature);
 
-            // По умолчанию используем нижний регистр (более распространённый)
-            var signature = signatureLower;
-
-            _logger.LogInformation("Using lowercase MD5 by default");
-
-            // Формируем параметры запроса
+            // Р¤РѕСЂРјРёСЂСѓРµРј РїР°СЂР°РјРµС‚СЂС‹ Р·Р°РїСЂРѕСЃР°
             var queryParams = new List<string>
             {
                 $"m={_options.MerchantId}",
@@ -100,7 +82,7 @@ namespace Api.Services
                 $"currency={currency}"
             };
 
-            // Добавляем опциональные параметры
+            // Р”РѕР±Р°РІР»СЏРµРј РѕРїС†РёРѕРЅР°Р»СЊРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹
             if (!string.IsNullOrEmpty(email) && email.Contains("@"))
             {
                 queryParams.Add($"em={HttpUtility.UrlEncode(email)}");
@@ -117,67 +99,38 @@ namespace Api.Services
             var paymentUrl = $"{baseUrl}?{queryString}";
 
             _logger.LogInformation("Generated payment URL: {Url}", paymentUrl);
-            
-            // Генерируем тестовые URL для обоих регистров
-            var urlLower = $"{baseUrl}?m={_options.MerchantId}&oa={amountStr}&o={orderId}&s={signatureLower}&currency={currency}";
-            var urlUpper = $"{baseUrl}?m={_options.MerchantId}&oa={amountStr}&o={orderId}&s={signatureUpper}&currency={currency}";
-            
-            _logger.LogWarning("==================================.");
-            _logger.LogWarning("?? CRITICAL: Try BOTH URLs (lowercase vs UPPERCASE MD5):");
-            _logger.LogWarning("URL with lowercase MD5: {Url}", urlLower);
-            _logger.LogWarning("URL with UPPERCASE MD5: {Url}", urlUpper);
-            _logger.LogWarning("===================================");
-
-            // Также генерируем варианты с другими формулами
-            var sig2String = $"{_options.MerchantId}:{amountStr}:{secret1Raw}:{currency}:{orderId}";
-            var sig2Lower = ComputeMD5Lower(sig2String);
-            var sig2Upper = MD5Helper.Create(sig2String);
-
-            var url2Lower = $"{baseUrl}?m={_options.MerchantId}&oa={amountStr}&o={orderId}&s={sig2Lower}&currency={currency}";
-            var url2Upper = $"{baseUrl}?m={_options.MerchantId}&oa={amountStr}&o={orderId}&s={sig2Upper}&currency={currency}";
-
-            _logger.LogWarning("Alternative formula with currency:");
-            _logger.LogWarning("URL with lowercase MD5 (formula 2): {Url}", url2Lower);
-            _logger.LogWarning("URL with UPPERCASE MD5 (formula 2): {Url}", url2Upper);
-            _logger.LogWarning("===================================");
+            _logger.LogInformation("вњ… Using WORKING formula: m:oa:secret:currency:o (lowercase MD5)");
+            _logger.LogInformation("===================================");
 
             return paymentUrl;
         }
 
         public bool VerifyWebhookSignature(string merchantId, string amount, string orderId, string sign)
         {
-            // Получаем секрет напрямую из конфигурации
+            // РџРѕР»СѓС‡Р°РµРј СЃРµРєСЂРµС‚ РЅР°РїСЂСЏРјСѓСЋ РёР· РєРѕРЅС„РёРіСѓСЂР°С†РёРё
             var secret2Raw = _configuration["FreeKassa:SecretWord2"] ?? _options.Secret2;
+            var currency = _configuration["FreeKassa:Currency"] ?? "RUB";
 
             _logger.LogInformation("=== FreeKassa Webhook Signature Verification ===");
             _logger.LogInformation("Order ID: {OrderId}", orderId);
             _logger.LogInformation("Merchant ID: {MerchantId}", merchantId);
             _logger.LogInformation("Amount: {Amount}", amount);
-            _logger.LogInformation("Secret2 (masked): {Secret}", MaskSecret(secret2Raw));
             _logger.LogInformation("Received signature: {Received}", sign);
 
-            // Пробуем основную формулу в обоих регистрах
-            var signatureString = $"{merchantId}:{amount}:{secret2Raw}:{orderId}";
-            
-            var sigUpper = MD5Helper.Create(signatureString);
-            var sigLower = ComputeMD5Lower(signatureString);
+            // вњ… РСЃРїРѕР»СЊР·СѓРµРј РїСЂР°РІРёР»СЊРЅСѓСЋ С„РѕСЂРјСѓР»Сѓ: m:oa:secret:currency:o (lowercase)
+            var signatureString = $"{merchantId}:{amount}:{secret2Raw}:{currency}:{orderId}";
+            var expectedSignature = ComputeMD5Lower(signatureString);
 
-            _logger.LogInformation("Expected signature (UPPERCASE): {Sig}", sigUpper);
-            _logger.LogInformation("Expected signature (lowercase): {Sig}", sigLower);
+            _logger.LogInformation("Expected signature formula: m:oa:secret2:currency:o");
+            _logger.LogInformation("Expected signature (lowercase): {Sig}", expectedSignature);
 
-            // Также пробуем с currency
-            var currency = _configuration["FreeKassa:Currency"] ?? "RUB";
-            var sig2String = $"{merchantId}:{amount}:{secret2Raw}:{currency}:{orderId}";
-            var sig2Upper = MD5Helper.Create(sig2String);
-            var sig2Lower = ComputeMD5Lower(sig2String);
+            // РўР°РєР¶Рµ РїСЂРѕРІРµСЂСЏРµРј РІР°СЂРёР°РЅС‚ Р±РµР· currency (РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№)
+            var signatureStringAlt = $"{merchantId}:{amount}:{secret2Raw}:{orderId}";
+            var expectedSignatureAlt = ComputeMD5Lower(signatureStringAlt);
+            _logger.LogInformation("Alternative expected (without currency): {Sig}", expectedSignatureAlt);
 
-            _logger.LogInformation("Expected signature with currency (UPPERCASE): {Sig}", sig2Upper);
-            _logger.LogInformation("Expected signature with currency (lowercase): {Sig}", sig2Lower);
-
-            var isValid = string.Equals(sigUpper, sign, StringComparison.OrdinalIgnoreCase) ||
-                         string.Equals(sigLower, sign, StringComparison.OrdinalIgnoreCase) ||
-                         string.Equals(sig2Upper, sign, StringComparison.OrdinalIgnoreCase) ||
-                         string.Equals(sig2Lower, sign, StringComparison.OrdinalIgnoreCase);
+            var isValid = string.Equals(expectedSignature, sign, StringComparison.OrdinalIgnoreCase) ||
+                         string.Equals(expectedSignatureAlt, sign, StringComparison.OrdinalIgnoreCase);
             
             _logger.LogInformation("Signature valid: {IsValid}", isValid);
             _logger.LogInformation("===================================");
