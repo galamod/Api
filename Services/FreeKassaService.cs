@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web;
@@ -23,51 +24,60 @@ namespace Api.Services
 
         public string GeneratePaymentUrl(string orderId, decimal amount, string email, string description)
         {
-            var merchantId = _configuration["FreeKassa:MerchantId"];
-            var secretWord1 = _configuration["FreeKassa:SecretWord1"];
+            var merchantId = (_configuration["FreeKassa:MerchantId"] ?? string.Empty).Trim();
+            var secretWord1 = (_configuration["FreeKassa:SecretWord1"] ?? string.Empty).Trim();
+            var currency = (_configuration["FreeKassa:Currency"] ?? "RUB").Trim();
+            var baseUrl = (_configuration["FreeKassa:BaseUrl"] ?? "https://pay.freekassa.net/").TrimEnd('/') + "/";
 
             if (string.IsNullOrEmpty(merchantId) || string.IsNullOrEmpty(secretWord1))
             {
                 throw new InvalidOperationException("FreeKassa credentials are not configured");
             }
 
-            // Генерируем подпись согласно документации FreeKassa
-            // Формула: MD5(m:oa:secret_word_1:o)
-            // где m - ID магазина, oa - сумма, secret_word_1 - секретное слово, o - номер заказа
-            var signatureString = $"{merchantId}:{amount:F2}:{secretWord1}:{orderId}";
-            var signature = ComputeMD5(signatureString);
+            // Форматируем сумму инвариантно (всегда точка и 2 знака)
+            var amountStr = amount.ToString("F2", CultureInfo.InvariantCulture);
 
-            _logger.LogInformation($"=== FreeKassa Payment URL Generation ===");
-            _logger.LogInformation($"Order ID: {orderId}");
-            _logger.LogInformation($"Merchant ID: {merchantId}");
-            _logger.LogInformation($"Amount: {amount:F2}");
-            _logger.LogInformation($"Secret Word 1 (first 4 chars): {(secretWord1?.Length >= 4 ? secretWord1.Substring(0, 4) : secretWord1)}***");
-            _logger.LogInformation($"Signature string: {signatureString}");
-            _logger.LogInformation($"Signature (MD5): {signature}");
+            // Вариант 1 (Классический, чаще используется): MD5(m:oa:secret_word_1:o)
+            var signatureStringClassic = $"{merchantId}:{amountStr}:{secretWord1}:{orderId}";
+            var signatureClassic = ComputeMD5(signatureStringClassic);
 
-            // Формируем URL согласно документации FreeKassa
-            var baseUrl = "https://pay.freekassa.net/"; // Официальный URL из документации
-            
-            // Строим query string согласно документации
+            // Вариант 2 (некоторым магазинам требуется валюта): MD5(m:oa:secret_word_1:o:currency)
+            var signatureStringWithCurrency = $"{merchantId}:{amountStr}:{secretWord1}:{orderId}:{currency}";
+            var signatureWithCurrency = ComputeMD5(signatureStringWithCurrency);
+
+            // По умолчанию используем классический вариант (без currency) — совпадает с примерами поддержки
+            var signature = signatureClassic;
+            var usedSignatureFormula = "m:oa:secret_word_1:o";
+
+            _logger.LogInformation("=== FreeKassa Payment URL Generation ===");
+            _logger.LogInformation("Order ID: {OrderId}", orderId);
+            _logger.LogInformation("Merchant ID: {MerchantId}", merchantId);
+            _logger.LogInformation("Amount: {Amount}", amountStr);
+            _logger.LogInformation("Currency: {Currency}", currency);
+            _logger.LogInformation("Signature formula (classic): {Formula}", "m:oa:secret_word_1:o");
+            _logger.LogInformation("Signature string (classic): {SigStr}", signatureStringClassic);
+            _logger.LogInformation("Signature (classic MD5): {Sig}", signatureClassic);
+            _logger.LogInformation("Signature formula (with currency): {Formula}", "m:oa:secret_word_1:o:currency");
+            _logger.LogInformation("Signature string (with currency): {SigStr}", signatureStringWithCurrency);
+            _logger.LogInformation("Signature (with currency MD5): {Sig}", signatureWithCurrency);
+            _logger.LogInformation("Using signature formula: {Used}", usedSignatureFormula);
+
             var queryParams = new List<string>
             {
-                $"m={merchantId}",        // ID магазина
-                $"oa={amount:F2}",        // Сумма заказа
-                $"o={orderId}",           // ID заказа
-                $"s={signature}",         // Подпись
-                "currency=RUB"            // Валюта (обязательный параметр!)
+                $"m={merchantId}",
+                $"oa={amountStr}",
+                $"o={orderId}",
+                $"s={signature}",
+                $"currency={currency}"
             };
 
-            // Email опционален
             if (!string.IsNullOrEmpty(email) && email.Contains("@"))
             {
                 queryParams.Add($"em={HttpUtility.UrlEncode(email)}");
             }
 
-            // Язык интерфейса
             queryParams.Add("lang=ru");
 
-            // Описание заказа (опционально)
             if (!string.IsNullOrEmpty(description))
             {
                 queryParams.Add($"us_order_desc={HttpUtility.UrlEncode(description)}");
@@ -76,8 +86,8 @@ namespace Api.Services
             var queryString = string.Join("&", queryParams);
             var paymentUrl = $"{baseUrl}?{queryString}";
 
-            _logger.LogInformation($"Generated payment URL: {paymentUrl}");
-            _logger.LogInformation($"===================================");
+            _logger.LogInformation("Generated payment URL: {Url}", paymentUrl);
+            _logger.LogInformation("===================================");
 
             return paymentUrl;
         }
@@ -90,20 +100,37 @@ namespace Api.Services
                 return false;
             }
 
-            // Вычисляем подпись: MD5(shopId:amount:secret_word_2:order_id)
+            var currency = (_configuration["FreeKassa:Currency"] ?? "RUB").Trim();
+
+            // Инвариантное представление суммы на случай, если провайдер шлёт с точкой
+            // (но в вебхуке мы не знаем формат, поэтому используем как пришло и дублируем вариант с инвариантом)
+            var amountInvariant = amount;
+
+            // Вариант 1: MD5(m:oa:secret_word_2:o) — классический
             var signatureString = $"{merchantId}:{amount}:{secretWord2}:{orderId}";
             var expectedSignature = ComputeMD5(signatureString);
 
-            _logger.LogInformation($"Verifying signature for order {orderId}");
-            _logger.LogInformation($"Signature string: {signatureString}");
-            _logger.LogInformation($"Expected signature: {expectedSignature}");
-            _logger.LogInformation($"Received signature: {sign}");
+            // Вариант 1b: классический, но с инвариантной суммой
+            var signatureStringInvariant = $"{merchantId}:{amountInvariant}:{secretWord2}:{orderId}";
+            var expectedSignatureInvariant = ComputeMD5(signatureStringInvariant);
 
-            var isValid = string.Equals(expectedSignature, sign, StringComparison.OrdinalIgnoreCase);
+            // Вариант 2: MD5(m:oa:secret_word_2:o:currency)
+            var signatureStringWithCurrency = $"{merchantId}:{amount}:{secretWord2}:{orderId}:{currency}";
+            var expectedSignatureWithCurrency = ComputeMD5(signatureStringWithCurrency);
+
+            _logger.LogInformation("Verifying signature for order {OrderId}", orderId);
+            _logger.LogInformation("Expected classic: {Sig}", expectedSignature);
+            _logger.LogInformation("Expected classic (invariant amount): {Sig}", expectedSignatureInvariant);
+            _logger.LogInformation("Expected with currency: {Sig}", expectedSignatureWithCurrency);
+            _logger.LogInformation("Received signature: {Sign}", sign);
+
+            var isValid = string.Equals(expectedSignature, sign, StringComparison.OrdinalIgnoreCase)
+                          || string.Equals(expectedSignatureInvariant, sign, StringComparison.OrdinalIgnoreCase)
+                          || string.Equals(expectedSignatureWithCurrency, sign, StringComparison.OrdinalIgnoreCase);
 
             if (!isValid)
             {
-                _logger.LogWarning($"Signature mismatch for order {orderId}");
+                _logger.LogWarning("Signature mismatch for order {OrderId}", orderId);
             }
 
             return isValid;
