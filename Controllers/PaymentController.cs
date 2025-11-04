@@ -12,20 +12,20 @@ namespace Api.Controllers
     [Route("api/[controller]")]
     public class PaymentController : ControllerBase
     {
-        private readonly IFreeKassaService _freeKassaService;
+        private readonly IFreeKassaPaymentService _freeKassaPaymentService;
         private readonly ILicenseService _licenseService;
         private readonly AppDbContext _context;
         private readonly ILogger<PaymentController> _logger;
         private readonly IConfiguration _configuration;
 
         public PaymentController(
-            IFreeKassaService freeKassaService,
+            IFreeKassaPaymentService freeKassaPaymentService,
             ILicenseService licenseService,
             AppDbContext context,
             ILogger<PaymentController> logger,
             IConfiguration configuration)
         {
-            _freeKassaService = freeKassaService;
+            _freeKassaPaymentService = freeKassaPaymentService;
             _licenseService = licenseService;
             _context = context;
             _logger = logger;
@@ -57,6 +57,11 @@ namespace Api.Controllers
                     return NotFound("User not found");
                 }
 
+                // Формируем email
+                var userEmail = user.Username.Contains("@") 
+                    ? user.Username 
+                    : $"{user.Username}@user.local";
+
                 // Генерируем уникальный ID заказа
                 var orderId = $"ORDER_{Guid.NewGuid():N}";
 
@@ -75,11 +80,14 @@ namespace Api.Controllers
                 _context.Payments.Add(payment);
                 await _context.SaveChangesAsync();
 
-                // Получаем валюту из конфигурации
-                var currency = _configuration["FreeKassa:Currency"] ?? "RUB";
-
-                // Генерируем URL для оплаты используя официальный сервис FreeKassa
-                var paymentUrl = _freeKassaService.GetPayLink(orderId, request.Amount, currency);
+                // Генерируем URL для оплаты с полными параметрами
+                var description = $"{request.ApplicationName} - Plan {request.PlanIndex}";
+                var paymentUrl = _freeKassaPaymentService.GeneratePaymentUrl(
+                    orderId, 
+                    request.Amount, 
+                    userEmail, 
+                    description
+                );
 
                 _logger.LogInformation($"Created payment {orderId} for user {userId}, app: {request.ApplicationName}, plan: {request.PlanIndex}, amount: {request.Amount}");
 
@@ -125,20 +133,10 @@ namespace Api.Controllers
                     return Ok("YES");
                 }
 
-                // Парсим сумму
-                if (!decimal.TryParse(AMOUNT, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var amount))
+                // Проверяем подпись используя новый сервис
+                if (!_freeKassaPaymentService.VerifyWebhookSignature(MERCHANT_ID, AMOUNT, MERCHANT_ORDER_ID, SIGN))
                 {
-                    _logger.LogWarning($"Invalid amount format: {AMOUNT}");
-                    return BadRequest("Invalid amount format");
-                }
-
-                // Генерируем ожидаемую подпись используя официальный сервис FreeKassa
-                var expectedSign = _freeKassaService.GetNotificationSign(MERCHANT_ORDER_ID, amount);
-
-                // Проверяем подпись
-                if (!string.Equals(expectedSign, SIGN, StringComparison.OrdinalIgnoreCase))
-                {
-                    _logger.LogWarning($"Invalid signature for order {MERCHANT_ORDER_ID}. Expected: {expectedSign}, Received: {SIGN}");
+                    _logger.LogWarning($"Invalid signature for order {MERCHANT_ORDER_ID}");
                     return BadRequest("Invalid signature");
                 }
 

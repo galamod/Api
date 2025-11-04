@@ -31,12 +31,16 @@ string[] allowedOrigins =
 
 builder.Services.AddSingleton<IConnectionManager, ConnectionManager>();
 
-// Регистрация официального сервиса FreeKassa
-var merchantId = int.Parse(builder.Configuration["FreeKassa:MerchantId"] ?? "0");
-var secret1 = builder.Configuration["FreeKassa:SecretWord1"] ?? throw new InvalidOperationException("FreeKassa:SecretWord1 is not configured");
-var secret2 = builder.Configuration["FreeKassa:SecretWord2"] ?? throw new InvalidOperationException("FreeKassa:SecretWord2 is not configured");
+// Регистрация FreeKassa
+var freeKassaOptions = new FreeKassaOptions
+{
+    MerchantId = int.Parse(builder.Configuration["FreeKassa:MerchantId"] ?? "0"),
+    Secret1 = builder.Configuration["FreeKassa:SecretWord1"] ?? throw new InvalidOperationException("FreeKassa:SecretWord1 is not configured"),
+    Secret2 = builder.Configuration["FreeKassa:SecretWord2"] ?? throw new InvalidOperationException("FreeKassa:SecretWord2 is not configured")
+};
 
-builder.Services.AddFreeKassa(merchantId, secret1, secret2);
+builder.Services.AddSingleton(freeKassaOptions);
+builder.Services.AddScoped<IFreeKassaPaymentService, FreeKassaPaymentService>();
 
 // Регистрация сервиса License
 builder.Services.AddScoped<ILicenseService, LicenseService>();
