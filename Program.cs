@@ -1,5 +1,6 @@
 using Api;
 using Api.Services;
+using Api.FreeKassa;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -30,8 +31,14 @@ string[] allowedOrigins =
 
 builder.Services.AddSingleton<IConnectionManager, ConnectionManager>();
 
-// Регистрация сервисов FreeKassa и License
-builder.Services.AddScoped<IFreeKassaService, FreeKassaService>();
+// Регистрация официального сервиса FreeKassa
+var merchantId = int.Parse(builder.Configuration["FreeKassa:MerchantId"] ?? "0");
+var secret1 = builder.Configuration["FreeKassa:SecretWord1"] ?? throw new InvalidOperationException("FreeKassa:SecretWord1 is not configured");
+var secret2 = builder.Configuration["FreeKassa:SecretWord2"] ?? throw new InvalidOperationException("FreeKassa:SecretWord2 is not configured");
+
+builder.Services.AddFreeKassa(merchantId, secret1, secret2);
+
+// Регистрация сервиса License
 builder.Services.AddScoped<ILicenseService, LicenseService>();
 
 builder.Services.AddCors(options =>
@@ -83,11 +90,6 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-//app.UseStaticFiles();
-//app.UseRouting();
-
-//app.UseGalaxyProxy(); // 👈 Наш middleware-прокси
 
 app.MapControllers();
 

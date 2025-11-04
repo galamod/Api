@@ -1,5 +1,6 @@
 using Api.Models;
 using Api.Services;
+using Api.FreeKassa;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -49,17 +50,12 @@ namespace Api.Controllers
                     return Unauthorized("Invalid user ID");
                 }
 
-                // Получаем email пользователя из БД
+                // Получаем пользователя из БД
                 var user = await _context.Users.FindAsync(userId);
                 if (user == null)
                 {
                     return NotFound("User not found");
                 }
-
-                // Формируем email - используем username как email или создаём валидный email
-                var userEmail = user.Username.Contains("@") 
-                    ? user.Username 
-                    : $"{user.Username}@user.local"; // Более валидный формат
 
                 // Генерируем уникальный ID заказа
                 var orderId = $"ORDER_{Guid.NewGuid():N}";
@@ -79,13 +75,11 @@ namespace Api.Controllers
                 _context.Payments.Add(payment);
                 await _context.SaveChangesAsync();
 
-                // Генерируем URL для оплаты
-                var paymentUrl = _freeKassaService.GeneratePaymentUrl(
-                    orderId,
-                    request.Amount,
-                    userEmail,
-                    $"{request.ApplicationName} - Plan {request.PlanIndex}"
-                );
+                // Получаем валюту из конфигурации
+                var currency = _configuration["FreeKassa:Currency"] ?? "RUB";
+
+                // Генерируем URL для оплаты используя официальный сервис FreeKassa
+                var paymentUrl = _freeKassaService.GetPayLink(orderId, request.Amount, currency);
 
                 _logger.LogInformation($"Created payment {orderId} for user {userId}, app: {request.ApplicationName}, plan: {request.PlanIndex}, amount: {request.Amount}");
 
@@ -114,21 +108,6 @@ namespace Api.Controllers
             {
                 _logger.LogInformation($"Received webhook for order {MERCHANT_ORDER_ID}, amount: {AMOUNT}, sign: {SIGN}");
 
-                var secretWord2 = _configuration["FreeKassa:SecretWord2"];
-
-                if (string.IsNullOrEmpty(secretWord2))
-                {
-                    _logger.LogError("FreeKassa:SecretWord2 is not configured");
-                    return BadRequest("Configuration error");
-                }
-
-                // Проверяем подпись
-                if (!_freeKassaService.VerifySignature(MERCHANT_ID, AMOUNT, secretWord2, MERCHANT_ORDER_ID, SIGN))
-                {
-                    _logger.LogWarning($"Invalid signature for order {MERCHANT_ORDER_ID}");
-                    return BadRequest("Invalid signature");
-                }
-
                 // Находим платеж в БД
                 var payment = await _context.Payments
                     .FirstOrDefaultAsync(p => p.OrderId == MERCHANT_ORDER_ID);
@@ -144,6 +123,23 @@ namespace Api.Controllers
                 {
                     _logger.LogInformation($"Payment {MERCHANT_ORDER_ID} already processed");
                     return Ok("YES");
+                }
+
+                // Парсим сумму
+                if (!decimal.TryParse(AMOUNT, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var amount))
+                {
+                    _logger.LogWarning($"Invalid amount format: {AMOUNT}");
+                    return BadRequest("Invalid amount format");
+                }
+
+                // Генерируем ожидаемую подпись используя официальный сервис FreeKassa
+                var expectedSign = _freeKassaService.GetNotificationSign(MERCHANT_ORDER_ID, amount);
+
+                // Проверяем подпись
+                if (!string.Equals(expectedSign, SIGN, StringComparison.OrdinalIgnoreCase))
+                {
+                    _logger.LogWarning($"Invalid signature for order {MERCHANT_ORDER_ID}. Expected: {expectedSign}, Received: {SIGN}");
+                    return BadRequest("Invalid signature");
                 }
 
                 // Обновляем статус платежа
