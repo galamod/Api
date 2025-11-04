@@ -1,6 +1,5 @@
 using Api.Models;
 using Api.Services;
-using Api.FreeKassa;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -219,70 +218,6 @@ namespace Api.Controllers
             {
                 _logger.LogError(ex, $"Error getting payment status for order {orderId}");
                 return StatusCode(500, new { message = "Ошибка при получении статуса платежа" });
-            }
-        }
-
-        /// <summary>
-        /// Принудительно проверить статус платежа через API FreeKassa
-        /// </summary>
-        [Authorize]
-        [HttpPost("check/{orderId}")]
-        public async Task<IActionResult> ForceCheckPaymentStatus(string orderId)
-        {
-            try
-            {
-                var payment = await _context.Payments
-                    .FirstOrDefaultAsync(p => p.OrderId == orderId);
-
-                if (payment == null)
-                {
-                    return NotFound(new { message = "Платеж не найден" });
-                }
-
-                // Проверяем, что пользователь запрашивает свой платеж
-                var userIdClaim = User.FindFirstValue("id");
-                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
-                {
-                    return Unauthorized("Invalid user ID");
-                }
-
-                if (payment.UserId != userId)
-                {
-                    return Forbid();
-                }
-
-                // Если платеж уже оплачен, не проверяем повторно
-                if (payment.Status == PaymentStatus.Paid)
-                {
-                    return Ok(new { message = "Платеж уже оплачен", status = payment.Status });
-                }
-
-                // Проверяем через API
-                var checkResult = await _freeKassaPaymentService.CheckPaymentStatusAsync(orderId);
-
-                if (checkResult.IsPaid)
-                {
-                    payment.Status = PaymentStatus.Paid;
-                    payment.PaidAt = DateTime.UtcNow;
-
-                    // Активируем лицензию
-                    var license = await _licenseService.CreateAndActivateLicenseAsync(
-                        payment.UserId,
-                        payment.ApplicationName,
-                        payment.PlanIndex
-                    );
-
-                    await _context.SaveChangesAsync();
-
-                    return Ok(new { message = "Платеж подтверждён, лицензия активирована", status = payment.Status, licenseKey = license.Key });
-                }
-
-                return Ok(new { message = "Платеж ещё не оплачен", status = checkResult.Status });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error force checking payment {orderId}");
-                return StatusCode(500, new { message = "Ошибка при проверке платежа" });
             }
         }
 
