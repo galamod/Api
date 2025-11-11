@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="client-examples\**" />
+    <Content Remove="client-examples\**" />
+    <EmbeddedResource Remove="client-examples\**" />
+    <None Remove="client-examples\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
     <PackageReference Include="JsonSubTypes" Version="2.0.1" />
