@@ -21,6 +21,15 @@ builder.Services.AddHttpClient("GalaxyClient", client =>
     CookieContainer = new CookieContainer()
 });
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ConfigureHttpsDefaults(httpsOptions =>
+    {
+        httpsOptions.SslProtocols = System.Security.Authentication.SslProtocols.Tls12
+                                  | System.Security.Authentication.SslProtocols.Tls13;
+    });
+});
+
 string[] allowedOrigins =
 {
     "https://galabot.netlify.app",

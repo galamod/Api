@@ -53,7 +53,6 @@ namespace Api.Controllers
             }
         }
 
-
         [Authorize]
         [HttpGet("my")]
         public async Task<IActionResult> GetMyLicenses()
@@ -63,6 +62,84 @@ namespace Api.Controllers
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
             return Ok(licenses);
+        }
+
+        /// <summary>
+        /// Получить детальную информацию о лицензии пользователя для конкретного приложения
+        /// </summary>
+        [Authorize]
+        [HttpGet("info")]
+        public async Task<IActionResult> GetLicenseInfo([FromQuery] string application)
+        {
+            if (string.IsNullOrWhiteSpace(application))
+                return BadRequest("Название приложения не может быть пустым");
+
+            var userId = Guid.Parse(User.FindFirstValue("id")!);
+            var now = DateTime.UtcNow;
+
+            // Ищем активную лицензию для данного приложения или универсальную лицензию
+            var license = await _context.Licenses
+                .Where(x => x.UserId == userId &&
+                           (x.ApplicationName == null || x.ApplicationName == application))
+                .OrderByDescending(x => x.CreatedAt) // Берём самую новую
+                .FirstOrDefaultAsync();
+
+            if (license == null)
+            {
+                return Ok(new LicenseInfoDto
+                {
+                    HasLicense = false,
+                    ApplicationName = application,
+                    Status = "Нет активной лицензии"
+                });
+            }
+
+            // Проверяем, не истекла ли лицензия
+            var isExpired = license.ExpirationDate.HasValue && license.ExpirationDate.Value <= now;
+            var isActive = !isExpired;
+
+            // Вычисляем количество оставшихся дней
+            int? daysRemaining = null;
+            if (license.ExpirationDate.HasValue && !isExpired)
+            {
+                daysRemaining = (int)(license.ExpirationDate.Value - now).TotalDays;
+            }
+
+            // Определяем статус
+            string status;
+            if (!license.ExpirationDate.HasValue)
+            {
+                status = "Бессрочная лицензия";
+            }
+            else if (isExpired)
+            {
+                status = "Лицензия истекла";
+            }
+            else if (daysRemaining <= 7)
+            {
+                status = $"Истекает через {daysRemaining} дн.";
+            }
+            else if (daysRemaining <= 30)
+            {
+                status = $"Активна ({daysRemaining} дн. осталось)";
+            }
+            else
+            {
+                status = "Активна";
+            }
+
+            return Ok(new LicenseInfoDto
+            {
+                HasLicense = true,
+                LicenseKey = license.Key,
+                ApplicationName = license.ApplicationName ?? "Все приложения",
+                StartDate = license.CreatedAt,
+                ExpirationDate = license.ExpirationDate,
+                IsActive = isActive,
+                IsExpired = isExpired,
+                DaysRemaining = daysRemaining,
+                Status = status
+            });
         }
 
         [Authorize]

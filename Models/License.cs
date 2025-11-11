@@ -45,6 +45,22 @@ namespace Api
         public string? UserUsername { get; set; }
     }
 
+    /// <summary>
+    /// DTO для информации о лицензии пользователя для конкретного приложения
+    /// </summary>
+    public class LicenseInfoDto
+    {
+        public bool HasLicense { get; set; }
+        public string? LicenseKey { get; set; }
+        public string? ApplicationName { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? ExpirationDate { get; set; }
+        public bool IsActive { get; set; }
+        public bool IsExpired { get; set; }
+        public int? DaysRemaining { get; set; }
+        public string Status { get; set; } = string.Empty;
+    }
+
     public class CreateLicenseForUserDto
     {
         public Guid UserId { get; set; }
@@ -75,5 +91,4 @@ namespace Api
         [Required]
         public string Key { get; set; }
     }
-
 }
